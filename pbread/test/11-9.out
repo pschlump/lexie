@@ -1,0 +1,7 @@
+Dump At: File: _/Users/corwin/Projects/pongo2/lexie/pbread/_test/_obj_test/pbread.go LineNo:54
+N PbBuffer=1
+  Buffer [0] Len: 16 Pos: 6
+  Contents ->4
+ccc
+ddd
+<-

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"testing"
 
-	"../com"
+	"github.com/pschlump/lexie/com"
 
 	. "gopkg.in/check.v1"
 )

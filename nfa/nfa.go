@@ -18,8 +18,8 @@ import (
 	"sort"
 	"unicode/utf8"
 
-	"../com"
-	"../re"
+	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/re"
 )
 
 type TransitionType struct {

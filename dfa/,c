@@ -1,0 +1,6 @@
+
+**********************************************************************************************************
+Top: (machine number 2) ctx.St:21
+ (peek) machine=2 cur_st=21 ii=24 for rune rn=->{<- to=36 hard=false Rv=0 Tau=false
+ At: File: /Users/corwin/Projects/pongo2/lexie/dfa/nm.go LineNo:250
+Match, continuing to advance[ctx.St=21] rn={ ii=24 to=36

@@ -1,0 +1,14 @@
+Type=in.ImDefinedValueType
+
+{Seq:1 WhoAmI:ReservedWords 
+
+NameValueStr:map[and:Tok_L_AND not:Tok_not as:Tok_as in:Tok_in bor:Tok_B_OR band:Tok_B_AND xor:Tok_XOR or:Tok_L_OR true:Tok_true false:Tok_false export:Tok_export]
+
+**
+NameValue:map[and:4 true:32 as:34 bor:42 band:41 xor:64 or:5 false:33 not:31 export:35 in:28]
+
+Reverse:map[5:or 32:true 42:bor 31:not 41:band 35:export 33:false 28:in 64:xor 4:and 34:as]
+SeenAt:map[bor:{LineNo:[39] FileName:[unk-file]} band:{LineNo:[39] FileName:[unk-file]} and:{LineNo:[39] FileName:[unk-file]} true:{LineNo:[39] FileName:[unk-file]} export:{LineNo:[39] FileName:[unk-file]} in:{LineNo:[39] FileName:[unk-file]} as:{LineNo:[39] FileName:[unk-file]} or:{LineNo:[39] FileName:[unk-file]} false:{LineNo:[39] FileName:[unk-file]} not:{LineNo:[39 39] FileName:[unk-file unk-file]} xor:{LineNo:[39] FileName:[unk-file]}]
+}
+
+, File: /Users/corwin/Projects/pongo2/lexie/dfa/match.go LineNo:260

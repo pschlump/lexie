@@ -31,7 +31,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"../com"
+	"github.com/pschlump/lexie/com"
 )
 
 //	"../../../go-lib/sizlib"

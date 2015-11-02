@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"../gen"
+	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/gen"
 )
 
 // "../../../go-lib/sizlib"

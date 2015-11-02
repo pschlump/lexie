@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"../com"
+	"github.com/pschlump/lexie/com"
 )
 
 type In01TestType struct {

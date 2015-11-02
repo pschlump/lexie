@@ -18,7 +18,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"../com"
+	"github.com/pschlump/lexie/com"
 )
 
 type ReTreeNodeType struct {

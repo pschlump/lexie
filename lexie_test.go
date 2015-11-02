@@ -12,12 +12,12 @@ import (
 	"strings"
 	"testing"
 
-	"./com"
-	"./dfa"
-	"./nfa"
+	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/dfa"
+	"github.com/pschlump/lexie/nfa"
 
-	"../../go-lib/sizlib"
-	"../../go-lib/tr"
+	sizlib "github.com/pschlump/filelib" // "../../go-lib/sizlib"
+	tr "github.com/pschlump/godebug"     // "../../go-lib/tr"
 
 	. "gopkg.in/check.v1"
 )
@@ -109,7 +109,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 		Pool.Sigma = Pool.GenerateSigma()
 
 		if false {
-			DbPrintf("test7", "Pool=%s\n", sizlib.SVarI(Pool))
+			DbPrintf("test7", "Pool=%s\n", tr.SVarI(Pool))
 		}
 		Pool.DumpPool(false)
 		Pool.DumpPoolJSON(os.Stdout, vv.Re, vv.Rv)

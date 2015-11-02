@@ -5,12 +5,10 @@ import (
 	"io"
 	"strings"
 
-	"../com"
-	"../eval"
-	"../gen"
-	"../tok"
-
-	// "../../../go-lib/sizlib"
+	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/eval"
+	"github.com/pschlump/lexie/gen"
+	"github.com/pschlump/lexie/tok"
 )
 
 type MtType struct {
