@@ -1,0 +1,1199 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">_/../../../../../Users/corwin/Projects/pongo2/lexie/re/re.go (73.3%)</option>
+				
+				<option value="file1">_/../../../../../Users/corwin/Projects/pongo2/lexie/re/x_type.go (29.4%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" >//
+// R E - Part of Lexie Lexical Generation System
+//
+// (C) Philip Schlump, 2014-2015.
+// Version: 1.0.8
+// BuildNo: 203
+//
+// Special Thanks to 2C-Why, LLC for supporting this project.
+//
+
+package re
+
+import (
+        "errors"
+        "fmt"
+        "sort"
+        "strconv"
+        "strings"
+        "unicode/utf8"
+
+        "../com"
+
+        "../../../go-lib/sizlib"
+)
+
+type ReTreeNodeType struct {
+        Item     string           // Set of Runes
+        Mm       int              // { m, n }
+        Nn       int              //  { m, n }
+        LR_Tok   LR_TokType       // Node Type
+        Children []ReTreeNodeType // Children of this node
+}
+
+type LexReType struct {
+        Buf   string          // Holds the RE being parsed
+        Pos   int             // Where we are
+        Tree  *ReTreeNodeType // Pointer to the top of the tree
+        Error []error         // Set of errors
+        Sigma string          //
+}
+
+type LexReMatcherType struct {
+        Sym  string
+        Rv   LR_TokType
+        Repl string
+}
+
+// -- Functions ------------------------------------------------------------------------------------------------------------
+
+func init() <span class="cov8" title="1">{
+        if false </span><span class="cov0" title="0">{
+                fmt.Printf("", sizlib.SVarI(nil), com.LF())
+        }</span>
+}
+
+func NameOfLR_TokType(x LR_TokType) string <span class="cov8" title="1">{
+        if t, ok := LR_TokTypeLookup[x]; ok </span><span class="cov8" title="1">{
+                return t
+        }</span>
+        <span class="cov0" title="0">return fmt.Sprintf("**unk-LR_Token = %d **", x)</span>
+}
+
+func NewLexReType() *LexReType <span class="cov8" title="1">{
+        return &amp;LexReType{
+                Buf:  "",
+                Pos:  0,
+                Tree: &amp;ReTreeNodeType{Item: "", LR_Tok: LR_null, Children: make([]ReTreeNodeType, 0, 10)},
+        }
+}</span>
+
+func (lr *LexReType) SetBuf(s string) <span class="cov8" title="1">{
+        lr.Buf = s
+        lr.Pos = 0
+        lr.Tree.Children = make([]ReTreeNodeType, 0, 10)
+}</span>
+
+func (lr *LexReType) Next() (ss string, cl LR_TokType) <span class="cov8" title="1">{
+        var rr rune
+        var sz int
+        if lr.Pos &lt; len(lr.Buf) </span><span class="cov8" title="1">{
+                for _, vv := range LexReMatcher </span><span class="cov8" title="1">{
+                        if strings.HasPrefix(lr.Buf[lr.Pos:], vv.Sym) </span><span class="cov8" title="1">{
+                                ss = vv.Sym
+                                cl = vv.Rv
+                                lr.Pos += len(vv.Sym)
+                                if vv.Repl != "" </span><span class="cov8" title="1">{
+                                        ss = vv.Repl
+                                }</span>
+                                <span class="cov8" title="1">goto done</span>
+                        }
+                }
+                // ss = lr.Buf[lr.Pos : lr.Pos+1]
+                <span class="cov8" title="1">rr, sz = utf8.DecodeRune([]byte(lr.Buf[lr.Pos:]))
+                ss += string(rr)
+                cl = LR_Text
+                // lr.Pos += 1
+                lr.Pos += sz
+        done:
+        }</span><span class="cov8" title="1"> else {
+                ss = ""
+                cl = LR_EOF
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+func (lr *LexReType) Warn(s string) <span class="cov8" title="1">{
+        if com.DbOn("OutputErrors") </span><span class="cov0" title="0">{
+                fmt.Printf("Warning: %s\n", s)
+        }</span>
+        <span class="cov8" title="1">lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Warning: %s, %s", s, com.LF(2))))</span>
+}
+
+func (lr *LexReType) Err(s string) <span class="cov8" title="1">{
+        if com.DbOn("OutputErrors") </span><span class="cov0" title="0">{
+                fmt.Printf("Error: %s\n", s)
+        }</span>
+        <span class="cov8" title="1">lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Error: %s, %s", s, com.LF(2))))</span>
+}
+
+func NewReTreeNodeType() *ReTreeNodeType <span class="cov0" title="0">{
+        return &amp;ReTreeNodeType{
+                Item:   "",
+                LR_Tok: LR_null,
+        }
+}</span>
+
+func (lr *LexReType) parseCCL(depth int, ww LR_TokType) (tree ReTreeNodeType) <span class="cov8" title="1">{
+        pos := 0
+        com.DbPrintf("db2", "parseCCL Top: depth=%d,  %d=%s\n", depth, ww, NameOfLR_TokType(ww))
+        s := ""
+        dx := 0
+        marked := false
+        c, w := lr.Next()
+        for w != LR_EOF </span><span class="cov8" title="1">{
+                com.DbPrintf("re2", "Top of parseCCL dx=%d -&gt;%s&lt;-\n", dx, c)
+                switch w </span>{
+                <span class="cov8" title="1">case LR_MINUS: // -                -- Text if not in CCL and not 1st char in CCL
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_Text: //                        -- Add a node to list, move right
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_CARROT: // ^                -- BOL
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_DOT: // .                -- Match any char
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_STAR: // *                -- Error if 1st char, else take prev item from list, star and replace it.
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_PLUS: // +                -- Error if 1st char
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_QUEST: // ?                -- Error if 1st char
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_OP_PAR: // (                -- Start of Sub_Re
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_CL_PAR: // )
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_OR: // |
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_OP_BR: // {
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_CL_BR: // }
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_COMMA: // ,
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_DOLLAR: // $
+                        s += c</span>
+
+                <span class="cov0" title="0">case LR_N_CCL: // [^...]        -- N_CCL Node
+                        marked = true
+                        com.DbPrintf("re2", "    incr to %d, %s\n", dx, com.LF())
+                        s += c</span> // Add To CCL
+
+                <span class="cov8" title="1">case LR_CCL: // [...]        -- CCL Node (Above)
+                        marked = true
+                        com.DbPrintf("re2", "    incr to %d, %s\n", dx, com.LF())
+                        s += c</span> // Add To CCL
+
+                <span class="cov8" title="1">case LR_E_CCL:
+                        dx--
+                        com.DbPrintf("re2", "    decr to %d, %s\n", dx, com.LF())
+                        if dx &lt; 0 </span><span class="cov8" title="1">{
+                                tree.Item = expandCCL(s) // Do Something, Return
+                                tree.LR_Tok = ww
+                                return
+                        }</span><span class="cov8" title="1"> else {
+                                s += c //
+                        }</span>
+
+                <span class="cov0" title="0">default:
+                        lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseCCL = %d, %s", w, com.LF())))
+                        tree.Item = expandCCL(s) // Do Something, Return
+                        tree.LR_Tok = ww
+                        return</span>
+                }
+                <span class="cov8" title="1">pos++
+                c, w = lr.Next()
+
+                if c == ":" &amp;&amp; marked </span><span class="cov8" title="1">{
+                        marked = false
+                        dx++
+                }</span>
+        }
+        <span class="cov8" title="1">if w == LR_EOF </span><span class="cov8" title="1">{
+                lr.Err("EOF found in Character Class [...] or [^...].")
+        }</span>
+        <span class="cov8" title="1">tree.Item = expandCCL(s)
+        tree.LR_Tok = ww
+        return</span>
+}
+
+// tree.Item, tree.Mm, tree.Nn = parseIteratorString(s) // Do Something, Return
+/*
+Should build a test for this
+        m,n= -&gt;2,3&lt;- 2 3
+        m,n= -&gt;3,2&lt;- 3 2
+        m,n= -&gt;3,&lt;- 3 9999999999
+        m,n= -&gt;,2&lt;- 0 2
+        m,n= -&gt;2,3&lt;- 2 3
+        m,n= -&gt;3,2&lt;- 3 2
+        m,n= -&gt;3,&lt;- 3 9999999999
+        m,n= -&gt;,2&lt;- 0 2
+        m,n= -&gt;,2&lt;- 0 2
+        m,n= -&gt;,&lt;- 0 9999999999
+*/
+func (lr *LexReType) parseIteratorString(s string) (mm int, nn int) <span class="cov8" title="1">{
+        var err error
+        mm, nn = 1, 1
+        com := strings.Index(s, ",")
+        end := strings.Index(s, "}")
+        if end != -1 </span><span class="cov0" title="0">{
+                s = s[0:end]
+        }</span>
+        <span class="cov8" title="1">if com == -1 </span><span class="cov0" title="0">{
+                mm, err = strconv.Atoi(s)
+                if err == nil </span><span class="cov0" title="0">{
+                        nn = mm
+                }</span>
+        }<span class="cov8" title="1"> else if com == 0 </span><span class="cov8" title="1">{
+                mm = 0
+                nn = InfiniteIteration
+                p2 := s[com+1:]
+                if len(p2) &gt; 0 </span><span class="cov8" title="1">{
+                        nn, err = strconv.Atoi(p2)
+                        if err != nil </span><span class="cov0" title="0">{
+                                nn = 1
+                        }</span>
+                }
+        }<span class="cov8" title="1"> else if com+1 &gt;= len(s) </span><span class="cov8" title="1">{
+                nn = InfiniteIteration
+                p1 := s[0:com]
+                mm, err = strconv.Atoi(p1)
+                if err != nil </span><span class="cov0" title="0">{
+                        mm = 0
+                }</span>
+        }<span class="cov8" title="1"> else {
+                nn = InfiniteIteration
+                p1 := s[0:com]
+                p2 := s[com+1:]
+                mm, err = strconv.Atoi(p1)
+                if err != nil </span><span class="cov0" title="0">{
+                        mm = 0
+                }</span>
+                <span class="cov8" title="1">if len(p2) &gt; 0 </span><span class="cov8" title="1">{
+                        nn, err = strconv.Atoi(p2)
+                        if err != nil </span><span class="cov0" title="0">{
+                                nn = 1
+                        }</span>
+                }
+        }
+        // fmt.Printf("m,n= -&gt;%s&lt;- %d %d\n", s, mm, nn)
+        <span class="cov8" title="1">return</span>
+}
+
+// mm, nn := lr.parseIterator ( depth+1 )
+func (lr *LexReType) parseIterator(depth int) (tree ReTreeNodeType) <span class="cov8" title="1">{
+        pos := 0
+        com.DbPrintf("db2", "parseIterator Top: depth=%d\n", depth)
+        s := ""
+        c, w := lr.Next()
+        for w != LR_EOF </span><span class="cov8" title="1">{
+                switch w </span>{
+                <span class="cov0" title="0">case LR_MINUS: // -                -- Text if not in CCL and not 1st char in CCL
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_CARROT: // ^                -- BOL
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_DOT: // .                -- Match any char
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_STAR: // *                -- Error if 1st char, else take prev item from list, star and replace it.
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_PLUS: // +                -- Error if 1st char
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_QUEST: // ?                -- Error if 1st char
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_OP_PAR: // (                -- Start of Sub_Re
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_CL_PAR: // )
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_CCL: // [...]        -- CCL Node (Above)
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_OR: // |
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_OP_BR: // {
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_DOLLAR: // $
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_E_CCL:
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_N_CCL: // [^...]        -- N_CCL Node
+                        lr.Error = append(lr.Error, errors.New(fmt.Sprintf("in parseIterator, Invalid {m,n} - invalid chars found, %s", com.LF())))
+                        tree.Mm, tree.Nn = 1, 1
+                        tree.LR_Tok = LR_OP_BR
+                        return</span>
+
+                <span class="cov8" title="1">case LR_Text: //                        -- Add a node to list, move right
+                        if c[0] &gt;= '0' &amp;&amp; c[0] &lt;= '9' || c[0] == ',' </span><span class="cov8" title="1">{
+                                s += c // Add To Iterator
+                        }</span><span class="cov0" title="0"> else {
+                                lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseIterator, %s", com.LF())))
+                                tree.Mm, tree.Nn = lr.parseIteratorString(s) // Do Something, Return
+                                tree.Item = "{"
+                                tree.LR_Tok = LR_OP_BR
+                                return
+                        }</span>
+                <span class="cov8" title="1">case LR_COMMA: // ,
+                        s += c</span> // Add To Iterator
+                <span class="cov8" title="1">case LR_CL_BR: // }
+                        tree.Mm, tree.Nn = lr.parseIteratorString(s) // Do Something, Return
+                        tree.Item = "{"
+                        tree.LR_Tok = LR_OP_BR
+                        return</span>
+                <span class="cov0" title="0">default:
+                        lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseIterator, %s", com.LF())))
+                        tree.Mm, tree.Nn = lr.parseIteratorString(s) // Do Something, Return
+                        tree.Item = "{"
+                        tree.LR_Tok = LR_OP_BR
+                        return</span>
+                }
+                <span class="cov8" title="1">pos++
+                c, w = lr.Next()</span>
+        }
+        <span class="cov0" title="0">if w == LR_EOF </span><span class="cov0" title="0">{
+                lr.Err("EOF found in Iterator {m,n}.")
+        }</span>
+        <span class="cov0" title="0">tree.Mm, tree.Nn = lr.parseIteratorString(s) // Do Something, Return
+        tree.Item = "{"
+        tree.LR_Tok = LR_OP_BR
+        return</span>
+}
+
+func N4Blanks(n int) (rv string) <span class="cov8" title="1">{
+        rv = ""
+        for i := 0; i &lt; n; i++ </span><span class="cov8" title="1">{
+                rv += "    "
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+//
+// What can I see at the top of a RE
+//
+//        LR_Text                     //
+//        LR_EOF                      //
+//        LR_DOT                      // .                -- Match any char
+//        LR_STAR                     // *                -- Error if 1st char
+//        LR_PLUS                     // +                -- Error if 1st char
+//        LR_QUEST                    // ?                -- Error if 1st char
+//        LR_B_CCL                    // [                -- Start of CCL Node
+//        LR_E_CCL                    // ]
+//        LR_OP_PAR                   // (                -- Start of Sub_Re
+//        LR_CL_PAR                   // )
+//        LR_CCL                      // [...]        -- CCL Node (Above)
+//        LR_N_CCL                    // [^...]        -- N_CCL Node
+//        LR_CARROT                   // ^                -- BOL
+//        LR_MINUS                    // -                -- Text if not in CCL and not 1st char in CCL
+//
+//        Item     string
+//        LR_Tok   LR_TokType
+//        Children []*ReTreeNodeType
+//        Next     *ReTreeNodeType
+//
+func (lr *LexReType) DumpParseNodesChild(ch []ReTreeNodeType, d int) <span class="cov8" title="1">{
+        com.DbPrintf("DumpParseNodes", "\n%sDumpParseNodesChild: At %s\n", N4Blanks(d), com.LF())
+        for ii, vv := range ch </span><span class="cov8" title="1">{
+                com.DbPrintf("DumpParseNodes", "%sat %s [step %d] ", N4Blanks(d), com.LF(), ii)
+                com.DbPrintf("DumpParseNodes", "Item: [%s] %d=%s, N-Children=%d\n", vv.Item, vv.LR_Tok, NameOfLR_TokType(vv.LR_Tok), len(vv.Children))
+                if len(vv.Children) &gt; 0 </span><span class="cov8" title="1">{
+                        lr.DumpParseNodesChild(vv.Children, d+1)
+                }</span>
+        }
+        <span class="cov8" title="1">com.DbPrintf("DumpParseNodes", "%sDumpParseNodesChild: Done %s\n\n", N4Blanks(d), com.LF())</span>
+}
+
+func (lr *LexReType) DumpParseNodes() <span class="cov8" title="1">{
+        com.DbPrintf("DumpParseNodes", "\nDumpParseNodes: At %s\n", com.LF())
+        for ii, vv := range lr.Tree.Children </span><span class="cov8" title="1">{
+                com.DbPrintf("DumpParseNodes", "at %s [step %d] ", com.LF(), ii)
+                com.DbPrintf("DumpParseNodes", "Item: [%s] %d=%s, N-Children=%d\n", vv.Item, vv.LR_Tok, NameOfLR_TokType(vv.LR_Tok), len(vv.Children))
+                if len(vv.Children) &gt; 0 </span><span class="cov8" title="1">{
+                        lr.DumpParseNodesChild(vv.Children, 1)
+                }</span>
+        }
+        <span class="cov8" title="1">com.DbPrintf("DumpParseNodes", "DumpParseNodes: Done %s\n\n", com.LF())
+        com.DbPrintf("DumpParseNodesX", "DumpParseNodes: %s\n\n", sizlib.SVarI(lr.Tree))</span>
+}
+
+func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard bool) <span class="cov0" title="0">{
+        t := 0
+
+        hard = false
+        if d == 1 </span><span class="cov0" title="0">{
+                com.DbPrintf("CalcLength", "CalcLengthChild at top: %s\n\n", sizlib.SVarI(tree))
+        }</span>
+
+        <span class="cov0" title="0">switch tree.LR_Tok </span>{
+        <span class="cov0" title="0">case LR_null: //
+                for jj := range tree.Children </span><span class="cov0" title="0">{
+                        t, hard = lr.CalcLengthChild(&amp;tree.Children[jj], d+1)
+                        x += t
+                }</span>
+        <span class="cov0" title="0">case LR_Text: //
+                // com.DbPrintf("CalcLength", "Len of item(%s) = %d, %s\n", tree.Item, len(tree.Item), com.LF())
+                x += len(tree.Item)
+                hard = true</span>
+        <span class="cov0" title="0">case LR_EOF: //
+                hard = true</span>
+        <span class="cov0" title="0">case LR_DOT: // .
+                x += 1</span>
+        <span class="cov0" title="0">case LR_STAR: // *
+                x = 0</span>
+                // com.DbPrintf("CalcLength", "After * x = %d, hard=%v\n", x, hard)
+        <span class="cov0" title="0">case LR_PLUS: // +
+                // patch to fix the problem with [0-9]+ not working -- In reality the length is only if it is a "FIXED" length, 0 else
+                //                if len(tree.Children) &gt; 0 {
+                //                        t, hard = lr.CalcLengthChild(&amp;tree.Children[0], d+1)
+                //                        x += t
+                //                }
+                //                hard = true
+                x = 0</span>
+        <span class="cov0" title="0">case LR_QUEST: // ?
+                x = 0</span>
+        <span class="cov0" title="0">case LR_OP_BR: // {                         // {m,n} - need to calculate length of ( m times, length of children
+                x = 0</span>
+        <span class="cov0" title="0">case LR_OP_PAR: // (
+                if len(tree.Children) &gt; 0 </span><span class="cov0" title="0">{
+                        t, hard = lr.CalcLengthChild(&amp;tree.Children[0], d+1)
+                        x += t
+                }</span>
+                // com.DbPrintf("CalcLength", "After ( x = %d, hard=%v\n", x, hard)
+        <span class="cov0" title="0">case LR_CL_PAR: // )
+                x = 0</span>
+        <span class="cov0" title="0">case LR_CCL: // [...]
+                x += 1
+                hard = true</span>
+        <span class="cov0" title="0">case LR_N_CCL: // [^...]
+                x += 1</span>
+        <span class="cov0" title="0">case LR_E_CCL: // ]
+                x += 1</span>
+        <span class="cov0" title="0">case LR_CARROT: // ^
+                x += 0
+                hard = true</span>
+        <span class="cov0" title="0">case LR_MINUS: // -
+                x += 1
+                hard = true</span>
+        <span class="cov0" title="0">case LR_DOLLAR: // $
+                hard = true</span>
+
+        <span class="cov0" title="0">case LR_OR: // |
+                y := -1
+                z := 0
+                hard = false
+                if len(tree.Children) &gt; 0 </span><span class="cov0" title="0">{
+                        hard = true
+                        h := false
+                        for jj := range tree.Children </span><span class="cov0" title="0">{
+                                z, h = lr.CalcLengthChild(&amp;tree.Children[jj], d+1)
+                                if y == -1 </span><span class="cov0" title="0">{
+                                        y = z
+                                }</span><span class="cov0" title="0"> else if y &lt; z </span><span class="cov0" title="0">{
+                                        y = z
+                                }</span>
+                                <span class="cov0" title="0">if !h </span><span class="cov0" title="0">{
+                                        hard = false
+                                }</span>
+                        }
+                }
+                <span class="cov0" title="0">x += y</span>
+                // com.DbPrintf("CalcLength", "After | x = %d, hard = %v\n", x, hard)
+        }
+
+        <span class="cov0" title="0">return</span>
+}
+
+func (lr *LexReType) CalcLength() (int, bool) <span class="cov0" title="0">{
+        x, h := lr.CalcLengthChild(lr.Tree, 1)
+        com.DbPrintf("CalcLength", "CalcLength Final Value for Tree = %d, hard=%v\n", x, h)
+        return x, h
+}</span>
+
+func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeType) []ReTreeNodeType <span class="cov8" title="1">{
+        //var first *ReTreeNodeType
+        //var last *ReTreeNodeType
+        pre := strings.Repeat("    ", depth)
+        if depth == 0 </span><span class="cov8" title="1">{
+                xTree = lr.Tree
+                com.DbPrintf("parseExpression", "%sat %s !!!top!!!, depth=%d \n", pre, com.LF(), depth)
+        }</span>
+        <span class="cov8" title="1">isFirst := true
+        inOr := false
+        com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+        c, w := lr.Next()
+        for w != LR_EOF </span><span class="cov8" title="1">{
+                com.DbPrintf("parseExpression", "%sat %s !!!top!!!, depth=%d c=-&gt;%s&lt;- w=%d %s -- Loop Top -- xTree=%s\n\n",
+                        pre, com.LF(), depth, c, w, NameOfLR_TokType(w), sizlib.SVarI(xTree))
+                switch w </span>{
+                <span class="cov0" title="0">case LR_CL_BR: // }
+                        fallthrough</span>
+                <span class="cov0" title="0">case LR_COMMA: // ,
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_E_CCL:
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_MINUS: // -                -- Text if not in CCL and not 1st char in CCL
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_Text: //                        -- Add a node to list, move right
+                        //if true {
+                        xTree.Children = append(xTree.Children, ReTreeNodeType{Item: c, LR_Tok: LR_Text})</span>
+                        //} else {
+                        // // Bad Idea - mucks up '*' and other processing -  To Simplify Tree needs to be done post-generation with Simp-Rules
+                        //        ll := len(lr.Tree.Children) - 1
+                        //        if ll &gt;= 0 &amp;&amp; lr.Tree.Children[ll].LR_Tok == LR_Text {
+                        //                lr.Tree.Children[ll].Item += c
+                        //        } else {
+                        //                xTree.Children = append(xTree.Children, ReTreeNodeType{Item: c, LR_Tok: LR_Text})
+                        //        }
+                        //}
+
+                <span class="cov8" title="1">case LR_CARROT: // ^                -- BOL                -- If at beginning, or after ( or | then BOL - else just text??
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_DOLLAR: // $                -- BOL                -- If at end, or just before ) or | the EOL - else just text??
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_DOT: // .                -- Match any char
+                        xTree.Children = append(xTree.Children, ReTreeNodeType{Item: c, LR_Tok: w})</span>
+
+                <span class="cov8" title="1">case LR_OP_BR: // {
+                        if isFirst </span><span class="cov0" title="0">{
+                                lr.Warn(fmt.Sprintf("Invalid '%s' at beginning of R.E. assumed to be a text character missing esacape.", c))
+                                xTree.Children = append(xTree.Children, ReTreeNodeType{Item: c, LR_Tok: LR_Text})
+                        }</span><span class="cov8" title="1"> else {
+                                ll := len(xTree.Children) - 1
+                                tmp := xTree.Children[ll]
+                                newTree := lr.parseIterator(depth + 1)
+                                if newTree.Mm == 0 &amp;&amp; newTree.Nn == InfiniteIteration </span><span class="cov8" title="1">{
+                                        ll := len(xTree.Children) - 1
+                                        tmp := xTree.Children[ll]
+                                        com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), ll, sizlib.SVarI(xTree), sizlib.SVarI(tmp))
+                                        xTree.Children[ll] = ReTreeNodeType{Item: "*", LR_Tok: LR_STAR, Children: []ReTreeNodeType{tmp}}
+                                }</span><span class="cov8" title="1"> else {
+                                        if newTree.Mm &gt; newTree.Nn </span><span class="cov8" title="1">{
+                                                lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid Range, Start is bigger than end, {%d,%d}, %s", newTree.Mm, newTree.Nn, com.LF())))
+                                        }</span>
+                                        <span class="cov8" title="1">com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), ll, sizlib.SVarI(xTree), sizlib.SVarI(tmp))
+                                        // xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: LR_OP_BR, Children: []ReTreeNodeType{tmp}, Mm: newTree.Mm, Nn: newTree.Nn}
+                                        newTree.Children = []ReTreeNodeType{tmp}
+                                        xTree.Children[ll] = newTree</span>
+                                        // CCL: xTree.Children = append(xTree.Children, lr.parseCCL(depth+1, w)) // xyzzy needs work ---------------------------------------------------
+                                }
+                                <span class="cov8" title="1">com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())</span>
+                        }
+
+                <span class="cov8" title="1">case LR_STAR: // *                -- Error if 1st char, else take prev item from list, star and replace it.
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_PLUS: // +                -- Error if 1st char
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_QUEST: // ?                -- Error if 1st char
+                        if isFirst </span><span class="cov8" title="1">{
+                                lr.Warn(fmt.Sprintf("Invalid '%s' at beginning of R.E. assumed to be a text character missing esacape.", c))
+                                xTree.Children = append(xTree.Children, ReTreeNodeType{Item: c, LR_Tok: LR_Text})
+                        }</span><span class="cov8" title="1"> else {
+                                ll := len(xTree.Children) - 1
+                                tmp := xTree.Children[ll]
+                                com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), ll, sizlib.SVarI(xTree), sizlib.SVarI(tmp))
+                                xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: w, Children: []ReTreeNodeType{tmp}}
+                                com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+                        }</span>
+
+                <span class="cov8" title="1">case LR_OR: // |                n-ary or operator
+                        com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+                        inOr = true
+
+                        // Left Machine is collected to be sub-machine == Beginnig-to-current
+                        // left := xTree.Children // change to be left section back to but not including "|" node - or all if no | node.
+                        kk := -1
+                        for jj := len(xTree.Children) - 1; jj &gt;= 0; jj-- </span><span class="cov8" title="1">{
+                                if xTree.Children[jj].LR_Tok == LR_OR </span><span class="cov8" title="1">{
+                                        kk = jj
+                                        break</span>
+                                }
+                        }
+                        <span class="cov8" title="1">if kk == -1 </span><span class="cov8" title="1">{ // No OR tok found
+                                left := xTree.Children // change to be left section back to but not including "|" node - or all if no | node.
+                                ll := len(left)
+                                leftNode := ReTreeNodeType{Item: "", LR_Tok: LR_null, Children: make([]ReTreeNodeType, ll, ll)}
+                                for jj := range left </span><span class="cov8" title="1">{
+                                        leftNode.Children[jj] = left[jj]
+                                }</span>
+
+                                <span class="cov8" title="1">newTop := ReTreeNodeType{Item: "|", LR_Tok: LR_OR, Children: make([]ReTreeNodeType, 0, 10)}
+                                newTop.Children = append(newTop.Children, leftNode) // only if no "or" node, else ref to "or" node
+                                xTree.Children = xTree.Children[:0]
+                                xTree.Children = append(xTree.Children, newTop)
+                                com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, left=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), sizlib.SVarI(left))</span>
+                        }<span class="cov8" title="1"> else {
+                                if kk &gt;= 0 </span><span class="cov8" title="1">{
+                                        if kk &lt; len(xTree.Children) </span><span class="cov8" title="1">{
+                                                tmp := xTree.Children[kk+1:]
+                                                xTree.Children = xTree.Children[0 : kk+1]
+                                                newNode := ReTreeNodeType{Item: "", LR_Tok: LR_null, Children: make([]ReTreeNodeType, len(tmp), len(tmp))}
+                                                for i := 0; i &lt; len(tmp); i++ </span><span class="cov8" title="1">{
+                                                        newNode.Children[i] = tmp[i]
+                                                }</span>
+                                                <span class="cov8" title="1">xTree.Children[kk].Children = append(xTree.Children[kk].Children, newNode)</span>
+                                        }
+                                }
+                        }
+
+                        // Or node is created like (LR_STAR)
+                        // Recursive call to parse rest of items at this level
+                        //newNode := ReTreeNodeType{Item: "", LR_Tok: LR_null, Children: make([]ReTreeNodeType, 1, 10)} // No recursive call
+                        //lr.parseExpression(depth+1, depth, &amp;newNode.Children[0])
+                        //newTop.Children = append(newTop.Children, newNode.Children[0])
+
+                        // Take results of recursion and put in as RIGHT machine under LR_OR (optimize for N-Tree OR at this point)
+                        //xTree.Children = append(xTree.Children, newTop)
+                        //if depth &gt; d_depth {
+                        //com.DbPrintf("parseExpression", "%sat %s, depth=%d d_detph=%d\n", pre, com.LF(), depth, d_depth)
+                        //        return xTree.Children
+                        //}
+
+                <span class="cov8" title="1">case LR_OP_PAR: // (                -- Start of Sub_Re
+                        com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+
+                        newNode := ReTreeNodeType{Item: c, LR_Tok: LR_OP_PAR, Children: make([]ReTreeNodeType, 1, 10)}
+
+                        lr.parseExpression(depth+1, depth+1, &amp;newNode.Children[0])
+
+                        newNode.Children[0].Item = c
+                        newNode.Children[0].LR_Tok = LR_OP_PAR
+
+                        xTree.Children = append(xTree.Children, newNode.Children[0])
+
+                        com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())</span>
+
+                <span class="cov8" title="1">case LR_CL_PAR: // )
+                        // If in "or" node set - then collect last section to "or" ------------------------ &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+                        com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+                        if depth == 0 </span><span class="cov8" title="1">{
+                                com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+                                lr.Warn(fmt.Sprintf("Invalid '%s' at not properly nested.   Assuming that this was to match a character.", c))
+                                xTree.Children = append(xTree.Children, ReTreeNodeType{Item: c, LR_Tok: LR_Text})
+                                com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+                        }</span><span class="cov8" title="1"> else {
+                                com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+                                if inOr </span><span class="cov8" title="1">{
+                                        com.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), sizlib.SVarI(xTree))
+                                        kk := -1
+                                        for jj := len(xTree.Children) - 1; jj &gt;= 0; jj-- </span><span class="cov8" title="1">{
+                                                if xTree.Children[jj].LR_Tok == LR_OR </span><span class="cov8" title="1">{
+                                                        kk = jj
+                                                        break</span>
+                                                }
+                                        }
+                                        <span class="cov8" title="1">if kk &gt;= 0 </span><span class="cov8" title="1">{
+                                                if kk &lt; len(xTree.Children) </span><span class="cov8" title="1">{
+                                                        tmp := xTree.Children[kk+1:]
+                                                        xTree.Children = xTree.Children[0 : kk+1]
+                                                        newNode := ReTreeNodeType{Item: "", LR_Tok: LR_null, Children: make([]ReTreeNodeType, len(tmp), len(tmp))}
+                                                        for i := 0; i &lt; len(tmp); i++ </span><span class="cov8" title="1">{
+                                                                newNode.Children[i] = tmp[i]
+                                                        }</span>
+                                                        <span class="cov8" title="1">xTree.Children[kk].Children = append(xTree.Children[kk].Children, newNode)</span>
+                                                }
+                                        }
+                                        <span class="cov8" title="1">com.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), sizlib.SVarI(xTree))</span>
+                                }
+                                <span class="cov8" title="1">return xTree.Children</span>
+                        }
+                        <span class="cov8" title="1">com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+                        inOr = false</span>
+
+                <span class="cov8" title="1">case LR_CCL: // [...]        -- CCL Node (Above)
+                        fallthrough</span>
+                <span class="cov8" title="1">case LR_N_CCL: // [^...]        -- N_CCL Node
+                        xTree.Children = append(xTree.Children, lr.parseCCL(depth+1, w))</span> // xyzzy needs work ---------------------------------------------------
+
+                <span class="cov0" title="0">default:
+                        lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid LR Token Type, '%d', '%s', %s", w, NameOfLR_TokType(w), com.LF())))
+                        return xTree.Children</span>
+                }
+                <span class="cov8" title="1">isFirst = false
+                com.DbPrintf("parseExpression", "%sAT %s, BOTTOM xTree=%s\n", pre, com.LF(), sizlib.SVarI(xTree))
+                c, w = lr.Next()</span>
+        }
+        // If in "or" node set - then collect last section to "or" ------------------------ &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+        <span class="cov8" title="1">if inOr </span><span class="cov8" title="1">{
+                com.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), sizlib.SVarI(xTree))
+                kk := -1
+                for jj := len(xTree.Children) - 1; jj &gt;= 0; jj-- </span><span class="cov8" title="1">{
+                        if xTree.Children[jj].LR_Tok == LR_OR </span><span class="cov8" title="1">{
+                                kk = jj
+                                break</span>
+                        }
+                }
+                <span class="cov8" title="1">if kk &gt;= 0 </span><span class="cov8" title="1">{
+                        if kk &lt; len(xTree.Children) </span><span class="cov8" title="1">{
+                                tmp := xTree.Children[kk+1:]
+                                xTree.Children = xTree.Children[0 : kk+1]
+                                newNode := ReTreeNodeType{Item: "", LR_Tok: LR_null, Children: make([]ReTreeNodeType, len(tmp), len(tmp))}
+                                for i := 0; i &lt; len(tmp); i++ </span><span class="cov8" title="1">{
+                                        newNode.Children[i] = tmp[i]
+                                }</span>
+                                <span class="cov8" title="1">xTree.Children[kk].Children = append(xTree.Children[kk].Children, newNode)</span>
+                        }
+                }
+                <span class="cov8" title="1">com.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), sizlib.SVarI(xTree))</span>
+        }
+        <span class="cov8" title="1">return xTree.Children</span>
+}
+
+func (lr *LexReType) ParseRe(ss string) <span class="cov8" title="1">{
+        com.DbPrintf("db2", "at %s\n", com.LF())
+        lr.SetBuf(ss)
+        com.DbPrintf("db2", "at %s\n", com.LF())
+        lr.parseExpression(0, 0, nil)
+        com.DbPrintf("db2", "at %s\n", com.LF())
+}</span>
+
+func expandCCL(s string) (ccl string) <span class="cov8" title="1">{
+        ccl = ""
+        com.DbPrintf("db2", "at %s\n", com.LF())
+
+        pos := 0
+        if len(s) &gt; 0 &amp;&amp; s[0:1] == "-" </span><span class="cov8" title="1">{ // Check for leading '-' include in CCL
+                ccl += "-"
+                pos = 1
+        }</span>
+
+        <span class="cov8" title="1">for ii := pos; ii &lt; len(s); ii++ </span><span class="cov8" title="1">{
+                com.DbPrintf("re2", "ii=%d remaining -&gt;%s&lt;-, %s\n", ii, s[ii:], com.LF())
+                if strings.HasPrefix(s[ii:], "[:alphnum:]") </span><span class="cov0" title="0">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        // ccl += X_ALPHA
+                        ccl += X_LOWER
+                        ccl += X_UPPER
+                        ccl += X_NUMERIC
+                        ii += len("[:alphnum:]") - 1
+                }</span><span class="cov8" title="1"> else if strings.HasPrefix(s[ii:], "[:alpha:]") </span><span class="cov8" title="1">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        // ccl += X_ALPHA
+                        ccl += X_LOWER
+                        ccl += X_UPPER
+                        ii += len("[:alpha:]") - 1
+                }</span><span class="cov8" title="1"> else if strings.HasPrefix(s[ii:], "[:lower:]") </span><span class="cov0" title="0">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        ccl += X_LOWER
+                        ii += len("[:lower:]") - 1
+                }</span><span class="cov8" title="1"> else if strings.HasPrefix(s[ii:], "[:upper:]") </span><span class="cov0" title="0">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        ccl += X_UPPER
+                        ii += len("[:upper:]") - 1
+                }</span><span class="cov8" title="1"> else if strings.HasPrefix(s[ii:], "[:numeric:]") </span><span class="cov0" title="0">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        ccl += X_NUMERIC
+                        ii += len("[:numeric:]") - 1
+                }</span><span class="cov8" title="1"> else if ii+9 &lt;= len(s) &amp;&amp; s[ii:ii+9] == "a-zA-Z0-9" </span><span class="cov8" title="1">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        // ccl += X_ALPHA
+                        ccl += X_LOWER
+                        ccl += X_UPPER
+                        ccl += X_NUMERIC
+                        ii += 8
+                }</span><span class="cov8" title="1"> else if ii+6 &lt;= len(s) &amp;&amp; s[ii:ii+6] == "a-zA-Z" </span><span class="cov8" title="1">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        // ccl += X_ALPHA
+                        ccl += X_LOWER
+                        ccl += X_UPPER
+                        ii += 5
+                }</span><span class="cov8" title="1"> else if ii+3 &lt;= len(s) &amp;&amp; s[ii:ii+3] == "0-9" </span><span class="cov8" title="1">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        // fmt.Printf("matched 0-9 pattern\n")
+                        ccl += X_NUMERIC
+                        ii += 2
+                }</span><span class="cov8" title="1"> else if ii+3 &lt;= len(s) &amp;&amp; s[ii:ii+3] == "a-z" </span><span class="cov8" title="1">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        ccl += X_LOWER
+                        ii += 2
+                }</span><span class="cov8" title="1"> else if ii+3 &lt;= len(s) &amp;&amp; s[ii:ii+3] == "A-Z" </span><span class="cov0" title="0">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        ccl += X_UPPER
+                        ii += 2
+                }</span><span class="cov8" title="1"> else if ii+2 &lt; len(s) &amp;&amp; s[ii+1:ii+2] == "-" </span><span class="cov8" title="1">{
+                        com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+                        // xyzzyRune  TODO - this code is horribley non-utf8 compatable at this moment in time.
+                        e := s[ii+2]
+                        // fmt.Printf("matched a-b pattern, b=%s e=%s\n", string(s[ii]), string(e))
+                        if s[ii] &gt;= e </span><span class="cov8" title="1">{
+                                fmt.Printf("Error: Poorly formatted character-class, beginning is larger than or equal to end of CCL\n") // Xyzzy - need line number etc
+                        }</span>
+                        <span class="cov8" title="1">for b := s[ii]; b &lt;= e; b++ </span><span class="cov8" title="1">{
+                                ccl += string(b)
+                        }</span>
+                        <span class="cov8" title="1">ii += 2</span>
+                }<span class="cov8" title="1"> else {
+                        ccl += s[ii : ii+1]
+                }</span>
+                // fmt.Printf("bottom ccl now: -&gt;%s&lt;-\n", ccl)
+        }
+
+        <span class="cov8" title="1">return</span>
+}
+
+func (lr *LexReType) GenerateSigma() (rv string) <span class="cov8" title="1">{
+        rv = lr.GenerateSigmaFromTree(lr.Tree, 1)
+        lr.Sigma = rv
+
+        uniq := make(map[string]bool)
+        for _, rn := range rv </span><span class="cov8" title="1">{
+                uniq[string(rn)] = true
+        }</span>
+
+        //fmt.Printf("RE:GenerateSigma: uniq=%v\n", uniq)
+
+        // To store the keys in slice in sorted order
+        <span class="cov8" title="1">var keys []string
+        for k := range uniq </span><span class="cov8" title="1">{
+                keys = append(keys, k)
+        }</span>
+        //fmt.Printf("RE:GenerateSigma: keys (unsorted)=%v\n", keys)
+        <span class="cov8" title="1">sort.Strings(keys)
+        //fmt.Printf("RE:GenerateSigma: keys (sorted)=%v\n", keys)
+
+        rv = ""
+        for _, k := range keys </span><span class="cov8" title="1">{
+                rv += k
+        }</span>
+
+        <span class="cov8" title="1">lr.Sigma = rv
+        return</span>
+}
+
+func (lr *LexReType) GenerateSigmaFromTree(tree *ReTreeNodeType, d int) (rv string) <span class="cov8" title="1">{
+
+        switch tree.LR_Tok </span>{
+        <span class="cov8" title="1">case LR_OP_PAR: // (
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_QUEST: // ?
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_PLUS: // +
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_STAR: // *
+                if len(tree.Children) &gt; 0 </span><span class="cov8" title="1">{
+                        rv += lr.GenerateSigmaFromTree(&amp;tree.Children[0], d+1)
+                }</span>
+        <span class="cov8" title="1">case LR_OR: // |
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_null: //
+                for jj := range tree.Children </span><span class="cov8" title="1">{
+                        rv += lr.GenerateSigmaFromTree(&amp;tree.Children[jj], d+1)
+                }</span>
+        <span class="cov8" title="1">case LR_CARROT: // ^
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_Text: //
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_EOF: //
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_DOT: // .
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_MINUS: // -
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_CCL: // [...]
+                fallthrough</span>
+        <span class="cov8" title="1">case LR_N_CCL: // [^...]                        // probably incorrect
+                rv += tree.Item</span>
+        <span class="cov0" title="0">case LR_CL_PAR:</span> // )
+        <span class="cov0" title="0">case LR_E_CCL:</span> // ]
+        <span class="cov8" title="1">case LR_DOLLAR:</span> // $
+        }
+
+        <span class="cov8" title="1">return</span>
+}
+
+/*
+
+// Set of possible input tokens
+// Walk the NFA and collect all unique tokens that are not lambda and have a transition
+func (nn *NFA_PoolType) GenerateSigma() (s string) {
+        uniq := make(map[string]bool)
+        s = ""
+        for _, vv := range nn.Pool {
+                if vv.IsUsed {
+                        for _, ww := range vv.Next2 {
+                                if !ww.IsLambda {
+                                        uniq[ww.On] = true
+                                }
+                        }
+
+                }
+        }
+
+        fmt.Printf("GenerateSigma: uniq=%v\n", uniq)
+
+        // To store the keys in slice in sorted order
+        var keys []string
+        for k := range uniq {
+                keys = append(keys, k)
+        }
+        fmt.Printf("GenerateSigma: keys (unsorted)=%v\n", keys)
+        sort.Strings(keys)
+        fmt.Printf("GenerateSigma: keys (sorted)=%v\n", keys)
+
+        for _, k := range keys {
+                s += k
+        }
+
+        return
+}
+
+*/
+
+/* vim: set noai ts=4 sw=4: */
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package re
+
+import "strings"
+
+const (
+        X_DOT          = "\uF8FA" // Any char in Sigma
+        X_BOL          = "\uF8F3" // Beginning of line
+        X_EOL          = "\uF8F4" // End of line
+        X_NUMERIC      = "\uF8F5"
+        X_LOWER        = "\uF8F6"
+        X_UPPER        = "\uF8F7"
+        X_ALPHA        = "\uF8F8"
+        X_ALPHNUM      = "\uF8F9"
+        X_EOF          = "\uF8FB"
+        X_not_CH       = "\uF8FC" // On input lookup if the char is NOT in Signa then it is returned as this.
+        X_else_CH      = "\uF8FC" // If char is not matched in this state then take this path
+        X_N_CCL        = "\uF8FD"
+        X_LAMBDA_MATCH = "\uF8FE"
+)
+
+const (
+        R_min_reserved = '\uF8FA' //
+        R_DOT          = '\uF8FA' // Any char in Sigma
+        R_BOL          = '\uF8F3' // Beginning of line
+        R_EOL          = '\uF8F4' // End of line
+        R_NUMERIC      = '\uF8F5'
+        R_LOWER        = '\uF8F6'
+        R_UPPER        = '\uF8F7'
+        R_ALPHA        = '\uF8F8'
+        R_ALPHNUM      = '\uF8F9'
+        R_EOF          = '\uF8FB'
+        R_not_CH       = '\uF8FC' // On input lookup if the char is NOT in Signa then it is returned as this.
+        R_else_CH      = '\uF8FC' // If char is not matched in this state then take this path
+        R_N_CCL        = '\uF8FD' // If char is not matched in this state then take this path
+        R_LAMBDA_MATCH = '\uF8FE'
+)
+
+const InfiniteIteration = 9999999999
+
+type LR_TokType int
+
+const (
+        LR_null   LR_TokType = iota //  0
+        LR_Text                     //  1
+        LR_EOF                      //  2
+        LR_DOT                      //  3 .
+        LR_STAR                     //  4 *
+        LR_PLUS                     //  5 +
+        LR_QUEST                    //  6 ?
+        LR_OP_PAR                   //  7 (
+        LR_CL_PAR                   //  8 )
+        LR_CCL                      //  9 [...]
+        LR_N_CCL                    // 10 [^...]
+        LR_E_CCL                    // 11 ]
+        LR_CARROT                   // 12 ^
+        LR_MINUS                    // 13 -
+        LR_DOLLAR                   // 14 $
+        LR_OR                       // 15 |
+        LR_OP_BR                    // 16 {
+        LR_CL_BR                    // 17 }
+        LR_COMMA                    // 18 ,
+)
+
+var LR_TokTypeLookup map[LR_TokType]string
+
+func init() <span class="cov8" title="1">{
+        LR_TokTypeLookup = make(map[LR_TokType]string)
+        LR_TokTypeLookup[LR_null] = "LR_null"
+        LR_TokTypeLookup[LR_Text] = "LR_Text"
+        LR_TokTypeLookup[LR_EOF] = "LR_EOF"
+        LR_TokTypeLookup[LR_DOT] = "LR_DOT"
+        LR_TokTypeLookup[LR_STAR] = "LR_STAR"
+        LR_TokTypeLookup[LR_PLUS] = "LR_PLUS"
+        LR_TokTypeLookup[LR_QUEST] = "LR_QUEST"
+        LR_TokTypeLookup[LR_OP_PAR] = "LR_OP_PAR"
+        LR_TokTypeLookup[LR_CL_PAR] = "LR_CL_PAR"
+        LR_TokTypeLookup[LR_CCL] = "LR_CCL"
+        LR_TokTypeLookup[LR_N_CCL] = "LR_N_CCL"
+        LR_TokTypeLookup[LR_E_CCL] = "LR_E_CCL"
+        LR_TokTypeLookup[LR_CARROT] = "LR_CARROT"
+        LR_TokTypeLookup[LR_MINUS] = "LR_MINUS"
+        LR_TokTypeLookup[LR_DOLLAR] = "LR_DOLLAR"
+        LR_TokTypeLookup[LR_OR] = "LR_OR"
+        LR_TokTypeLookup[LR_OP_BR] = "LR_OP_BR"
+        LR_TokTypeLookup[LR_CL_BR] = "LR_CL_BR"
+        LR_TokTypeLookup[LR_COMMA] = "LR_COMMA"
+}</span>
+
+var LexReMatcher = []LexReMatcherType{
+        {Sym: `\[`, Rv: LR_Text, Repl: "["},
+        {Sym: `\]`, Rv: LR_Text, Repl: "]"},
+        {Sym: `\(`, Rv: LR_Text, Repl: "("},
+        {Sym: `\)`, Rv: LR_Text, Repl: ")"},
+        {Sym: `\^`, Rv: LR_Text, Repl: "^"},
+        {Sym: `\?`, Rv: LR_Text, Repl: "?"},
+        {Sym: `\*`, Rv: LR_Text, Repl: "*"},
+        {Sym: `\+`, Rv: LR_Text, Repl: "+"},
+        {Sym: `\.`, Rv: LR_Text, Repl: "."},
+        {Sym: `\-`, Rv: LR_Text, Repl: "-"},
+        {Sym: `\^`, Rv: LR_Text, Repl: "^"},
+        {Sym: `\$`, Rv: LR_Text, Repl: "$"},
+        {Sym: `\\`, Rv: LR_Text, Repl: "\\"},
+        {Sym: `\|`, Rv: LR_Text, Repl: "|"},
+        {Sym: `\{`, Rv: LR_Text, Repl: "{"},
+        {Sym: `\}`, Rv: LR_Text, Repl: "}"},
+        {Sym: `\,`, Rv: LR_Text, Repl: ","},
+        {Sym: "[^", Rv: LR_N_CCL},
+        {Sym: ".", Rv: LR_DOT},
+        {Sym: "*", Rv: LR_STAR},
+        {Sym: "+", Rv: LR_PLUS},
+        {Sym: "?", Rv: LR_QUEST},
+        {Sym: "[", Rv: LR_CCL},
+        {Sym: "]", Rv: LR_E_CCL},
+        {Sym: "(", Rv: LR_OP_PAR},
+        {Sym: ")", Rv: LR_CL_PAR},
+        {Sym: "^", Rv: LR_CARROT},
+        {Sym: "-", Rv: LR_MINUS},
+        {Sym: "$", Rv: LR_DOLLAR},
+        {Sym: "|", Rv: LR_OR},
+        {Sym: "{", Rv: LR_OP_BR},
+        {Sym: "}", Rv: LR_CL_BR},
+        {Sym: ",", Rv: LR_COMMA},
+}
+
+func EscapeStr(s string) string <span class="cov0" title="0">{
+        if s == X_DOT </span><span class="cov0" title="0">{
+                // return "\u2022"        // Middle Bullet
+                return "\u25C9" // FishEye
+        }</span><span class="cov0" title="0"> else if s == X_NUMERIC </span><span class="cov0" title="0">{
+                return "0-9"
+        }</span><span class="cov0" title="0"> else if s == X_LOWER </span><span class="cov0" title="0">{
+                return "a-z"
+        }</span><span class="cov0" title="0"> else if s == X_UPPER </span><span class="cov0" title="0">{
+                return "A-Z"
+        }</span><span class="cov0" title="0"> else if s == X_ALPHA </span><span class="cov0" title="0">{
+                return "a-zA-Z"
+        }</span><span class="cov0" title="0"> else if s == X_ALPHNUM </span><span class="cov0" title="0">{
+                return "a-zA-Z0-9"
+        }</span><span class="cov0" title="0"> else if s == X_EOF </span><span class="cov0" title="0">{
+                return "EOF"
+        }</span><span class="cov0" title="0"> else if s == X_BOL </span><span class="cov0" title="0">{
+                return "BOL"
+        }</span><span class="cov0" title="0"> else if s == X_EOL </span><span class="cov0" title="0">{
+                return "EOL"
+        }</span>
+        <span class="cov0" title="0">s = strings.Replace(s, `\`, `\\`, -1)
+        s = strings.Replace(s, `"`, `\"`, -1)
+        return s</span>
+}
+
+func EscapeStrForGV(s string) string <span class="cov0" title="0">{
+        if s == X_DOT </span><span class="cov0" title="0">{
+                // return "\u2022"        // Middle Bullet
+                return "\u25C9" // FishEye
+        }</span><span class="cov0" title="0"> else if s == X_NUMERIC </span><span class="cov0" title="0">{
+                return "0-9"
+        }</span><span class="cov0" title="0"> else if s == X_LOWER </span><span class="cov0" title="0">{
+                return "a-z"
+        }</span><span class="cov0" title="0"> else if s == X_UPPER </span><span class="cov0" title="0">{
+                return "A-Z"
+        }</span><span class="cov0" title="0"> else if s == X_ALPHA </span><span class="cov0" title="0">{
+                return "a-zA-Z"
+        }</span><span class="cov0" title="0"> else if s == X_ALPHNUM </span><span class="cov0" title="0">{
+                return "a-zA-Z0-9"
+        }</span><span class="cov0" title="0"> else if s == X_EOF </span><span class="cov0" title="0">{
+                return "EOF"
+        }</span><span class="cov0" title="0"> else if s == X_BOL </span><span class="cov0" title="0">{
+                return "BOL"
+        }</span><span class="cov0" title="0"> else if s == X_EOL </span><span class="cov0" title="0">{
+                return "EOL"
+        }</span>
+        <span class="cov0" title="0">s = strings.Replace(s, `\`, `\\`, -1)
+        s = strings.Replace(s, `"`, `\"`, -1)
+        s = strings.Replace(s, "\t", `\t`, -1)
+        s = strings.Replace(s, "\n", `\n`, -1)
+        s = strings.Replace(s, "\f", `\f`, -1)
+        s = strings.Replace(s, "\v", `\v`, -1)
+        s = strings.Replace(s, "\r", `\r`, -1)
+        s = strings.Replace(s, " ", `\B`, -1)
+        return s</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible = document.getElementById('file0');
+		files.addEventListener('change', onChange, false);
+		function onChange() {
+			visible.style.display = 'none';
+			visible = document.getElementById(files.value);
+			visible.style.display = 'block';
+			window.scrollTo(0, 0);
+		}
+	})();
+	</script>
+</html>

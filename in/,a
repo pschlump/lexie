@@ -1,0 +1,463 @@
+Defs - OutputDef
+==========================================================================
+DefType: Machines
+==========================================================================
+    S_Common=1
+    S_Init=0
+    S_Num=8
+    S_Quote=4
+    S_Str0=5
+    S_Str1=6
+    S_Str2=7
+    S_TAG=2
+    S_VAR=3
+==========================================================================
+DefType: Errors
+==========================================================================
+    Err_EOF_In_String=1
+    Err_EOF_Tag=2
+    Warn_End_Var_Unexpected=3
+    Warn_Unrecog_Char=4
+==========================================================================
+DefType: ReservedWords
+==========================================================================
+    and=Tok_L_AND
+    as=Tok_as
+    band=Tok_B_AND
+    bor=Tok_B_OR
+    export=Tok_export
+    false=Tok_false
+    in=Tok_in
+    not=Tok_not
+    or=Tok_L_OR
+    true=Tok_true
+    xor=Tok_XOR
+==========================================================================
+DefType: Tokens
+==========================================================================
+    Tok_APROX_EQ=58
+    Tok_B_AND=41
+    Tok_B_AND_EQ=52
+    Tok_B_OR=42
+    Tok_B_OR_EQ=51
+    Tok_CAROT_EQ=50
+    Tok_CARRET=20
+    Tok_CL=13
+    Tok_CL_BL=9
+    Tok_CL_BRACE=54
+    Tok_CL_SQ=39
+    Tok_CL_VAR=7
+    Tok_COLON=25
+    Tok_COMMA=21
+    Tok_Call=65
+    Tok_DCL_VAR=63
+    Tok_DIV_EQ=48
+    Tok_DOT=22
+    Tok_EOF=66
+    Tok_EQ=26
+    Tok_EQ3=57
+    Tok_EXCLAM=23
+    Tok_Float=67
+    Tok_GE=2
+    Tok_GT=18
+    Tok_HTML=68
+    Tok_ID=69
+    Tok_Ignore=70
+    Tok_LE=3
+    Tok_LT=17
+    Tok_L_AND=4
+    Tok_L_EQ=1
+    Tok_L_OR=5
+    Tok_MINUS=15
+    Tok_MINUS_EQ=46
+    Tok_MINUS_MINUS=62
+    Tok_MOD_EQ=49
+    Tok_NE=10
+    Tok_NE_LG=11
+    Tok_NUM=71
+    Tok_OP=12
+    Tok_OP_BL=8
+    Tok_OP_BRACE=53
+    Tok_OP_SQ=38
+    Tok_OP_VAR=6
+    Tok_OR=24
+    Tok_PCT=27
+    Tok_PIPE=37
+    Tok_PLUS=14
+    Tok_PLUS_EQ=45
+    Tok_PLUS_PLUS=61
+    Tok_QUEST=59
+    Tok_RE_MATCH=60
+    Tok_SLASH=19
+    Tok_SS=36
+    Tok_STAR=16
+    Tok_STAR_EQ=47
+    Tok_S_L=43
+    Tok_S_L_EQ=72
+    Tok_S_R=44
+    Tok_S_R_EQ=73
+    Tok_Str0=74
+    Tok_Str1=75
+    Tok_TILDE=40
+    Tok_TILDE_EQ=55
+    Tok_TILDE_TILDE=56
+    Tok_XOR=64
+    Tok_and=29
+    Tok_as=34
+    Tok_export=35
+    Tok_false=33
+    Tok_in=28
+    Tok_not=31
+    Tok_null=0
+    Tok_or=30
+    Tok_true=32
+
+// Defs - OutputDef
+// ==========================================================================
+// DefType: Tokens
+// ==========================================================================
+const (
+    Tok_null = 0
+    Tok_L_EQ = 1
+    Tok_GE = 2
+    Tok_LE = 3
+    Tok_L_AND = 4
+    Tok_L_OR = 5
+    Tok_OP_VAR = 6
+    Tok_CL_VAR = 7
+    Tok_OP_BL = 8
+    Tok_CL_BL = 9
+    Tok_NE = 10
+    Tok_NE_LG = 11
+    Tok_OP = 12
+    Tok_CL = 13
+    Tok_PLUS = 14
+    Tok_MINUS = 15
+    Tok_STAR = 16
+    Tok_LT = 17
+    Tok_GT = 18
+    Tok_SLASH = 19
+    Tok_CARRET = 20
+    Tok_COMMA = 21
+    Tok_DOT = 22
+    Tok_EXCLAM = 23
+    Tok_OR = 24
+    Tok_COLON = 25
+    Tok_EQ = 26
+    Tok_PCT = 27
+    Tok_in = 28
+    Tok_and = 29
+    Tok_or = 30
+    Tok_not = 31
+    Tok_true = 32
+    Tok_false = 33
+    Tok_as = 34
+    Tok_export = 35
+    Tok_SS = 36
+    Tok_PIPE = 37
+    Tok_OP_SQ = 38
+    Tok_CL_SQ = 39
+    Tok_TILDE = 40
+    Tok_B_AND = 41
+    Tok_B_OR = 42
+    Tok_S_L = 43
+    Tok_S_R = 44
+    Tok_PLUS_EQ = 45
+    Tok_MINUS_EQ = 46
+    Tok_STAR_EQ = 47
+    Tok_DIV_EQ = 48
+    Tok_MOD_EQ = 49
+    Tok_CAROT_EQ = 50
+    Tok_B_OR_EQ = 51
+    Tok_B_AND_EQ = 52
+    Tok_OP_BRACE = 53
+    Tok_CL_BRACE = 54
+    Tok_TILDE_EQ = 55
+    Tok_TILDE_TILDE = 56
+    Tok_EQ3 = 57
+    Tok_APROX_EQ = 58
+    Tok_QUEST = 59
+    Tok_RE_MATCH = 60
+    Tok_PLUS_PLUS = 61
+    Tok_MINUS_MINUS = 62
+    Tok_DCL_VAR = 63
+    Tok_XOR = 64
+    Tok_Call = 65
+    Tok_EOF = 66
+    Tok_Float = 67
+    Tok_HTML = 68
+    Tok_ID = 69
+    Tok_Ignore = 70
+    Tok_NUM = 71
+    Tok_S_L_EQ = 72
+    Tok_S_R_EQ = 73
+    Tok_Str0 = 74
+)
+
+// ==========================================================================
+// DefType: Machines
+// ==========================================================================
+const (
+    S_Init = 0
+    S_Common = 1
+    S_TAG = 2
+    S_VAR = 3
+    S_Quote = 4
+    S_Str0 = 5
+    S_Str1 = 6
+    S_Str2 = 7
+)
+
+// ==========================================================================
+// DefType: Errors
+// ==========================================================================
+const (
+    Err_EOF_In_String = 1
+    Err_EOF_Tag = 2
+    Warn_End_Var_Unexpected = 3
+)
+
+// ==========================================================================
+// DefType: ReservedWords
+// ==========================================================================
+const (
+    RW_and = 4
+    RW_or = 5
+    RW_in = 28
+    RW_not = 31
+    RW_true = 32
+    RW_false = 33
+    RW_as = 34
+    RW_export = 35
+    RW_band = 41
+    RW_bor = 42
+)
+
+Machine[0] Name[S_Init]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   \\{\\{                          Rv:6=Tok_OP_VAR     Call:3=S_VAR       
+        1: Pat   \\{%                            Rv:8=Tok_OP_BL      Call:2=S_TAG       
+        2: Pat   \\{\\\\\\{                                                              Repl:`{{` 
+        3: Pat   \\{\\\\%                                                                Repl:`{%` 
+        4: Pat   .*                              Rv:68=Tok_HTML                         
+        5: EOF                                   Rv:66=Tok_EOF                          
+Machine[1] Name[S_Common]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   <<=                             Rv:72=Tok_S_L_EQ                       
+        1: Pat   >>=                             Rv:73=Tok_S_R_EQ                       
+        2: Pat   ===                             Rv:57=Tok_EQ3                          
+        3: Pat   =~=                             Rv:58=Tok_APROX_EQ                     
+        4: Pat   <=                              Rv:3=Tok_LE                            
+        5: Pat   <<                              Rv:43=Tok_S_L                          
+        6: Pat   >>                              Rv:44=Tok_S_R                          
+        7: Pat   ==                              Rv:1=Tok_L_EQ                          
+        8: Pat   >=                              Rv:2=Tok_GE                            
+        9: Pat   &&                              Rv:4=Tok_L_AND                         
+       10: Pat   \\|\\|                          Rv:5=Tok_L_OR                          
+       11: Pat   !=                              Rv:10=Tok_NE                           
+       12: Pat   <>                              Rv:10=Tok_NE                           
+       13: Pat   \\+=                            Rv:45=Tok_PLUS_EQ                      
+       14: Pat   -=                              Rv:46=Tok_MINUS_EQ                     
+       15: Pat   \\*=                            Rv:47=Tok_STAR_EQ                      
+       16: Pat   /=                              Rv:48=Tok_DIV_EQ                       
+       17: Pat   %=                              Rv:49=Tok_MOD_EQ                       
+       18: Pat   \\^=                            Rv:50=Tok_CAROT_EQ                     
+       19: Pat   \\|=                            Rv:51=Tok_B_OR_EQ                      
+       20: Pat   &=                              Rv:52=Tok_B_AND_EQ                     
+       21: Pat   ~=                              Rv:55=Tok_TILDE_EQ                     
+       22: Pat   ~~                              Rv:56=Tok_TILDE_TILDE                     
+       23: Pat   ?=                              Rv:60=Tok_RE_MATCH                     
+       24: Pat   \\{\\{                          Rv:6=Tok_OP_VAR     Call:3=S_VAR       
+       25: Pat   \\{%                            Rv:8=Tok_OP_BL      Call:2=S_TAG       
+       26: Pat   %\\}                            Rv:9=Tok_CL_BL                          Return 
+       27: Pat   \\}\\}                          Rv:7=Tok_CL_VAR                         Return 
+       28: Pat   \\+\\+                          Rv:61=Tok_PLUS_PLUS                     
+       29: Pat   --                              Rv:62=Tok_MINUS_MINUS                     
+       30: Pat   :=                              Rv:63=Tok_DCL_VAR                      
+       31: Pat   [a-zA-Z_][a-zA-Z0-9_]*          Rv:69=Tok_ID                            [ReservedWord] 
+       32: Pat   [0-9]                                               Call:8=S_Num       
+       33: Pat   \"                              Rv:70=Tok_Ignore    Call:5=S_Str0       [Ignore] 
+       34: Pat   '                               Rv:70=Tok_Ignore    Call:6=S_Str1       [Ignore] 
+       35: Pat   `                               Rv:70=Tok_Ignore    Call:7=S_Str2       [Ignore] 
+       36: Pat   \\^                             Rv:20=Tok_CARRET                       
+       37: Pat   (                               Rv:12=Tok_OP                           
+       38: Pat   )                               Rv:13=Tok_CL                           
+       39: Pat   \\+                             Rv:14=Tok_PLUS                         
+       40: Pat   [                               Rv:38=Tok_OP_SQ                        
+       41: Pat   \\.                             Rv:22=Tok_DOT                          
+       42: Pat   ]                               Rv:39=Tok_CL_SQ                        
+       43: Pat   ~                               Rv:40=Tok_TILDE                        
+       44: Pat   &                               Rv:41=Tok_B_AND                        
+       45: Pat   \\|                             Rv:24=Tok_OR                           
+       46: Pat   ?                               Rv:59=Tok_QUEST                        
+       47: Pat   -                               Rv:15=Tok_MINUS                        
+       48: Pat   \\*                             Rv:16=Tok_STAR                         
+       49: Pat   <                               Rv:17=Tok_LT                           
+       50: Pat   >                               Rv:18=Tok_GT                           
+       51: Pat   /                               Rv:19=Tok_SLASH                        
+       52: Pat   %                               Rv:27=Tok_PCT                          
+       53: Pat   \\{                             Rv:53=Tok_OP_BRACE                     
+       54: Pat   \\}                             Rv:54=Tok_CL_BRACE                     
+       55: Pat   ,                               Rv:21=Tok_COMMA                        
+       56: Pat   !                               Rv:23=Tok_EXCLAM                       
+       57: Pat   :                               Rv:25=Tok_COLON                        
+       58: Pat   =                               Rv:26=Tok_EQ                           
+       59: Pat   [ \t\n\f\r]                     Rv:70=Tok_Ignore                        [Ignore] 
+       60: Pat   .                                                                       [Warn=Warn_Unrecog_Char] 
+       61: EOF                                                                           [Err=Err_EOF_Tag] 
+Machine[2] Name[S_TAG]-----------------------------------------------------------------
+    Mixins: [S_Common]
+        0: Pat   <<=                             Rv:72=Tok_S_L_EQ                       
+        1: Pat   >>=                             Rv:73=Tok_S_R_EQ                       
+        2: Pat   ===                             Rv:57=Tok_EQ3                          
+        3: Pat   =~=                             Rv:58=Tok_APROX_EQ                     
+        4: Pat   <=                              Rv:3=Tok_LE                            
+        5: Pat   <<                              Rv:43=Tok_S_L                          
+        6: Pat   >>                              Rv:44=Tok_S_R                          
+        7: Pat   ==                              Rv:1=Tok_L_EQ                          
+        8: Pat   >=                              Rv:2=Tok_GE                            
+        9: Pat   &&                              Rv:4=Tok_L_AND                         
+       10: Pat   \\|\\|                          Rv:5=Tok_L_OR                          
+       11: Pat   !=                              Rv:10=Tok_NE                           
+       12: Pat   <>                              Rv:10=Tok_NE                           
+       13: Pat   \\+=                            Rv:45=Tok_PLUS_EQ                      
+       14: Pat   -=                              Rv:46=Tok_MINUS_EQ                     
+       15: Pat   \\*=                            Rv:47=Tok_STAR_EQ                      
+       16: Pat   /=                              Rv:48=Tok_DIV_EQ                       
+       17: Pat   %=                              Rv:49=Tok_MOD_EQ                       
+       18: Pat   \\^=                            Rv:50=Tok_CAROT_EQ                     
+       19: Pat   \\|=                            Rv:51=Tok_B_OR_EQ                      
+       20: Pat   &=                              Rv:52=Tok_B_AND_EQ                     
+       21: Pat   ~=                              Rv:55=Tok_TILDE_EQ                     
+       22: Pat   ~~                              Rv:56=Tok_TILDE_TILDE                     
+       23: Pat   ?=                              Rv:60=Tok_RE_MATCH                     
+       24: Pat   \\{\\{                          Rv:6=Tok_OP_VAR     Call:3=S_VAR       
+       25: Pat   \\{%                            Rv:8=Tok_OP_BL      Call:2=S_TAG       
+       26: Pat   %\\}                            Rv:9=Tok_CL_BL                          Return 
+       27: Pat   \\}\\}                          Rv:7=Tok_CL_VAR                         Return 
+       28: Pat   \\+\\+                          Rv:61=Tok_PLUS_PLUS                     
+       29: Pat   --                              Rv:62=Tok_MINUS_MINUS                     
+       30: Pat   :=                              Rv:63=Tok_DCL_VAR                      
+       31: Pat   [a-zA-Z_][a-zA-Z0-9_]*          Rv:69=Tok_ID                            [ReservedWord] 
+       32: Pat   [0-9]                                               Call:8=S_Num       
+       33: Pat   \"                              Rv:70=Tok_Ignore    Call:5=S_Str0       [Ignore] 
+       34: Pat   '                               Rv:70=Tok_Ignore    Call:6=S_Str1       [Ignore] 
+       35: Pat   `                               Rv:70=Tok_Ignore    Call:7=S_Str2       [Ignore] 
+       36: Pat   \\^                             Rv:20=Tok_CARRET                       
+       37: Pat   (                               Rv:12=Tok_OP                           
+       38: Pat   )                               Rv:13=Tok_CL                           
+       39: Pat   \\+                             Rv:14=Tok_PLUS                         
+       40: Pat   [                               Rv:38=Tok_OP_SQ                        
+       41: Pat   \\.                             Rv:22=Tok_DOT                          
+       42: Pat   ]                               Rv:39=Tok_CL_SQ                        
+       43: Pat   ~                               Rv:40=Tok_TILDE                        
+       44: Pat   &                               Rv:41=Tok_B_AND                        
+       45: Pat   \\|                             Rv:24=Tok_OR                           
+       46: Pat   ?                               Rv:59=Tok_QUEST                        
+       47: Pat   -                               Rv:15=Tok_MINUS                        
+       48: Pat   \\*                             Rv:16=Tok_STAR                         
+       49: Pat   <                               Rv:17=Tok_LT                           
+       50: Pat   >                               Rv:18=Tok_GT                           
+       51: Pat   /                               Rv:19=Tok_SLASH                        
+       52: Pat   %                               Rv:27=Tok_PCT                          
+       53: Pat   \\{                             Rv:53=Tok_OP_BRACE                     
+       54: Pat   \\}                             Rv:54=Tok_CL_BRACE                     
+       55: Pat   ,                               Rv:21=Tok_COMMA                        
+       56: Pat   !                               Rv:23=Tok_EXCLAM                       
+       57: Pat   :                               Rv:25=Tok_COLON                        
+       58: Pat   =                               Rv:26=Tok_EQ                           
+       59: Pat   [ \t\n\f\r]                     Rv:70=Tok_Ignore                        [Ignore] 
+       60: Pat   .                                                                       [Warn=Warn_Unrecog_Char] 
+       61: EOF                                                                           [Err=Err_EOF_Tag] 
+Machine[3] Name[S_VAR]-----------------------------------------------------------------
+    Mixins: [S_Common]
+        0: Pat   <<=                             Rv:72=Tok_S_L_EQ                       
+        1: Pat   >>=                             Rv:73=Tok_S_R_EQ                       
+        2: Pat   ===                             Rv:57=Tok_EQ3                          
+        3: Pat   =~=                             Rv:58=Tok_APROX_EQ                     
+        4: Pat   <=                              Rv:3=Tok_LE                            
+        5: Pat   <<                              Rv:43=Tok_S_L                          
+        6: Pat   >>                              Rv:44=Tok_S_R                          
+        7: Pat   ==                              Rv:1=Tok_L_EQ                          
+        8: Pat   >=                              Rv:2=Tok_GE                            
+        9: Pat   &&                              Rv:4=Tok_L_AND                         
+       10: Pat   \\|\\|                          Rv:5=Tok_L_OR                          
+       11: Pat   !=                              Rv:10=Tok_NE                           
+       12: Pat   <>                              Rv:10=Tok_NE                           
+       13: Pat   \\+=                            Rv:45=Tok_PLUS_EQ                      
+       14: Pat   -=                              Rv:46=Tok_MINUS_EQ                     
+       15: Pat   \\*=                            Rv:47=Tok_STAR_EQ                      
+       16: Pat   /=                              Rv:48=Tok_DIV_EQ                       
+       17: Pat   %=                              Rv:49=Tok_MOD_EQ                       
+       18: Pat   \\^=                            Rv:50=Tok_CAROT_EQ                     
+       19: Pat   \\|=                            Rv:51=Tok_B_OR_EQ                      
+       20: Pat   &=                              Rv:52=Tok_B_AND_EQ                     
+       21: Pat   ~=                              Rv:55=Tok_TILDE_EQ                     
+       22: Pat   ~~                              Rv:56=Tok_TILDE_TILDE                     
+       23: Pat   ?=                              Rv:60=Tok_RE_MATCH                     
+       24: Pat   \\{\\{                          Rv:6=Tok_OP_VAR     Call:3=S_VAR       
+       25: Pat   \\{%                            Rv:8=Tok_OP_BL      Call:2=S_TAG       
+       26: Pat   %\\}                            Rv:9=Tok_CL_BL                          Return 
+       27: Pat   \\}\\}                          Rv:7=Tok_CL_VAR                         Return 
+       28: Pat   \\+\\+                          Rv:61=Tok_PLUS_PLUS                     
+       29: Pat   --                              Rv:62=Tok_MINUS_MINUS                     
+       30: Pat   :=                              Rv:63=Tok_DCL_VAR                      
+       31: Pat   [a-zA-Z_][a-zA-Z0-9_]*          Rv:69=Tok_ID                            [ReservedWord] 
+       32: Pat   [0-9]                                               Call:8=S_Num       
+       33: Pat   \"                              Rv:70=Tok_Ignore    Call:5=S_Str0       [Ignore] 
+       34: Pat   '                               Rv:70=Tok_Ignore    Call:6=S_Str1       [Ignore] 
+       35: Pat   `                               Rv:70=Tok_Ignore    Call:7=S_Str2       [Ignore] 
+       36: Pat   \\^                             Rv:20=Tok_CARRET                       
+       37: Pat   (                               Rv:12=Tok_OP                           
+       38: Pat   )                               Rv:13=Tok_CL                           
+       39: Pat   \\+                             Rv:14=Tok_PLUS                         
+       40: Pat   [                               Rv:38=Tok_OP_SQ                        
+       41: Pat   \\.                             Rv:22=Tok_DOT                          
+       42: Pat   ]                               Rv:39=Tok_CL_SQ                        
+       43: Pat   ~                               Rv:40=Tok_TILDE                        
+       44: Pat   &                               Rv:41=Tok_B_AND                        
+       45: Pat   \\|                             Rv:24=Tok_OR                           
+       46: Pat   ?                               Rv:59=Tok_QUEST                        
+       47: Pat   -                               Rv:15=Tok_MINUS                        
+       48: Pat   \\*                             Rv:16=Tok_STAR                         
+       49: Pat   <                               Rv:17=Tok_LT                           
+       50: Pat   >                               Rv:18=Tok_GT                           
+       51: Pat   /                               Rv:19=Tok_SLASH                        
+       52: Pat   %                               Rv:27=Tok_PCT                          
+       53: Pat   \\{                             Rv:53=Tok_OP_BRACE                     
+       54: Pat   \\}                             Rv:54=Tok_CL_BRACE                     
+       55: Pat   ,                               Rv:21=Tok_COMMA                        
+       56: Pat   !                               Rv:23=Tok_EXCLAM                       
+       57: Pat   :                               Rv:25=Tok_COLON                        
+       58: Pat   =                               Rv:26=Tok_EQ                           
+       59: Pat   [ \t\n\f\r]                     Rv:70=Tok_Ignore                        [Ignore] 
+       60: Pat   .                                                                       [Warn=Warn_Unrecog_Char] 
+       61: EOF                                                                           [Err=Err_EOF_Tag] 
+Machine[4] Name[S_Quote]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   .                                                                       Return 
+        1: EOF                                                                           [Err=Err_EOF_In_String] 
+Machine[5] Name[S_Str0]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   \\                              Rv:65=Tok_Call      Call:4=S_Quote     
+        1: Pat   .*\"                            Rv:74=Tok_Str0                          Return 
+        2: EOF                                                                           [Err=Err_EOF_In_String] 
+Machine[6] Name[S_Str1]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   \\                              Rv:65=Tok_Call      Call:4=S_Quote     
+        1: Pat   .*'                             Rv:75=Tok_Str1                          Return 
+        2: EOF                                                                           [Err=Err_EOF_In_String] 
+Machine[7] Name[S_Str2]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   ``                                                                      Repl:"`" 
+        1: Pat   .*`                             Rv:74=Tok_Str0                         
+        2: EOF                                                                           [Err=Err_EOF_In_String] 
+Machine[8] Name[S_Num]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   [0-9]*\\.[0-9]+([eE][-+]?[0-9]+(\\.[0-9]*)?)?  Rv:67=Tok_Float                         Return 
+        1: Pat   x[0-9a-fA-F]*                   Rv:71=Tok_NUM                           Return 
+        2: Pat   [0-9]*                          Rv:71=Tok_NUM                           Return 
+        3: EOF                                                                           [Err=Err_EOF_In_String] 
+PASS
+coverage: 93.2% of statements
+ok  	_/Users/corwin/Projects/pongo2/lexie/in	0.022s

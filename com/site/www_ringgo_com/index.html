@@ -1,0 +1,165 @@
+{% extend "base_page.html" %}
+{% block prod_name %}
+	RingGo
+{% endblock %}
+{% block features %}
+					<div class="col-sm-6">
+						<div class="media">
+							<!-- xyzzy - Iterate over the features -->
+							<div class="media-body text-right">
+								<h4 class="media-heading">1</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-cog"></i>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-body text-right">
+								<h4 class="media-heading">2</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-check"></i>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-body text-right">
+								<h4 class="media-heading">3</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-desktop"></i>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-body text-right">
+								<h4 class="media-heading">4</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-users"></i>
+							</div>
+						</div>
+					</div>
+					<div class="space visible-xs"></div>
+					<div class="col-sm-6">
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-leaf"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">5</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-area-chart"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">6</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-child"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">7</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-codepen"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">8</h4>
+								<p>
+									Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature Ringo Feature
+								</p>
+							</div>
+						</div>
+					</div>
+{% endblock %}
+{% block about %}
+					<div class="col-md-12">
+						<!-- xyzzy - nested blocks - what to do? <h1 id="about" class="title text-center">About <span>{%block lexie%} name {%endblock%}</span></h1> -->
+						<h1 id="about" class="title text-center">About <span>RingGo</span></h1>
+						<!-- xyzzy - Iterate over the about -->
+						<p class="lead">
+							Ringo is a template engine.  There is a command line interface for testing and building static sites.
+							This webpage was build with the command line version of ringo.  The templates use a syntax based on
+							Django Templates.   -xyzzy- other template systems.
+						</p>
+
+						<p class="lead">
+							Ringo is implemented in Go and can conventilenly be built into a Go HTTP server.  
+						</p>
+
+						<p class="lead">
+							Ringo uses the Lexie single pass scanner.  This gives Ringo the ability to change tokens
+							at runtime.
+						</p>
+
+						<div class="space"></div>
+					</div>
+{% endblock %}
+{% block banner_text %}
+						<div class="col-md-8 col-md-offset-2 object-non-visible" data-animation-effect="fadeIn">
+							<h1 class="text-center">Extended Go template engine &nbsp;<span>RingGo</span></h1>
+							<p class="lead text-center">Based on Django Templates with lots of extensions.
+							</p>
+						</div>
+{% endblock %}
+{% block the_logo %}
+<img src="images/ringgo-icon.svg">
+{% endblock %}
+{% block inline_css_top %}
+<style>
+.logo {
+	margin: 0px;
+}
+</style>
+{% endblock %}
+{%block title_tag%}
+Template Engine in Go
+{% endblock %}
+{% block inline_js_top %}
+<script>
+var prod_name = "ringgo";
+</script>
+{% endblock %}
+{% block footer_content %}
+								<p class="large">Shameless Plug: If you need help we will do our best...  If you are looking for
+								remote development in Go we can definilty help you.
+								</p>
+								<ul class="list-icons">
+									<li><i class="fa fa-map-marker pr-10"></i> 1005 E. Custer St, Laramie WY, 81070</li>
+									<li><i class="fa fa-phone pr-10"></i> 720-209-7888 </li>
+									<li><i class="fa fa-envelope-o pr-10"></i> pschlump@gmail.com</li>
+								</ul>
+								<ul class="social-links">
+									<li class="github"><a target="_blank" href="http://www.github.com/pschlump"><i class="fa fa-github"></i></a></li>
+									<li class="twitter"><a target="_blank" href="https://twitter.com/HtmlcoderMe"><i class="fa fa-twitter"></i></a></li>
+									<li class="googleplus"><a target="_blank" href="http://plus.google.com"><i class="fa fa-google-plus"></i></a></li>
+									<li class="linkedin"><a target="_blank" href="http://www.linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+								</ul>
+{% endblock %}
+{% endextend %}

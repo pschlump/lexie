@@ -1,0 +1,10 @@
+ok: 42 /Users/corwin/Projects/pongo2/lexie/com/t1_test.go
+ok: 49 /Users/corwin/Projects/pongo2/lexie/com/t1_test.go
+ok: File: /Users/corwin/Projects/pongo2/lexie/com/t1_test.go LineNo:58
+ok: File: /Users/corwin/Projects/pongo2/lexie/com/t1_test.go LineNo:62
+ok: File: /Users/corwin/Projects/pongo2/lexie/com/t1_test.go LineNo:70
+t
+ok: File: /Users/corwin/Projects/pongo2/lexie/com/t1_test.go LineNo:234
+PASS
+coverage: 100.0% of statements
+ok  	_/Users/corwin/Projects/pongo2/lexie/com	0.010s

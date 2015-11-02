@@ -1,0 +1,1031 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">_/../../../../../Users/corwin/Projects/pongo2/lexie/in/in.go (93.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" >//
+// I N - Part of Lexie Lexical Generation System
+//
+// (C) Philip Schlump, 2014-2015.
+// Version: 1.0.8
+// BuildNo: 203
+//
+// Special Thanks to 2C-Why, LLC for supporting this project.
+//
+
+package in
+
+// --------------------------------------------------------------------------------------------------------------
+//
+// Ideas
+//                1. Investigate empty token in machines - xyzzy100
+//                 2. Output - Awesome Output from generation engine - that can be read back in
+//
+// Enhancements
+//                 1. Common Prefix - Boyer More Pattern Matching - Think RestMatch
+//
+// --------------------------------------------------------------------------------------------------------------
+
+import (
+        "fmt"
+        "io"
+        "io/ioutil"
+        "os"
+        "regexp"
+        "strconv"
+        "strings"
+        "unicode/utf8"
+
+        "../com"
+
+        "../../../go-lib/sizlib"
+)
+
+//        "../../../go-lib/sizlib"
+//        "../../../go-lib/tr"
+
+const (
+        ImPattern       = 1 //
+        ImLiteralString = 2 // Use EscapeLiternalString to get to ImPattern data
+        ImString        = 3 //
+        ImEOF           = 4 //
+)
+
+type ImMachineType struct {
+        Name   string        //
+        Mixins []string      //
+        Rules  []*ImRuleType //
+        Defs   *ImDefsType   //
+}
+
+type ImRuleType struct {
+        PatternType  int    // Pattern, Str0,1,2, $eof etc.  // Pattern Stuff --------------------------------------------------------------------------------
+        Pattern      string //
+        LineNo       int    // Error Reporintg Stuff ------------------------------------------------------------------------
+        FileName     string //
+        Rv           int    // ActionInfo Stuff -----------------------------------------------------------------------------
+        RvName       string //
+        Call         int    // Final machine number that is being called.
+        CallName     string //
+        Repl         bool   //
+        ReplString   string //
+        Ignore       bool   //
+        ReservedWord bool   //
+        Warn         bool   //
+        Err          bool   //
+        WEString     string //
+        Return       bool   //
+        Reset        bool   //
+        NotGreedy    bool   //
+}
+
+type ImSeenAtType struct {
+        LineNo   []int    //
+        FileName []string //
+}
+
+type ImDefinedValueType struct {
+        Seq          int                     //
+        WhoAmI       string                  //
+        NameValueStr map[string]string       //
+        NameValue    map[string]int          //
+        Reverse      map[int]string          //
+        SeenAt       map[string]ImSeenAtType //
+}
+
+var Tok_map map[int]string
+
+func init() <span class="cov8" title="1">{
+        Tok_map = make(map[int]string)
+}</span>
+
+type ImDefsType struct {
+        DefsAre map[string]ImDefinedValueType //
+}
+
+type ImType struct {
+        Def     ImDefsType      //
+        Machine []ImMachineType //
+}
+
+func ReadFileIntoLines(fn string) (rv []string) <span class="cov8" title="1">{
+        s, err := ioutil.ReadFile(fn)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Printf("Unable to read %s\n", fn)
+                return
+        }</span>
+        <span class="cov8" title="1">rv = strings.Split(string(s), "\n")
+        return</span>
+}
+
+func ReadFileIntoString(fn string) string <span class="cov0" title="0">{
+        s, err := ioutil.ReadFile(fn)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Printf("Unable to read %s\n", fn)
+                return ""
+        }</span>
+        <span class="cov0" title="0">return string(s)</span>
+}
+
+func ClasifyLine(ln string) (cls string) <span class="cov8" title="1">{
+        if strings.HasPrefix(ln, "$machine") </span><span class="cov8" title="1">{
+                cls = "$machine"
+        }</span><span class="cov8" title="1"> else if strings.HasPrefix(ln, "$end") </span><span class="cov8" title="1">{
+                cls = "$end"
+        }</span><span class="cov8" title="1"> else if strings.HasPrefix(ln, "$eof") </span><span class="cov8" title="1">{
+                cls = "$eof"
+        }</span><span class="cov8" title="1"> else if strings.HasPrefix(ln, "$def") </span><span class="cov8" title="1">{
+                cls = "$def"
+        }</span><span class="cov8" title="1"> else if strings.HasPrefix(ln, "\"") </span><span class="cov8" title="1">{
+                cls = "str0"
+        }</span><span class="cov8" title="1"> else if strings.HasPrefix(ln, "'") </span><span class="cov8" title="1">{
+                cls = "str1"
+        }</span><span class="cov8" title="1"> else if strings.HasPrefix(ln, "`") </span><span class="cov8" title="1">{
+                cls = "str2"
+        }</span><span class="cov8" title="1"> else {
+                cls = "pattern"
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+func EscapeLiteralString(in string) (rv string) <span class="cov8" title="1">{
+        rv = ""
+        for _, c := range in </span><span class="cov8" title="1">{
+                switch c </span>{
+                <span class="cov8" title="1">case '{', '}', '*', '+', '^', '$', '.', '|': // , '(':
+                        rv += `\`</span>
+                }
+                <span class="cov8" title="1">rv += string(c)</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// pat = EscapeNormalString(pat)
+func EscapeNormalString(in string) (rv string) <span class="cov8" title="1">{
+        rv = ""
+        var c rune
+        var sz int
+
+        for i := 0; i &lt; len(in); i += sz </span><span class="cov8" title="1">{
+                c, sz = utf8.DecodeRune([]byte(in[i:]))
+                if c == '\\' </span><span class="cov8" title="1">{
+                        i += sz
+                        c, sz = utf8.DecodeRune([]byte(in[i:]))
+                        switch c </span>{
+                        <span class="cov8" title="1">case 'n':
+                                rv += "\n"</span>
+                        <span class="cov8" title="1">case 't':
+                                rv += "\t"</span>
+                        <span class="cov8" title="1">case 'f':
+                                rv += "\f"</span>
+                        <span class="cov8" title="1">case 'r':
+                                rv += "\r"</span>
+                        <span class="cov0" title="0">case 'v':
+                                rv += "\v"</span>
+                        <span class="cov0" title="0">default:
+                                rv += string(c)</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        rv += string(c)
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) <span class="cov8" title="1">{
+        var ii int
+        // cls := ClasifyLine(ln)
+        //fmt.Printf("cls = %s, %s\n", cls, com.LF())
+        switch cls </span>{
+        <span class="cov8" title="1">case "str0":
+                pat = ""
+                for ii = 1; ii &lt; len(ln); ii++ </span><span class="cov8" title="1">{
+                        if ln[ii] == '\\' &amp;&amp; ii+1 &lt; len(ln) </span><span class="cov8" title="1">{
+                                if ln[ii+1] == '"' </span><span class="cov8" title="1">{
+                                        pat += "\""
+                                }</span><span class="cov8" title="1"> else {
+                                        pat += "\\"
+                                        pat += string(ln[ii+1])
+                                }</span>
+                                <span class="cov8" title="1">ii++</span>
+                        }<span class="cov8" title="1"> else if ln[ii] == '"' </span><span class="cov8" title="1">{
+                                break</span>
+                        }<span class="cov8" title="1"> else {
+                                pat += ln[ii : ii+1]
+                        }</span>
+                }
+                <span class="cov8" title="1">pat = EscapeNormalString(pat)
+                // pat = ln[1:ii]
+                if ii+1 &lt; len(ln) </span><span class="cov8" title="1">{
+                        rest = ln[ii+1:]
+                }</span>
+        <span class="cov8" title="1">case "str1":
+                pat = ""
+                for ii = 1; ii &lt; len(ln); ii++ </span><span class="cov8" title="1">{
+                        if ln[ii] == '\\' &amp;&amp; ii+1 &lt; len(ln) </span><span class="cov8" title="1">{
+                                if ln[ii+1] == '\'' </span><span class="cov8" title="1">{
+                                        pat += "'"
+                                }</span><span class="cov0" title="0"> else {
+                                        pat += "\\"
+                                        pat += string(ln[ii+1])
+                                }</span>
+                                <span class="cov8" title="1">ii++</span>
+                        }<span class="cov8" title="1"> else if ln[ii] == '\'' </span><span class="cov8" title="1">{
+                                break</span>
+                        }<span class="cov8" title="1"> else {
+                                pat += ln[ii : ii+1]
+                        }</span>
+                }
+                <span class="cov8" title="1">pat = EscapeNormalString(pat)
+                // pat = ln[1:ii]
+                if ii+1 &lt; len(ln) </span><span class="cov8" title="1">{
+                        rest = ln[ii+1:]
+                }</span>
+                //fmt.Printf("ii = %d ln[]= -&gt;%s&lt;-, %s\n", ii, ln[1:ii], com.LF())
+                //fmt.Printf("pat -&gt;%s&lt;-, %s\n", pat, com.LF())
+                //fmt.Printf("rest -&gt;%s&lt;-, %s\n", rest, com.LF())
+        <span class="cov8" title="1">case "str2":
+                pat = ""
+                for ii = 1; ii &lt; len(ln); ii++ </span><span class="cov8" title="1">{
+                        if ii+1 &lt; len(ln) &amp;&amp; ln[ii] == '`' &amp;&amp; ln[ii+1] == '`' </span><span class="cov8" title="1">{
+                                pat += "`"
+                                ii++
+                        }</span><span class="cov8" title="1"> else if ln[ii] == '`' </span><span class="cov8" title="1">{
+                                break</span>
+                        }<span class="cov8" title="1"> else {
+                                pat += ln[ii : ii+1]
+                        }</span>
+                }
+                <span class="cov8" title="1">if ii+1 &lt; len(ln) </span><span class="cov8" title="1">{
+                        rest = ln[ii+1:]
+                }</span>
+                <span class="cov8" title="1">pat = EscapeLiteralString(pat)</span>
+                //fmt.Printf("ii = %d, %s\n", ii, com.LF())
+                //fmt.Printf("pat -&gt;%s&lt;-, %s\n", pat, com.LF())
+                //fmt.Printf("rest -&gt;%s&lt;-, %s\n", rest, com.LF())
+        <span class="cov8" title="1">case "pattern":
+                for ii = 0; ii &lt; len(ln); ii++ </span><span class="cov8" title="1">{
+                        if ln[ii] == ' ' || ln[ii] == '\t' </span><span class="cov8" title="1">{
+                                break</span>
+                        }
+                }
+                <span class="cov8" title="1">pat = ln[0:ii]
+                // fmt.Printf("pat -&gt;%s&lt;-, %s\n", pat, com.LF())
+                if ii+1 &lt; len(ln) </span><span class="cov8" title="1">{
+                        rest = ln[ii:]
+                }</span>
+                // fmt.Printf("rest -&gt;%s&lt;-, %s\n", rest, com.LF())
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+var pa_re *regexp.Regexp
+var pnv_re *regexp.Regexp
+var fx_re *regexp.Regexp
+var pl_re *regexp.Regexp
+var com_re *regexp.Regexp
+var empty_re *regexp.Regexp
+var def_left_re *regexp.Regexp
+var def_right_re *regexp.Regexp
+var mach_left_re *regexp.Regexp
+var mach_right_re *regexp.Regexp
+var numeric_re *regexp.Regexp
+
+func init() <span class="cov8" title="1">{
+        pa_re = regexp.MustCompile("[ \t]*:([ \t]*)|([a-zA-Z]+([^ \t]*))*")
+        pnv_re = regexp.MustCompile("([a-zA-Z_][a-zA-Z0-9_]*)(=(.*))?")
+        fx_re = regexp.MustCompile("([a-zA-Z_][a-zA-Z0-9_]*)\\([ \t]*([^) \t]*[ \t]*)\\)")
+        // pl_re = regexp.MustCompile("((([a-zA-Z_][a-zA-Z0-9_]*)(=(.*))?),?)*")
+        pl_re = regexp.MustCompile("((([a-zA-Z_][a-zA-Z0-9_]*)((=[^, ]*)?)))*")
+        com_re = regexp.MustCompile("[ \t]*//.*$")
+        empty_re = regexp.MustCompile("^[ \t]*$")
+        def_left_re = regexp.MustCompile("^[ \t]*\\$def[ \t]*\\(")
+        def_right_re = regexp.MustCompile("[ \t]*\\)[ \t]*$")
+        mach_left_re = regexp.MustCompile("^[ \t]*\\$machine[ \t]*\\(")
+        mach_right_re = regexp.MustCompile("[ \t]*\\)[ \t]*$")
+        numeric_re = regexp.MustCompile("^[0-9]+$")
+}</span>
+
+func IsEmptyLine(ln string) bool <span class="cov8" title="1">{
+        a := empty_re.FindAllStringSubmatch(ln, -1)
+        if len(a) &gt; 0 </span><span class="cov8" title="1">{
+                return true
+        }</span>
+        <span class="cov8" title="1">return false</span>
+}
+
+// if len(ADef) &gt; 0 &amp;&amp; IsNumeric(ADef) {
+func IsNumeric(s string) bool <span class="cov8" title="1">{
+        a := numeric_re.FindAllStringSubmatch(s, -1)
+        if len(a) &gt; 0 </span><span class="cov8" title="1">{
+                return true
+        }</span>
+        <span class="cov8" title="1">return false</span>
+}
+
+func ParseAction(ln string) [][]string <span class="cov8" title="1">{
+        //Action := pa_re.FindAllString(ln, -1)
+        Action := pa_re.FindAllStringSubmatch(ln, -1)
+        return Action
+}</span>
+
+func ParsePattern(cls string, ln string) (pat string, flag string, opt []string) <span class="cov8" title="1">{
+        flag = ""
+        pat, rest := PickOffPatternAtBeginning(cls, ln)
+        // fmt.Printf("pat &gt;%s&lt; rest &gt;%s&lt;, %s\n", pat, rest, com.LF())
+        re := ParseAction(rest)
+        // fmt.Printf("ln -&gt;%s&lt;- re %s\n", ln, sizlib.SVarI(re))
+
+        for i := 1; i &lt; len(re); i++ </span><span class="cov8" title="1">{
+                if re[i][0] != "" </span><span class="cov8" title="1">{
+                        opt = append(opt, re[i][0])
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// Tok_Name=1 Tok_Name "T O K"
+func ParseNameValue(nv string) (name string, value string) <span class="cov8" title="1">{
+        name, value = "", ""
+        t1 := pnv_re.FindAllStringSubmatch(nv, -1)
+        com.DbPrintf("in", "t1=%s\n", sizlib.SVarI(t1))
+        if t1 != nil &amp;&amp; len(t1[0]) &gt; 0 </span><span class="cov8" title="1">{
+                name = t1[0][1]
+                if len(t1[0]) &gt; 3 </span><span class="cov8" title="1">{
+                        value = t1[0][3]
+                }</span>
+        }<span class="cov8" title="1"> else {
+                name = nv
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+// This is not relly correct, try a comment inside a quoted string and see why
+func RemoveComment(ln string) (oln string) <span class="cov8" title="1">{
+        // com_re = regexp.MustCompile("[ \t]*//.*$")
+        oln = com_re.ReplaceAllLiteralString(ln, "")
+        // fmt.Printf("Orig: --&gt;%s&lt;-- - After remvoing comment --&gt;%s&lt;--\n", ln, oln)
+        return
+}</span>
+
+// Rv(Name) Ignore(Xxx)
+func ParseActionItem(act string) (aa string, pp string) <span class="cov8" title="1">{
+        aa, pp = "", ""
+        t1 := fx_re.FindAllStringSubmatch(act, -1)
+        if t1 != nil </span><span class="cov8" title="1">{
+                com.DbPrintf("in", "t1=%s\n", sizlib.SVarI(t1))
+                aa = t1[0][1]
+                if len(t1[0]) &gt; 1 </span><span class="cov8" title="1">{
+                        pp = t1[0][2]
+                }</span>
+        }<span class="cov8" title="1"> else {
+                aa = act
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+func ParsePlist(pl string) (aa []string) <span class="cov8" title="1">{
+        t1 := pl_re.FindAllStringSubmatch(pl, -1)
+        if t1 != nil </span><span class="cov8" title="1">{
+                com.DbPrintf("in", "t1=%s\n", sizlib.SVarI(t1))
+                for _, vv := range t1 </span><span class="cov8" title="1">{
+                        if len(vv) &gt; 3 &amp;&amp; vv[2] != "" </span><span class="cov8" title="1">{
+                                aa = append(aa, vv[2])
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func NewIm() (rv *ImType) <span class="cov8" title="1">{
+        rv = &amp;ImType{}
+        rv.Def.DefsAre = make(map[string]ImDefinedValueType)
+        return
+}</span>
+
+// Found $def -&gt;$def(Tokens, Tok_null=0, Tok_ID=1 )&lt;-
+func ParseDef(ln string) (aa []string) <span class="cov8" title="1">{
+        ln = def_left_re.ReplaceAllLiteralString(ln, "")
+        ln = def_right_re.ReplaceAllLiteralString(ln, "")
+        aa = ParsePlist(ln)
+        // fmt.Printf("ParseDef: Plist %v\n", aa)
+        return
+}</span>
+
+func ParseMachine(ln string) (aa []string) <span class="cov8" title="1">{
+        ln = mach_left_re.ReplaceAllLiteralString(ln, "")
+        ln = mach_right_re.ReplaceAllLiteralString(ln, "")
+        aa = ParsePlist(ln)
+        // fmt.Printf("ParseMachine: Plist %v\n", aa)
+        return
+}</span>
+
+func validateDefType(DefType string) bool <span class="cov8" title="1">{
+        if !sizlib.InArray(DefType, []string{"Tokens", "Machines", "Errors", "ReservedWords"}) </span><span class="cov0" title="0">{
+                fmt.Printf("Error Invalid $def type --&gt;%s&lt;--, should be one of \"Tokens\", \"Machines\", \"Errors\", \"ReservedWords\" \n", DefType)
+                return false
+        }</span>
+        <span class="cov8" title="1">return true</span>
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------
+func (Im *ImType) SaveDef(DefType string, Defs []string, line_no int, file_name string) <span class="cov8" title="1">{
+        if validateDefType(DefType) </span><span class="cov8" title="1">{
+                for _, nm := range Defs </span><span class="cov8" title="1">{
+                        dd, ok := Im.Def.DefsAre[DefType]
+                        if !ok </span><span class="cov8" title="1">{
+                                dd = ImDefinedValueType{
+                                        Seq:          1,
+                                        WhoAmI:       DefType,
+                                        NameValue:    make(map[string]int),
+                                        NameValueStr: make(map[string]string),
+                                        Reverse:      make(map[int]string),
+                                        SeenAt:       make(map[string]ImSeenAtType),
+                                }
+                        }</span>
+                        // seq := dd.Seq
+                        <span class="cov8" title="1">n, v := ParseNameValue(nm)
+                        if n == "" &amp;&amp; v == "" </span><span class="cov8" title="1">{ // xyzzy100
+                                return
+                        }</span>
+                        <span class="cov8" title="1">com.DbPrintf("in", "Input: -&gt;%s&lt;- n &gt;%s&lt; v &gt;%s&lt;\n", nm, n, v)
+                        if v != "" </span><span class="cov8" title="1">{
+                                dd.NameValue[n] = -2 //                                                        //
+                                if vv, ok1 := dd.NameValueStr[n]; !ok1 </span><span class="cov8" title="1">{
+                                        dd.NameValueStr[n] = v //                                                //
+                                }</span><span class="cov8" title="1"> else {
+                                        if vv != v </span><span class="cov0" title="0">{
+                                                fmt.Printf("Error: Attempt to redfine %s from %s to %s - Probably an error\n", n, vv, v)
+                                        }</span>
+                                }
+                        }<span class="cov8" title="1"> else {
+                                dd.NameValue[n] = -1 //                                                        //
+                                if _, ok1 := dd.NameValueStr[n]; !ok1 </span><span class="cov8" title="1">{
+                                        dd.NameValueStr[n] = "" //                                                        //
+                                }</span>
+                        }
+                        // dd.Seq = seq + 1
+                        <span class="cov8" title="1">sa := dd.SeenAt[n]
+                        sa.LineNo = append(sa.LineNo, line_no)
+                        sa.FileName = append(sa.FileName, file_name)
+                        dd.SeenAt[n] = sa
+                        Im.Def.DefsAre[DefType] = dd</span>
+                }
+        }
+        // fmt.Printf("It Is:%+v\n", Im)
+}
+
+func (Im *ImType) ParseFile(data []string) <span class="cov8" title="1">{
+        var st = 0
+        var MNo = 0
+        // Im.SaveDef("Tokens", []string{"Tok_null=0", "Tok_ID=1", "Tok_Ignore=2"}, com.LINEn(), com.FILE())
+        Im.SaveDef("Tokens", []string{"Tok_null=0"}, com.LINEn(), com.FILE())
+        for line_no_m1, line := range data </span><span class="cov8" title="1">{
+                line_no := line_no_m1 + 1
+                line = RemoveComment(line)
+                if !IsEmptyLine(line) </span><span class="cov8" title="1">{
+                        cls := ClasifyLine(line)
+                        switch cls </span>{
+                        <span class="cov8" title="1">case "$machine":
+                                st = 1
+                                // fmt.Printf("Found $machine -&gt;%s&lt;-\n", line)
+                                m := ParseMachine(line) // parse machine
+                                MNo = Im.SaveMachine(m)</span> //  save machine
+                        <span class="cov8" title="1">case "$end":
+                                st = 0</span>
+                                // fmt.Printf("Found $end -&gt;%s&lt;-\n", line)
+                        <span class="cov8" title="1">case "$def":
+                                // fmt.Printf("Found $def -&gt;%s&lt;-\n", line)
+                                if st != 0 </span><span class="cov0" title="0">{
+                                        fmt.Printf("Error: $def found inside of a machine specificaiton, Line: %d\n", line_no)
+                                }</span>
+                                <span class="cov8" title="1">d := ParseDef(line)
+                                Im.SaveDef(d[0], d[1:], line_no, "unk-file")</span>
+                        <span class="cov8" title="1">case "str0":
+                                fallthrough</span>
+                        <span class="cov8" title="1">case "str1":
+                                fallthrough</span>
+                        <span class="cov8" title="1">case "str2":
+                                fallthrough</span>
+                        <span class="cov8" title="1">case "pattern":
+                                pat, _, opt := ParsePattern(cls, line)
+                                // fmt.Printf("pat &gt;%s&lt; opt &gt;%s&lt;\n", pat, opt)
+                                Im.SavePattern(MNo, pat, false, opt, line_no, "unk-file")</span>
+                        <span class="cov8" title="1">case "$eof":
+                                // fmt.Printf("Found $eof -&gt;%s&lt;-\n", line)
+                                if st != 1 </span><span class="cov0" title="0">{
+                                        fmt.Printf("Error: $eof found outside of a machine specificaiton, Line: %d\n", line_no)
+                                }</span>
+                                <span class="cov8" title="1">_, _, opt := ParsePattern("pattern", line[1:]) // parse $eof pattern -
+                                Im.SavePattern(MNo, "", true, opt, line_no, "unk-file")</span>
+                        <span class="cov0" title="0">default:
+                                panic("Unreacable Code")</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">Im.SaveDef("Tokens", []string{"Tok_ID", "Tok_Ignore"}, com.LINEn(), com.FILE())
+        Im.FinializeFile()
+        return</span>
+}
+
+func (Im *ImType) SavePattern(MNo int, pat string, isEof bool, opt []string, line_no int, file_name string) <span class="cov8" title="1">{
+        pp := 1 // Pattern
+        if isEof </span><span class="cov8" title="1">{
+                pp = 2 // EOF
+        }</span>
+        // fmt.Printf("opt: %v\n", opt)
+        <span class="cov8" title="1">x := &amp;ImRuleType{
+                Pattern:     pat,
+                PatternType: pp,
+                LineNo:      line_no, // Error Reporintg Stuff ------------------------------------------------------------------------
+                FileName:    file_name,
+        }
+        for ii, vv := range opt </span><span class="cov8" title="1">{
+                _ = ii
+                nm, param := ParseActionItem(vv)
+                // fmt.Printf("opt[%d] nm %s param &gt;%s&lt;\n", ii, nm, param)
+                switch nm </span>{
+                <span class="cov8" title="1">case "Rv":
+                        x.RvName = param
+                        Im.SaveDef("Tokens", []string{param}, line_no, file_name)</span>
+                <span class="cov8" title="1">case "Call":
+                        x.CallName = param
+                        Im.SaveDef("Machines", []string{param}, line_no, file_name)</span>
+                <span class="cov8" title="1">case "Repl":
+                        x.Repl = true
+                        x.ReplString = param</span>
+                <span class="cov8" title="1">case "Ignore":
+                        x.Ignore = true
+                        x.RvName = "Tok_Ignore"</span>
+                <span class="cov8" title="1">case "NotGreedy":
+                        x.NotGreedy = true</span>
+                <span class="cov8" title="1">case "Error":
+                        x.Err = true
+                        x.WEString = param
+                        Im.SaveDef("Errors", []string{param}, line_no, file_name)</span>
+                <span class="cov8" title="1">case "ReservedWord":
+                        x.ReservedWord = true
+                        Im.SaveDef("ReservedWords", []string{param}, line_no, file_name)</span>
+                <span class="cov8" title="1">case "Return":
+                        x.Return = true</span>
+                <span class="cov8" title="1">case "Warn":
+                        x.Warn = true
+                        x.WEString = param
+                        Im.SaveDef("Errors", []string{param}, line_no, file_name)</span>
+                <span class="cov8" title="1">case "Reset":</span>
+                        // xyzzy - not implemented yet
+                <span class="cov0" title="0">default:
+                        fmt.Printf("Error: %s is not a defined operation, line %d file %s\n", nm, line_no, file_name)</span>
+                }
+        }
+        <span class="cov8" title="1">Im.Machine[MNo].Rules = append(Im.Machine[MNo].Rules, x)</span>
+}
+
+func (Im *ImType) SaveMachine(opt []string) int <span class="cov8" title="1">{
+        ap := len(Im.Machine)
+        Mt := ImMachineType{
+                Name:   opt[0],
+                Mixins: opt[1:],
+                Defs:   &amp;Im.Def,
+        }
+        Im.Machine = append(Im.Machine, Mt)
+        Im.Def.DefsAre["Machines"].NameValueStr[opt[0]] = fmt.Sprintf("%d", ap)
+        return ap
+}</span>
+
+/*
+type ImSeenAtType struct {
+        LineNo   []int    //
+        FileName []string //
+}
+
+type ImDefinedValueType struct {
+        Seq       int                     //
+        WhoAmI    string                  //
+        NameValue map[string]int          //
+        Reverse   map[int]string          //
+        SeenAt    map[string]ImSeenAtType //
+}
+
+type ImDefsType struct {
+        DefsAre map[string]ImDefinedValueType //
+}
+
+type ImDefinedValueType struct {
+        Seq          int                     //
+        WhoAmI       string                  //
+        NameValueStr map[string]string       //
+        NameValue    map[string]int          //
+        Reverse      map[int]string          //
+        SeenAt       map[string]ImSeenAtType //
+}
+*/
+func (Im *ImType) FindValueFor(t string) int <span class="cov8" title="1">{
+        //for s, dd := range Im.Def.DefsAre {
+        //        _ = s
+        for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens"} </span><span class="cov8" title="1">{
+                dd := Im.Def.DefsAre[DefType]
+                // fmt.Printf("In %s Looking for %s\n", s, t)
+                if v, ok := dd.NameValue[t]; ok </span><span class="cov8" title="1">{
+                        // fmt.Printf("In %s Found for %s=%d\n", s, t, v)
+                        return v
+                }</span>
+        }
+        <span class="cov0" title="0">return -1</span>
+}
+
+func (Im *ImType) Lookup(DefType string, t string) int <span class="cov8" title="1">{
+        if validateDefType(DefType) </span><span class="cov8" title="1">{
+                dd := Im.Def.DefsAre[DefType]
+                // fmt.Printf("In %s Looking for %s\n", s, t)
+                if v, ok := dd.NameValue[t]; ok </span><span class="cov8" title="1">{
+                        // fmt.Printf("In %s Found for %s=%d\n", s, t, v)
+                        return v
+                }</span>
+        }
+        <span class="cov8" title="1">return -1</span>
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------
+//type ImRuleType struct {
+//        PatternType  int    // Pattern, Str0,1,2, $eof etc.  // Pattern Stuff --------------------------------------------------------------------------------
+//        Pattern      string //
+func (Im *ImType) LocatePattern(ff *ImRuleType, in []*ImRuleType) (rv int) <span class="cov8" title="1">{
+        rv = -1
+        // fmt.Printf("LocatePattern for %s %d\n", ff.Pattern, ff.PatternType)
+        for kk, tt := range in </span><span class="cov8" title="1">{
+                // fmt.Printf("    Compare to %s %d\n", tt.Pattern, tt.PatternType)
+                if tt.PatternType == ff.PatternType &amp;&amp; tt.Pattern == ff.Pattern </span><span class="cov8" title="1">{
+                        com.DbPrintf("in", "    Found\n")
+                        return kk
+                }</span>
+        }
+        // fmt.Printf("    NOT NOT NOT Found\n")
+        // Xyzzy - should add an error at this point?
+        //                2. Errors about missing machines in mixin not reported at all - see xyzzyMixin01
+        <span class="cov8" title="1">return</span>
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------
+func (Im *ImType) FinializeFile() <span class="cov8" title="1">{
+        ADef := ""
+        AKey := ""
+
+        // for DefType, dd := range Im.Def.DefsAre {
+        for _, DefType := range []string{"Machines", "Errors", "Tokens", "ReservedWords"} </span><span class="cov8" title="1">{
+                dd := Im.Def.DefsAre[DefType]
+                // fmt.Printf("DefType (FinializeFiile): %s\n", DefType)
+                // Pass 1 - Take Numbers and put in
+                ss := com.SortMapStringString(dd.NameValueStr)
+                // for AKey, ADef := range dd.NameValueStr {
+                for _, AKey = range ss </span><span class="cov8" title="1">{
+                        ADef = dd.NameValueStr[AKey]
+                        if len(ADef) &gt; 0 &amp;&amp; IsNumeric(ADef) </span><span class="cov8" title="1">{
+                                // fmt.Printf("Found numeric for %s=%s\n", AKey, ADef)
+                                v, err := strconv.Atoi(ADef)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        fmt.Printf("Error: Invalid numeric value for a token, &gt;%s&lt;, error=%s\n", ADef, err)
+                                }</span><span class="cov8" title="1"> else {
+                                        dd.NameValue[AKey] = v
+                                        dd.Reverse[v] = AKey
+                                }</span>
+                        }
+                }
+                // Pass 2 - Assign All Others
+                <span class="cov8" title="1">seq := dd.Seq
+                // for AKey, ADef := range dd.NameValueStr {
+                for _, AKey = range ss </span><span class="cov8" title="1">{
+                        ADef = dd.NameValueStr[AKey]
+                        if len(ADef) &gt; 0 &amp;&amp; IsNumeric(ADef) </span><span class="cov8" title="1">{
+                        }</span><span class="cov8" title="1"> else if len(ADef) == 0 </span><span class="cov8" title="1">{
+                                // fmt.Printf("Found sequence assign for for %s=%s\n", AKey, ADef)
+                                for _, ok := dd.Reverse[seq]; ok; </span><span class="cov8" title="1">{
+                                        seq++
+                                        _, ok = dd.Reverse[seq]
+                                }</span>
+                                <span class="cov8" title="1">dd.NameValue[AKey] = seq
+                                dd.Reverse[seq] = AKey
+                                dd.NameValueStr[AKey] = fmt.Sprintf("%d", seq)
+                                // fmt.Printf("     Assigned %d\n", seq)
+                                seq++</span>
+                        }
+                }
+                <span class="cov8" title="1">dd.Seq = seq
+
+                // fmt.Printf("dd.NameValue = %v\n", dd.NameValue)
+
+                // Pass 3 - Assign Tokens
+                // for AKey, ADef := range dd.NameValueStr {
+                for _, AKey = range ss </span><span class="cov8" title="1">{
+                        ADef = dd.NameValueStr[AKey]
+                        if len(ADef) &gt; 0 &amp;&amp; IsNumeric(ADef) </span><span class="cov8" title="1">{
+                        }</span><span class="cov8" title="1"> else if len(ADef) &gt; 0 </span><span class="cov8" title="1">{
+                                // fmt.Printf("Found Name Assign for for %s=%s\n", AKey, ADef)
+                                if v, ok := dd.NameValue[ADef]; ok </span><span class="cov0" title="0">{
+                                        dd.NameValue[AKey] = v
+                                        dd.Reverse[v] = AKey
+                                }</span>
+                        }
+                }
+                // Pass 4 - Look for any unsigned
+                // for AKey, ADef := range dd.NameValueStr {
+                <span class="cov8" title="1">for _, AKey = range ss </span><span class="cov8" title="1">{
+                        ADef = dd.NameValueStr[AKey]
+                        if len(ADef) &gt; 0 &amp;&amp; IsNumeric(ADef) </span><span class="cov8" title="1">{
+                        }</span><span class="cov8" title="1"> else if len(ADef) &gt; 0 </span><span class="cov8" title="1">{
+                                if v, ok := dd.NameValue[ADef]; ok </span><span class="cov0" title="0">{
+                                        dd.NameValue[AKey] = v
+                                        dd.Reverse[v] = AKey
+                                }</span><span class="cov8" title="1"> else {
+                                        v := Im.FindValueFor(ADef)
+                                        if v &lt; 0 </span><span class="cov0" title="0">{
+                                                fmt.Printf("Warning: Token is not defined, Automatically defining!, ADef/AKey %s=%s=%d\n", ADef, AKey, seq) // !! !! Requries a 4th pass - after all defined !! !!
+                                                dd.NameValue[AKey] = seq
+                                                dd.Reverse[seq] = AKey
+                                                seq++
+                                        }</span><span class="cov8" title="1"> else {
+                                                dd.NameValue[AKey] = v
+                                                dd.Reverse[v] = AKey
+                                        }</span>
+                                }
+                        }
+                }
+                <span class="cov8" title="1">Im.Def.DefsAre[DefType] = dd</span>
+        }
+
+        <span class="cov8" title="1">for _, vv := range Im.Machine </span><span class="cov8" title="1">{
+                for _, ww := range vv.Rules </span><span class="cov8" title="1">{
+                        if len(ww.RvName) &gt; 0 </span><span class="cov8" title="1">{
+                                // fmt.Printf("%-20s", fmt.Sprintf(" Rv:%d=%s ", ww.Rv, ww.RvName))
+                                ww.Rv = Im.Lookup("Tokens", ww.RvName)
+                        }</span>
+                        <span class="cov8" title="1">if len(ww.CallName) &gt; 0 </span><span class="cov8" title="1">{
+                                // fmt.Printf("%-20s", fmt.Sprintf(" Call:%d=%s ", ww.Call, ww.CallName))
+                                ww.Call = Im.Lookup("Machines", ww.CallName)
+                        }</span>
+                }
+        }
+
+        // xyzzy-Machine--Mixins---
+        <span class="cov8" title="1">for kk, vv := range Im.Machine </span><span class="cov8" title="1">{
+                var tRules []*ImRuleType
+                tRules = make([]*ImRuleType, 0, 100)
+                for _, rr := range vv.Rules </span><span class="cov8" title="1">{
+                        p := Im.LocatePattern(rr, tRules) // A merge operation - if not found then append, else replace
+                        if p &gt;= 0 </span><span class="cov8" title="1">{
+                                tRules[p] = rr
+                        }</span><span class="cov8" title="1"> else {
+                                tRules = append(tRules, rr)
+                        }</span>
+                }
+                <span class="cov8" title="1">for _, ww := range vv.Mixins </span><span class="cov8" title="1">{
+                        ii := Im.Lookup("Machines", ww)
+                        if ii &gt;= 0 &amp;&amp; ii &lt; len(Im.Machine) </span><span class="cov8" title="1">{
+                                for _, uu := range Im.Machine[ii].Rules </span><span class="cov8" title="1">{
+                                        p := Im.LocatePattern(uu, tRules) // A merge operation - if not found then append, else replace
+                                        if p &lt; 0 </span><span class="cov8" title="1">{
+                                                tRules = append(tRules, uu)
+                                        }</span>
+                                }
+                        }<span class="cov0" title="0"> else {
+                                fmt.Printf("Error: Mixin - did not find %s as a machine name\n", ww)
+                        }</span>
+                }
+                <span class="cov8" title="1">Im.Machine[kk].Rules = tRules</span>
+        }
+
+        <span class="cov8" title="1">dd := Im.Def.DefsAre["Tokens"]
+        Tok_map = dd.Reverse</span>
+}
+
+func (Im *ImType) OutputDef() <span class="cov8" title="1">{
+        fmt.Printf("Defs - OutputDef\n")
+        for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens"} </span><span class="cov8" title="1">{
+                dd := Im.Def.DefsAre[DefType]
+                fmt.Printf("==========================================================================\n")
+                fmt.Printf("DefType: %s\n", DefType)
+                fmt.Printf("==========================================================================\n")
+
+                ss := com.SortMapStringString(dd.NameValueStr)
+                // for AKey, ADef := range dd.NameValueStr {
+                for _, AKey := range ss </span><span class="cov8" title="1">{
+                        ADef := dd.NameValueStr[AKey]
+                        fmt.Printf("    %s=%v\n", AKey, ADef)
+                }</span>
+        }
+}
+
+//                min, max := com.RangeOfIntKeys(dd.Reverse)
+func RangeOfIntKeys(x map[int]string) (min int, max int) <span class="cov8" title="1">{
+        init := true
+        for ii := range x </span><span class="cov8" title="1">{
+                if init </span><span class="cov8" title="1">{
+                        init = false
+                        min, max = ii, ii
+                }</span><span class="cov8" title="1"> else {
+                        if ii &gt; max </span><span class="cov8" title="1">{
+                                max = ii
+                        }</span>
+                        <span class="cov8" title="1">if ii &lt; min </span><span class="cov8" title="1">{
+                                min = ii
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func (Im *ImType) OutputDefAsGoCode(fo io.Writer) <span class="cov8" title="1">{
+        fmt.Fprintf(fo, "\n// Defs - OutputDef\n")
+        // for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens"} {
+        for _, DefType := range []string{"Tokens", "Machines", "Errors", "ReservedWords"} </span><span class="cov8" title="1">{
+                dd := Im.Def.DefsAre[DefType]
+                fmt.Fprintf(fo, "// ==========================================================================\n")
+                fmt.Fprintf(fo, "// DefType: %s\n", DefType)
+                fmt.Fprintf(fo, "// ==========================================================================\n")
+                fmt.Fprintf(fo, "const (\n")
+
+                min, max := RangeOfIntKeys(dd.Reverse)
+                // for AKey, ADef := range dd.NameValueStr {
+                for ii := min; ii &lt; max; ii++ </span><span class="cov8" title="1">{
+                        if AKey, ok := dd.Reverse[ii]; ok </span><span class="cov8" title="1">{
+                                ADef := ii
+                                if DefType == "ReservedWords" </span><span class="cov8" title="1">{
+                                        fmt.Fprintf(fo, "    RW_%s = %v\n", AKey, ADef)
+                                }</span><span class="cov8" title="1"> else {
+                                        fmt.Fprintf(fo, "    %s = %v\n", AKey, ADef)
+                                }</span>
+                        }
+                }
+
+                <span class="cov8" title="1">fmt.Fprintf(fo, ")\n\n")</span>
+        }
+}
+
+// Output the Im structure
+func (Im *ImType) OutputImType() <span class="cov8" title="1">{
+
+        dpt := []string{"???", "Pat", "EOF", "???"}
+        if com.DbOn("in-echo-machine") </span><span class="cov8" title="1">{
+
+                Im.OutputDef()
+                Im.OutputDefAsGoCode(os.Stdout)
+                for ii, vv := range Im.Machine </span><span class="cov8" title="1">{
+                        fmt.Printf("Machine[%d] Name[%s]-----------------------------------------------------------------\n", ii, vv.Name)
+                        fmt.Printf("    Mixins: %v\n", vv.Mixins)
+                        // Rules  []*ImRuleType //
+                        for jj, ww := range vv.Rules </span><span class="cov8" title="1">{
+                                s := fmt.Sprintf("%q", ww.Pattern)
+                                s = s[1:]
+                                s = s[0 : len(s)-1]
+                                fmt.Printf("      %3d: %3s   %-30s ", jj, dpt[ww.PatternType], s)
+                                if len(ww.RvName) &gt; 0 </span><span class="cov8" title="1">{
+                                        fmt.Printf("%-20s", fmt.Sprintf(" Rv:%d=%s ", ww.Rv, ww.RvName))
+                                }</span><span class="cov8" title="1"> else {
+                                        fmt.Printf("%-20s", "")
+                                }</span>
+                                <span class="cov8" title="1">if len(ww.CallName) &gt; 0 </span><span class="cov8" title="1">{
+                                        fmt.Printf("%-20s", fmt.Sprintf(" Call:%d=%s ", ww.Call, ww.CallName))
+                                }</span><span class="cov8" title="1"> else {
+                                        fmt.Printf("%-20s", "")
+                                }</span>
+                                <span class="cov8" title="1">if ww.Return </span><span class="cov8" title="1">{
+                                        fmt.Printf(" Return ")
+                                }</span>
+                                <span class="cov8" title="1">if ww.Repl </span><span class="cov8" title="1">{
+                                        fmt.Printf(" Repl:%s ", ww.ReplString)
+                                }</span>
+                                <span class="cov8" title="1">if ww.Ignore </span><span class="cov8" title="1">{
+                                        fmt.Printf(" [Ignore] ")
+                                }</span>
+                                <span class="cov8" title="1">if ww.ReservedWord </span><span class="cov8" title="1">{
+                                        fmt.Printf(" [ReservedWord] ")
+                                }</span>
+                                <span class="cov8" title="1">if ww.Err </span><span class="cov8" title="1">{
+                                        fmt.Printf(" [Err=%s] ", ww.WEString)
+                                }</span>
+                                <span class="cov8" title="1">if ww.Warn </span><span class="cov8" title="1">{
+                                        fmt.Printf(" [Warn=%s] ", ww.WEString)
+                                }</span>
+                                <span class="cov8" title="1">fmt.Printf("\n")</span>
+                        }
+                }
+        }
+
+}
+
+func (Im *ImType) LookupMachine(name string) int <span class="cov8" title="1">{
+        x := Im.Lookup("Machines", name)
+        return x
+}</span>
+
+func ImReadFile(fn string) (Im *ImType) <span class="cov8" title="1">{
+        Im = NewIm()
+        fd := ReadFileIntoLines(fn)
+        if len(fd) &gt; 0 </span><span class="cov8" title="1">{
+                Im.ParseFile(fd)
+        }</span>
+        // fmt.Printf("%+v\n", Im)
+        <span class="cov8" title="1">Im.OutputImType()
+        return</span>
+}
+
+func Lookup_Tok_Name(Tok int) (rv string) <span class="cov8" title="1">{
+        ok := false
+        if rv, ok = Tok_map[Tok]; ok </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">rv = fmt.Sprintf("Unknown(Tok=%d)", Tok)
+        return</span>
+}
+
+func Add_Lookup_Token(Tok int, Name string) <span class="cov8" title="1">{
+        Tok_map[Tok] = Name
+}</span>
+
+/* vim: set noai ts=4 sw=4: */
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible = document.getElementById('file0');
+		files.addEventListener('change', onChange, false);
+		function onChange() {
+			visible.style.display = 'none';
+			visible = document.getElementById(files.value);
+			visible.style.display = 'block';
+			window.scrollTo(0, 0);
+		}
+	})();
+	</script>
+</html>

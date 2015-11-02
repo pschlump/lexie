@@ -1,0 +1,31 @@
+func EscapeStrForGV(s string) string {
+	if s == X_DOT {
+		// return "\u2022"	// Middle Bullet
+		return "\u25C9" // FishEye
+	} else if s == X_NUMERIC {
+		return "0-9"
+	} else if s == X_LOWER {
+		return "a-z"
+	} else if s == X_UPPER {
+		return "A-Z"
+	} else if s == X_ALPHA {
+		return "a-zA-Z"
+	} else if s == X_ALPHNUM {
+		return "a-zA-Z0-9"
+	} else if s == X_EOF {
+		return "EOF"
+	} else if s == X_BOL {
+		return "BOL"
+	} else if s == X_EOL {
+		return "EOL"
+	}
+	s = strings.Replace(s, `\`, `\\`, -1)
+	s = strings.Replace(s, `"`, `\"`, -1)
+	s = strings.Replace(s, "\t", `\t`, -1)
+	s = strings.Replace(s, "\n", `\n`, -1)
+	s = strings.Replace(s, "\f", `\f`, -1)
+	s = strings.Replace(s, "\v", `\v`, -1)
+	s = strings.Replace(s, "\r", `\r`, -1)
+	s = strings.Replace(s, " ", `\B`, -1)
+	return s
+}

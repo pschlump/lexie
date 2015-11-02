@@ -1,0 +1,20 @@
+{
+	"name":"Lexie"
+,	"title_tag":"Lexical Analyzer Generator in Go"
+,	"sections_enabled": [ "features", "about" ]
+,	"features":[
+		  "Convert sets of regular expressions into a lexical analyzer.   Build multipel callable machines that can match input."
+		, "Implement a context senstive system where one lexical analyzer can call others depending on context."
+		, "Implemented in Go for Go with chanels.   Scan more than one file in a non-blocking concurent fashion."
+		, "Support unicode input.   Be able to scan more than just ascii.  This is a world where software has to deal with internationalization."
+		, "Convert regular expressions into a fast table driven DFA."
+		, "Match in a single pass over the input."
+		, "Ability to chagne matched tokens at run time.  Reprot line/column and filename accurately so that error messages can be reported."
+	]
+,	"about":[
+		" Project after project I needed a one-pass lexical analyzer.  In http-router project I used an existing library - later I found that the match was performed by using regular expressions and iterating over them.  I had over 1500 different route!  The server was spending 1/3 of a scond processing regular exressions fore every HTTP request.  This was unaceptable!  I needed a fast one pass scanner.  "
+		, " Then I needed an extended templates language.  I needed a fast one pass scanner.  "
+		, " Then I worked on X - and -- you gusessed it...  I needed a fast one pass scanner.  "
+		, " So I build Lexie!  "
+	]
+}

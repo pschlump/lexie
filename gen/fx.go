@@ -1,0 +1,51 @@
+package gen
+
+const (
+	Fx_null          = 500
+	Fx_csrf_token    = 501
+	Fx_cycle         = 502
+	Fx_debug         = 503
+	Fx_include       = 504
+	Fx_load          = 505
+	Fx_lorem         = 506
+	Fx_now           = 507
+	Fx_regroup       = 508
+	Fx_templatetag   = 509
+	Fx_url           = 510
+	Fx_with          = 511
+	Fx_withratio     = 512
+	Fx_verbatim      = 513
+	Fx_endverbatim   = 514
+	Fx_spaceless     = 515
+	Fx_endspaceless  = 516
+	Fx_filter        = 517
+	Fx_endfilter     = 518
+	Fx_comment       = 519
+	Fx_endcomment    = 520
+	Fx_autoescape    = 521
+	Fx_endautoescape = 522
+	Fx_block         = 523
+	Fx_endblock      = 524
+	Fx_dump_context  = 525
+	Fx_set_context   = 526
+	Fx_get_context   = 527
+	Fx_If            = 528
+	Fx_IfEqual       = 529
+	Fx_IfNotEqual    = 530
+	Fx_IfChanged     = 531
+	Fx_IfNotChanged  = 532
+	Fx_ElsIf         = 533
+	Fx_Else          = 534
+	Fx_EndIf         = 535
+	Fx_For           = 536
+	Fx_Empty         = 537
+	Fx_EndFor        = 538
+	Fx_ReadJson      = 539
+	Fx_extend        = 540
+	Fx_template      = 541
+	Fx_endtemplate   = 542
+	Fx_render        = 543 // {% render <name> %}
+	Fx_endextend     = 544
+	Fx_Library       = 545
+	Fx_Mtest         = 546
+)

@@ -1,0 +1,245 @@
+{% extend "base_page.html" %}
+{% block prod_name %}
+	Lexie
+{% endblock %}
+{% block features %}
+					<div class="col-sm-6">
+						<div class="media">
+							<!-- xyzzy - Iterate over the features -->
+							<div class="media-body text-right">
+								<h4 class="media-heading">1</h4>
+								<p>Convert sets of regular expressions into a lexical analyzer.   Build multiple callable
+									machines that can match input.
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-cog"></i>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-body text-right">
+								<h4 class="media-heading">2</h4>
+								<p>Implement a context senstive system where one lexical analyzer can call others depending on context.
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-check"></i>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-body text-right">
+								<h4 class="media-heading">3</h4>
+								<p>Implemented in Go for Go with channels.   Scan more than one file
+								in a non-blocking concurent fashion.
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-desktop"></i>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-body text-right">
+								<h4 class="media-heading">4</h4>
+								<p>Support unicode input.   Be able to scan more than just ASCII.
+									This is a world where software has to deal with internationalization.
+								</p>
+							</div>
+							<div class="media-right">
+								<i class="fa fa-users"></i>
+							</div>
+						</div>
+					</div>
+					<div class="space visible-xs"></div>
+					<div class="col-sm-6">
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-leaf"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">5</h4>
+								<p>Convert regular expressions into a fast table driven DFA.
+								</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-area-chart"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">6</h4>
+								<p>Match in a single pass over the input.
+								</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-child"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">7</h4>
+								<p>Ability to change matched tokens at run time.  
+								</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-codepen"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">8</h4>
+								<p>Reprot line/column and filename accurately so that
+									error messages can be reported.
+								</p>
+							</div>
+						</div>
+					</div>
+{% endblock %}
+{% block about %}
+					<div class="col-md-12">
+						<!-- xyzzy - nested blocks - what to do? <h1 id="about" class="title text-center">About <span>{%block lexie%} name {%endblock%}</span></h1> -->
+						<h1 id="about" class="title text-center">About <span>Lexie</span></h1>
+						<!-- xyzzy - Iterate over the about -->
+						<p class="lead">
+							Project after project I needed a one-pass lexical analyzer.  In http-router project I
+							used an existing library - later I found that the match was performed by using regular
+							expressions and iterating over them.  I had over 1500 different routes!  The server
+							was spending 1/3 of a scond processing regular exressions for every HTTP request.
+							This was unaceptable!  I needed a fast one pass scanner.
+						</p>
+
+						<p class="lead">
+							Then I needed an extended templates language. 
+							I needed a fast one pass scanner.
+						</p>
+
+						<p class="lead">
+							Then I worked on X - and -- you gusessed it...
+							I needed a fast one pass scanner.
+						</p>
+
+						<p class="lead">
+							So I built Lexie!
+						</p>
+
+						<div class="space"></div>
+					</div>
+{% endblock %}
+{% block banner_text %}
+						<div class="col-md-8 col-md-offset-2 object-non-visible" data-animation-effect="fadeIn">
+							<h1 class="text-center">Fast Lexical Analyzer Generator &nbsp;<span>Lexie</span></h1>
+							<p class="lead text-center">Converts sets of regular expressions into a fast lexical
+							analyzer.  
+							</p>
+						</div>
+{% endblock %}
+{% block the_logo %}
+<div>
+<div id="t0"><div id="t1"><div id="t2"><span id="t2a">L</span>exie</div><div id="tZ"></div></div>
+<div id="tR"></div>
+<div id="t3">lexical</div>
+<div id="t4">analyzer</div>
+<div id="t5">generator</div>
+</div>
+</div>
+{% endblock %}
+{% block inline_css_top %}
+<style>
+#t0 {
+	width: 0;
+	height: 0;
+	border-bottom: 100px solid #f00;
+	border-right: 100px solid transparent;
+	color: white;
+}
+#t1 {
+	position: relative;
+	top: 10px;
+	left: 12px;
+	width: 0;
+	height: 0;
+	border-bottom: 80px solid darkblue;
+	border-right: 80px solid transparent;
+	color: white;
+}
+#t2 {
+	position: relative;
+	top: 22px;
+	left: -2px;
+	font-size: 60px;
+	font-weight: 700;
+	font-style: italic;
+	font-family: 'Raleway', sans-serif;
+	color: white;
+}
+#t2a {
+	font-style: normal;
+}
+#tZ {
+	position: relative;
+	top: -38px;
+	left: 87px;
+	border-bottom: 10px solid #f00;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	height: 0;
+	width: 10px;
+	color: white;
+}
+#tR {
+	width: 1px;
+	height: 80px;
+	background: black;
+	background: white;
+	position: relative;
+	top: -70px;
+	left: 174px;
+	color: white;
+}
+#t3 {
+	font-family: 'Open Sans', sans-serif;
+	position: relative;
+	top: -144px;
+	left: 184px;
+	color: white;
+}
+#t4 {
+	font-family: 'Open Sans', sans-serif;
+	position: relative;
+	top: -144px;
+	left: 184px;
+	color: white;
+}
+#t5 {
+	font-family: 'Open Sans', sans-serif;
+	position: relative;
+	top: -144px;
+	left: 184px;
+	color: white;
+}
+</style>
+{% endblock %}
+{%block title_tag %}
+Lexical Analyzer Generator in Go
+{% endextend %}
+{% block inline_js_top %}
+<script>
+var prod_name = "lexie";
+</script>
+{% endblock %}
+{% block footer_content %}
+								<p class="large">Shameless Plug: If you need help we will do our best...  If you are looking for
+								remote development in Go we can definilty help you.
+								</p>
+								<ul class="list-icons">
+									<li><i class="fa fa-map-marker pr-10"></i> 1005 E. Custer St, Laramie WY, 81070</li>
+									<li><i class="fa fa-phone pr-10"></i> 720-209-7888 </li>
+									<li><i class="fa fa-envelope-o pr-10"></i> pschlump@gmail.com</li>
+								</ul>
+								<ul class="social-links">
+									<li class="github"><a target="_blank" href="http://www.github.com/pschlump"><i class="fa fa-github"></i></a></li>
+									<li class="twitter"><a target="_blank" href="https://twitter.com/HtmlcoderMe"><i class="fa fa-twitter"></i></a></li>
+									<li class="googleplus"><a target="_blank" href="http://plus.google.com"><i class="fa fa-google-plus"></i></a></li>
+									<li class="linkedin"><a target="_blank" href="http://www.linkedin.com"><i class="fa fa-linkedin"></i></a></li>
+								</ul>
+{% endblock %}
+{% endextend %}
