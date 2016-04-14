@@ -11,7 +11,6 @@
 package com
 
 import (
-	"encoding/json"
 	"fmt"
 	"html"
 	"io"
@@ -23,7 +22,7 @@ import (
 	"sort"
 	"strings"
 
-	//
+	"github.com/pschlump/json" //	"encoding/json"
 
 	// "../../../go-lib/flags"  //		"github.com/jessevdk/go-flags"
 	// "../../../go-lib/sizlib" //
