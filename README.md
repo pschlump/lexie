@@ -1,5 +1,8 @@
 # Lexie - A Lexical Analizer Genrator and Lexical Analyzer
 
+ [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/pschlump/Go-FTL/master/LICENSE)
+
+
 Thanks for taking a look at *Lexie*.
 
 Lexie is designed to generate fast lexical analyzer based on
