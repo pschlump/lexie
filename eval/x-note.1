@@ -1,0 +1,144 @@
+http://stackoverflow.com/questions/23166411/wrapper-for-arbitrary-function-in-go
+
+reflect.Call()
+	http://mikespook.com/2012/07/function-call-by-name-in-golang/
+
+		func Call(m map[string]interface{}, name string, params ... interface{}) (result []reflect.Value, err error) {
+			f = reflect.ValueOf(m[name])
+			if len(params) != f.Type().NumIn() {
+				err = errors.New("The number of params is not adapted.")
+				return
+			}
+			in := make([]reflect.Value, len(params))
+			for k, param := range params {
+				in[k] = reflect.ValueOf(param)
+			}
+			result = f.Call(in)
+			return
+		}
+		Call(funcs, "foo")
+		Call(funcs, "bar", 1, 2, 3)
+
+https://bitbucket.org/mikespook/golib/src/27c65cdf8a772c737c9f4d14c0099bb82ee7fa35/funcmap/funcmap_test.go?at=default
+	-- Code in
+		/Users/corwin/Projects/pongo2/lexie-note/call
+	-- Looks Workable
+
+
+You can use reflection (reflect.TypeOf()) to get the type of something, and the value it gives (Type) has a string representation (String method) that you can print.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+for k, v := range data {
+    fmt.Printf("pair:%s\t%s\n", k, v)
+
+    switch t := v.(type) {
+    case int:
+        fmt.Printf("Integer: %v\n", t)
+    case float64:
+        fmt.Printf("Float64: %v\n", t)
+    case string:
+        fmt.Printf("String: %v\n", t)
+    case bool:
+        fmt.Printf("Bool: %v\n", t)
+    case []interface {}:
+        for i,n := range t {
+            fmt.Printf("Item: %v= %v\n", i, n)
+        }
+    default:
+        var r = reflect.TypeOf(t)
+        fmt.Printf("Other:%v\n", r)
+    }
+}
+
+http://golang.org/pkg/reflect/
+
+
+	4. Add a "find" operator to search hashes recursivly
+	4. Add a "isarray" operator return true if it is an array v.s. a hash
+	4. Add a "isvalue" operator return true if it is an array v.s. a hash
+
+5. Add RE Match											2hr
+	?= op
+	( str ?= "pattern" ) ? T : F
+
+
+// http://compilers.iecc.com/crenshaw/
+
+// Operators and Precience
+//
+// 		OP			Prec		Types			Meaning
+//		-----		----		-------			---------------------------------
+//		<=						I,F,S,B			Less Than or Equal -> Bool Type
+//		>=						I,F,S,B			Larger Than or Equal -> Bool Type
+//		<						I,F,S,B			Less Than -> Bool Type
+//		>						I,F,S,B			Larger Than -> Bool Type
+//		==						I,F,S,B			Equal -> Bool Type
+//		!=						I,F,S,B			Not Equal -> Bool Type
+//		<>						I,F,S,B			Not Equal -> Bool Type
+//
+//		!!						I,S,B			Convert from Type to Bool
+//
+//		(a)						I,F,S,B
+//
+//		a-b						I,F
+//		a+b						I,F
+//
+//		a/b						I,F
+//		a*b						I,F
+//		a%b						I,F(1)
+//
+//		a<<b					I
+//		a>>b					I
+//
+//		-a						I,F
+//		+a						I,F
+//
+//		&&						B
+//		||						B
+//
+//		^						I
+//		^^						I
+//
+//		!						B
+//
+//		++ lvalue
+//		-- lvalue
+//		lvalue ++
+//		laluee --
+//
+
+// Input is a slice of tokens,
+// Output is a token with a value,
+/*
+   package main
+
+   import "fmt"
+
+   func main() {
+   	fmt.Printf("%d\n", -15%10)
+   }
+*/

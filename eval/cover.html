@@ -1,0 +1,2525 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">_/../../../../../Users/corwin/Projects/pongo2/lexie/eval/eval.go (99.4%)</option>
+				
+				<option value="file1">_/../../../../../Users/corwin/Projects/pongo2/lexie/eval/lst.go (69.5%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" >package eval
+
+/*
+
+        1. Check and validate error messages
+        2. add to eval results tests - figure out what each of the test SHOULD result int - what should be in the symbol table
+                and add test cases / eval results - change Error found stuff to work and validate with correct errors
+
+
+-- by eob --
+
+        Improve Code:
+                1. Get rid of "DataType" and use xxx.(type)
+
+        Feature:
+                1. Fancy Pipes!
+
+        Feature:
+                1. Fetch data directly inside the templates                {% x = ( readUrl("....") | XML_To_Json ) %}
+
+        Test:
+                1. Build the lexie, rigno websites with it.
+
+        Feature:                                                                                                                                                                                                                                                                1hr
+                3. // xyzzyPMHash - operators +, - on Arrays, Hashes -- Set operations on arrays/hashes/maps
+                        a - b
+                        a == b
+                        a + b
+
+
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+
+        Implement As Macros:
+                                __line__, __file__
+                                __s_line__                "123"
+                                __ss_line__                '123'
+                                __sd_line__                "123"
+                                __sh_line__                `123`
+                                __sbs_line__        \"123\"
+
+
+        Simple:
+                Tokens not used ++, --, ~, ~=, ===, =~=
+                ; - to split statements?
+
+        Simple:
+                1. Add option to generate ../gen/gen_tok.go (with name at top) from lexie generator
+
+        Harder:
+                1. Fix/Test NCCLs
+
+        Optimize:
+                1. Do a performance tests between ".Call" arbitrary and known type calls
+
+                   Any function that is F(s,...) -&gt; s
+
+                   once you have the Type of the method or function in hand, you can then call on of those:
+
+                                // In returns the type of a function type's i'th input parameter.
+                                // It panics if the type's Kind is not Func.
+                                // It panics if i is not in the range [0, NumIn()).
+                                In(i int) Type
+
+                                // NumIn returns a function type's input parameter count.
+                                // It panics if the type's Kind is not Func.
+                                NumIn() int
+
+                                // NumOut returns a function type's output parameter count.
+                                // It panics if the type's Kind is not Func.
+                                NumOut() int
+
+                                // Out returns the type of a function type's i'th output parameter.
+                                // It panics if the type's Kind is not Func.
+                                // It panics if i is not in the range [0, NumOut()).
+                                Out(i int) Type
+
+                2. Look at the stuff in string.* package and do calls to all of them with .Call
+
+
+
+
+
+
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+
+Ringo - the web framework for developers with deadlines that care about performance
+        (i.e. get it done on time and scalable to the real world)
+
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+
+Steve Jobs, Elon Musk ... obsess over making “insanely great products”
+======================================================================
+
+You miss 100% of the shots you don't take
+=========================================
+
+...your business at its core must wage a constant battle to find the
+truth. And for a business, "the truth" means value. As an entrepreneur,
+you should be spending every day getting to the core of what "value"
+means to your customers.
+
+Your job is to build a venture that will search for real value and
+"the truth" of what your client really needs.
+=======================================================================
+
+
+
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+1. Do actual templates
+        2. Implment "extend"
+        3. Implment "import_library"
+        4. Implment "template"..."endtemplate"
+
+        CLI -c config.json -i input.tmpl.html  -o result.output.html -t command-trace.out
+
+                command-trace.out - Included Dependent Files -- in JSON format
+                ../test02
+
+
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+Goals: 1. 100% coverage of eval
+        2. Works for all operators defined on all data types or gives appropriate errors
+        3. Returns errors for all non-syntacticly correct castes - check for extra tokens at end
+                ad "as" Var - right hand assignment
+        4. Works with different flags set for behavior - all cases
+        5. Works with time data type also
+        5. Works with strings data type also
+
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
+
+
+*/
+
+import (
+        "errors"
+        "fmt"
+        "reflect"
+        "strings"
+
+        "../com"
+        "../gen"
+        "../tok"
+
+        // "../../../go-lib/sizlib"
+)
+
+type EvalType struct {
+        Pos     int          //
+        Ctx     *ContextType //
+        Mm      []tok.Token  //
+        Lax_DCL bool         // If true, then auto declare on all assignments
+        // Lax_ArrayHash bool         // If true, then [a] == a, { "x":a } == a
+        // FloatEQThrUse bool    // If true then compare floats using threshold
+        // FloatEQThr    float64 //
+        PrintErrorMsg bool
+        TestCase      string
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+//func (eval *EvalType) SetConfig(laxDcl bool, laxType bool, laxArrayHash bool, useFloatThr bool, floatThr float64) {
+//        eval.Lax_DCL = laxDcl
+//        eval.Lax_ArrayHash = laxArrayHash
+//        eval.FloatEQThrUse = useFloatThr
+//        eval.FloatEQThr = floatThr
+//}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) SetErrorInfo(rv *tok.Token, format string, args ...interface{}) <span class="cov8" title="1">{
+        t := eval.Pos
+        if t &gt;= len(eval.Mm) </span><span class="cov8" title="1">{
+                t = len(eval.Mm) - 1
+        }</span> // else if t &lt; 0 {
+        //         t = 0
+        // }
+        <span class="cov8" title="1">if len(eval.Mm) &gt; 0 </span><span class="cov8" title="1">{
+                rv.LineNo = eval.Mm[t].LineNo
+                rv.ColNo = eval.Mm[t].ColNo
+                rv.FileName = eval.Mm[t].FileName
+        }</span>
+        <span class="cov8" title="1">rv.CurValue = 0 // Add in a magic 0 or something for doing ops off of end of tokens
+        rv.DataType = CtxType_Int
+        rv.CoceLocation = com.LF(2)
+        rv.LValue = false
+        rv.Error = true
+        rv.ErrorMsg = fmt.Sprintf(format, args...)
+        if eval.PrintErrorMsg </span><span class="cov8" title="1">{
+                fmt.Printf("%s", rv.ErrorMsg)
+        }</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) ParsePlist() (rv []tok.Token) <span class="cov8" title="1">{
+        rv = make([]tok.Token, 0, 5)
+        opTk := eval.Mm[eval.Pos].TokNo
+        if opTk == gen.Tok_OP </span><span class="cov8" title="1">{
+                eval.Pos++
+                // fmt.Printf("IN ParsePlist -00-: %s\n", com.LF())
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                // fmt.Printf("IN ParsePlist -loop top-: %s\n", com.LF())
+                opTk := eval.Mm[eval.Pos].TokNo
+                if opTk != gen.Tok_CL &amp;&amp; opTk != gen.Tok_COMMA </span><span class="cov8" title="1">{ // not ) not ,
+                        // fmt.Printf("IN ParsePlist -return-: %s\n", com.LF())
+                        Tk := eval.PresG()
+                        rv = append(rv, Tk)
+                        if Tk.Error </span><span class="cov8" title="1">{
+                                return
+                        }</span>
+                        <span class="cov8" title="1">if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                                opTk = eval.Mm[eval.Pos].TokNo
+                                if opTk == gen.Tok_COMMA </span><span class="cov8" title="1">{
+                                        // fmt.Printf("IN ParsePlist -BB-: %s\n", com.LF())
+                                        eval.Pos++
+                                        opTk = eval.Mm[eval.Pos].TokNo
+                                }</span><span class="cov8" title="1"> else if opTk == gen.Tok_CL </span><span class="cov8" title="1">{
+                                        eval.Pos++
+                                        // fmt.Printf("IN ParsePlist -CC-: %s\n", com.LF())
+                                        return
+                                }</span>
+                        } // else {
+                        //         return
+                        // }
+                }<span class="cov8" title="1"> else {
+                        Tk := tok.Token{Error: true, ErrorMsg: "Error (Eval00001): Invalid Parameter List\n"}
+                        rv = append(rv, Tk)
+                        return
+                }</span>
+                // fmt.Printf("IN ParsePlist -A-: %s\n", com.LF())
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func BoundArrayIndex(i, min, max int) int <span class="cov8" title="1">{
+        if i &lt; min </span><span class="cov8" title="1">{
+                i = min
+        }</span>
+        <span class="cov8" title="1">if i &gt;= max </span><span class="cov8" title="1">{
+                i = max - 1
+        }</span>
+        //if t &gt;= len(eval.Mm) {
+        //        t = len(eval.Mm) - 1
+        //} else if t &lt; 0 {
+        //        t = 0
+        //}
+        <span class="cov8" title="1">return i</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) CallFunction(match string, plist []tok.Token) (rv tok.Token) <span class="cov8" title="1">{
+
+        // fmt.Printf("=============================================================================================================\n")
+        // fmt.Printf("IN CallFunction: %s\n", com.LF())
+        // fmt.Printf("IN CallFunction: Call &gt;&gt;&gt;%s&lt;&lt;&lt; with %s\n", match, sizlib.SVarI(plist))
+        // fmt.Printf("=============================================================================================================\n")
+
+        t := eval.Pos - 1
+        t = BoundArrayIndex(t, 0, len(eval.Mm))
+        if len(eval.Mm) &gt; 0 </span><span class="cov8" title="1">{
+                rv.LineNo = eval.Mm[t].LineNo
+                rv.ColNo = eval.Mm[t].ColNo
+                rv.FileName = eval.Mm[t].FileName
+        }</span>
+        <span class="cov8" title="1">rv.CoceLocation = com.LF(2)
+        rv.LValue = false
+        rv.Error = false
+        rv.ErrorMsg = ""
+        rv.DataType = CtxType_Int
+        rv.CurValue = 0
+
+        // func (ctx *ContextType) Call(name string, params ...interface{}) (result []reflect.Value, err error) {
+
+        p_plist := make([]interface{}, len(plist))
+        for ii, vv := range plist </span><span class="cov8" title="1">{
+                // xyzzy - coerce params to correct type?
+                p_plist[ii] = vv.CurValue
+        }</span>
+
+        <span class="cov8" title="1">ww, err := eval.Ctx.Call(match, p_plist...)
+        if err != nil </span><span class="cov8" title="1">{
+                eval.SetErrorInfo(&amp;rv, "%s", err)
+        }</span><span class="cov8" title="1"> else {
+                err_pos := -1
+                var err error
+                // Pass 1 check for error return type - if found the if not nil then process as error else pass 2 - skiping error
+                for ii, val := range ww </span><span class="cov8" title="1">{
+                        i := val.Interface()
+                        switch val.Type().String() </span>{
+                        <span class="cov8" title="1">case "error":
+                                err_pos = ii
+                                err = nil
+                                if i != nil </span><span class="cov8" title="1">{
+                                        err = errors.New(fmt.Sprintf("%v", val.Interface()))
+                                }</span>
+                        }
+                }
+                <span class="cov8" title="1">if err_pos &gt;= 0 &amp;&amp; err != nil </span><span class="cov8" title="1">{
+                        // fmt.Printf("Found Error Not Nil - At: %s\n", com.LF())
+                        rv.DataType = CtxType_Int
+                        rv.CurValue = 0
+                        rv.CoceLocation = "Call to funciton " + match
+                        rv.LValue = false
+                        rv.Error = true
+                        rv.ErrorMsg = fmt.Sprintf("%s", err)
+                        if eval.PrintErrorMsg </span><span class="cov8" title="1">{
+                                fmt.Printf("%s", rv.ErrorMsg)
+                        }</span>
+                }<span class="cov8" title="1"> else {
+                        for ii, val := range ww </span><span class="cov8" title="1">{
+                                if ii != err_pos </span><span class="cov8" title="1">{
+                                        switch val.Kind() </span>{
+                                        <span class="cov8" title="1">case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+                                                rv.DataType = CtxType_Int
+                                                rv.CurValue = int(val.Int())</span>
+                                        <span class="cov8" title="1">case reflect.String:
+                                                rv.DataType = CtxType_Str
+                                                rv.CurValue = val.String()</span>
+                                        <span class="cov8" title="1">case reflect.Bool:
+                                                rv.DataType = CtxType_Bool
+                                                rv.CurValue = val.Bool()</span>
+                                        <span class="cov8" title="1">case reflect.Float32, reflect.Float64:
+                                                rv.DataType = CtxType_Float
+                                                rv.CurValue = val.Float()</span>
+                                        <span class="cov8" title="1">default:
+                                                // fmt.Printf("Error (Eval00002): Can't handle type: %s as a return type from a function.", val.Type().String())
+                                                rv.DataType = CtxType_Int
+                                                rv.CurValue = 0
+                                                rv.CoceLocation = com.LF(1)
+                                                rv.LValue = false
+                                                rv.Error = true
+                                                rv.ErrorMsg = fmt.Sprintf("Error (Eval00003): Can't handle type: %s as a return type from a function.", val.Type().String())
+                                                if eval.PrintErrorMsg </span><span class="cov8" title="1">{
+                                                        fmt.Printf("%s", rv.ErrorMsg)
+                                                }</span>
+                                        }
+                                }
+                        }
+                }
+        }
+
+        <span class="cov8" title="1">return</span>
+}
+
+/*
+From: https://code.google.com/p/go/source/browse/src/pkg/fmt/scan.go?name=release-branch.go1.1#994
+
+                                switch v := ptr.Elem(); v.Kind() {
+                case reflect.Bool:
+                        v.SetBool(s.scanBool(verb))
+                case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+                        v.SetInt(s.scanInt(verb, v.Type().Bits()))
+                case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+                        v.SetUint(s.scanUint(verb, v.Type().Bits()))
+                case reflect.String:
+                        v.SetString(s.convertString(verb))
+                case reflect.Slice:
+                        // For now, can only handle (renamed) []byte.
+                        typ := v.Type()
+                        if typ.Elem().Kind() != reflect.Uint8 {
+                                s.errorString("Scan: can't handle type: " + val.Type().String())
+                        }
+                        str := s.convertString(verb)
+                        v.Set(reflect.MakeSlice(typ, len(str), len(str)))
+                        for i := 0; i &lt; len(str); i++ {
+                                v.Index(i).SetUint(uint64(str[i]))
+                        }
+                case reflect.Float32, reflect.Float64:
+                        s.skipSpace(false)
+                        s.notEOF()
+                        v.SetFloat(s.convertFloat(s.floatToken(), v.Type().Bits()))
+                case reflect.Complex64, reflect.Complex128:
+                        v.SetComplex(s.scanComplex(verb, v.Type().Bits()))
+                default:
+                        s.errorString("Scan: can't handle type: " + val.Type().String())
+*/
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Create the function with Fx ptr in the symbol table.
+func (eval *EvalType) DclFunction(id string, fx interface{}) <span class="cov8" title="1">{
+        eval.Ctx.SetInContext(id, CtxType_Func, fx)
+        return
+}</span>
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func MapIsEmpty(t map[string]tok.Token) bool <span class="cov8" title="1">{
+        if t == nil </span><span class="cov8" title="1">{
+                return true
+        }</span>
+        <span class="cov8" title="1">for _, _ = range t </span><span class="cov8" title="1">{
+                return false
+        }</span>
+        <span class="cov8" title="1">return true</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+//        rv.CurValue = mapLength(x.CurValue.(map[string]tok.Token))
+func MapLength(t map[string]tok.Token) (l int) <span class="cov8" title="1">{
+        l = 0
+        // fmt.Printf("At: %s\n", com.LF())
+        // fmt.Printf("t=%s\n", sizlib.SVarI(t))
+        for _, _ = range t </span><span class="cov8" title="1">{
+                // fmt.Printf("At: %s\n", com.LF())
+                l++
+        }</span>
+        // fmt.Printf("Returing %d At: %s\n", l, com.LF())
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// ToDo:
+//         IsEmpty - array/map - if len == 0, rueturn true (faster than len)
+//
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func x_len_e(x interface{}) (rv int) <span class="cov8" title="1">{
+        // fmt.Printf("len type=%T\n", x)
+        switch x.(type) </span>{
+        <span class="cov8" title="1">case []tok.Token:
+                // fmt.Printf("At: %s\n", com.LF())
+                rv = len(x.([]tok.Token))</span>
+        <span class="cov8" title="1">case map[string]tok.Token:
+                // fmt.Printf("At: %s\n", com.LF())
+                rv = MapLength(x.(map[string]tok.Token))</span>
+        <span class="cov8" title="1">default:
+                // fmt.Printf("At: %s\n", com.LF())
+                rv = 0</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func x_len(x interface{}) (rv int, e error) <span class="cov8" title="1">{
+        // fmt.Printf("len type=%T\n", x)
+        switch x.(type) </span>{
+        <span class="cov8" title="1">case []tok.Token:
+                // fmt.Printf("At: %s\n", com.LF())
+                rv = len(x.([]tok.Token))</span>
+        <span class="cov8" title="1">case map[string]tok.Token:
+                // fmt.Printf("At: %s\n", com.LF())
+                rv = MapLength(x.(map[string]tok.Token))</span>
+        <span class="cov8" title="1">default:
+                // fmt.Printf("At: %s\n", com.LF())
+                e = errors.New(fmt.Sprintf("Error (Eval00004): Invalid type. len() works on arrays and maps.  Type supplied %T\n", x))
+                rv = 0</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func x_test_ret_float(i int) float32 <span class="cov8" title="1">{
+        return 1.2
+}</span>
+func x_test_ret_bool(i int) bool <span class="cov8" title="1">{
+        return false
+}</span>
+
+func x_float_type_cast(x interface{}) (rv float64, e error) <span class="cov8" title="1">{
+        e = nil
+        switch x.(type) </span>{
+        <span class="cov8" title="1">case int:
+                rv = float64(x.(int))</span>
+        <span class="cov8" title="1">case float64:
+                rv = x.(float64)</span>
+        <span class="cov8" title="1">case bool:
+                if x.(bool) </span><span class="cov8" title="1">{
+                        rv = 1
+                }</span><span class="cov8" title="1"> else {
+                        rv = 0
+                }</span>
+        <span class="cov8" title="1">default:
+                e = errors.New(fmt.Sprintf("Error (Eval00005): Invalid type conversion, attempt to convert from %T to float\n", x))
+                rv = 0</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func x_bool_type_cast(x interface{}) (rv bool, e error) <span class="cov8" title="1">{
+        // fmt.Printf("BOOL: x=%v, %T %s\n", x, x, com.LF())
+        rv = false
+        // fmt.Printf("At: %s\n", com.LF())
+        switch x.(type) </span>{
+        <span class="cov8" title="1">case int:
+                // fmt.Printf("At: %s\n", com.LF())
+                if x.(int) == 0 </span><span class="cov8" title="1">{
+                        rv = false
+                }</span>
+        <span class="cov8" title="1">case bool:
+                // fmt.Printf("At: %s\n", com.LF())
+                rv = x.(bool)</span>
+        <span class="cov8" title="1">case string:
+                // fmt.Printf("At: %s\n", com.LF())
+                if len(x.(string)) != 0 </span><span class="cov8" title="1">{
+                        rv = true
+                }</span>
+        <span class="cov8" title="1">case []tok.Token:
+                // fmt.Printf("At: %s\n", com.LF())
+                if len(x.([]tok.Token)) != 0 </span><span class="cov8" title="1">{
+                        rv = true
+                }</span>
+        <span class="cov8" title="1">case map[string]tok.Token:
+                // fmt.Printf("At: %s\n", com.LF())
+                if !MapIsEmpty(x.(map[string]tok.Token)) </span><span class="cov8" title="1">{
+                        // fmt.Printf("At: %s\n", com.LF())
+                        rv = true
+                }</span>
+        <span class="cov8" title="1">default:
+                e = errors.New(fmt.Sprintf("Error (Eval00006): Invalid type conversion, attempt to convert from %T to bool\n", x))</span>
+        }
+        // fmt.Printf("At: %s\n", com.LF())
+        <span class="cov8" title="1">return</span>
+}
+
+func x_int_type_cast(x interface{}) (rv int, e error) <span class="cov8" title="1">{
+        rv = 0
+        switch x.(type) </span>{
+        <span class="cov8" title="1">case int:
+                rv = x.(int)</span>
+        <span class="cov8" title="1">case bool:
+                if x.(bool) </span><span class="cov8" title="1">{
+                        rv = 1
+                }</span>
+        <span class="cov8" title="1">case float64:
+                rv = int(x.(float64))</span>
+        <span class="cov8" title="1">default:
+                e = errors.New(fmt.Sprintf("Error (Eval00007): Invalid type conversion, attempt to convert from %T to int\n", x))</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+func x_StrToUpper(s string) string <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        return strings.ToUpper(s)
+}</span>
+
+func x_test_str1(s string, t string) string <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        return strings.ToUpper(s) + t
+}</span>
+
+type BobType struct {
+        Ooops  int
+        Ooopsy int
+}
+
+func x_test_str2(s string, t string) (rv BobType) <span class="cov8" title="1">{
+        return
+}</span>
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) InitFunctions() <span class="cov8" title="1">{
+        eval.DclFunction("float", x_float_type_cast)           //
+        eval.DclFunction("int", x_int_type_cast)               //
+        eval.DclFunction("bool", x_bool_type_cast)             //
+        eval.DclFunction("len", x_len)                         // length of item, must be array or hash
+        eval.DclFunction("len_e", x_len_e)                     // Length ignoring errors, 0 returned instead
+        eval.DclFunction("StrToUpper", x_StrToUpper)           //
+        eval.DclFunction("yStrToUpper", strings.ToUpper)       //
+        eval.DclFunction("x_test_ret_float", x_test_ret_float) // Test code
+        eval.DclFunction("x_test_ret_bool", x_test_ret_bool)   // Test code
+        eval.DclFunction("x_test_str1", x_test_str1)           //
+        eval.DclFunction("x_test_str2", x_test_str2)           // Returns an un-handlable type
+}</span>
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) Pres0() (rv tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("Pos:%d At: %s\n", eval.Pos, com.LF())
+        if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                switch eval.Mm[eval.Pos].TokNo </span>{
+                <span class="cov8" title="1">case gen.Tok_ID:
+                        // fmt.Printf("At: %s\n", com.LF())
+                        // fmt.Printf("Doing a lookup of &gt;&gt;&gt;%s&lt;&lt;&lt;\n", eval.Mm[eval.Pos].Match)
+                        match := eval.Mm[eval.Pos].Match
+                        if val0, t, f := eval.Ctx.GetFromContext(eval.Mm[eval.Pos].Match); f </span><span class="cov8" title="1">{
+                                // fmt.Printf("   Found, Type=%d/%s, %s\n", t, eval.Ctx.NameOfType(t), com.LF())
+                                switch t </span>{
+                                <span class="cov8" title="1">case CtxType_Func:
+                                        // fmt.Printf("At: %s\n", com.LF())
+                                        eval.Pos++
+                                        if eval.Pos &lt; len(eval.Mm) &amp;&amp; eval.Mm[eval.Pos].TokNo == gen.Tok_OP </span><span class="cov8" title="1">{
+                                                Plist := eval.ParsePlist()
+                                                rv = eval.CallFunction(match, Plist)
+                                                if rv.Error </span><span class="cov8" title="1">{
+                                                        return
+                                                }</span>
+                                                // fmt.Printf("Found a Func\n")
+                                        }<span class="cov8" title="1"> else {
+                                                eval.SetErrorInfo(&amp;rv, "Error (Eval00008): Function refrenced %s missing () to make call\n", match)
+                                                return
+                                        }</span>
+                                <span class="cov8" title="1">case CtxType_Int, CtxType_Str, CtxType_Bool, CtxType_Float, CtxType_ArrayOf, CtxType_MapOf, CtxType_SMapOf, CtxType_KMapOf:
+                                        // fmt.Printf("At: %s\n", com.LF())
+                                        rv.Match = eval.Mm[eval.Pos].Match
+                                        rv.CurValue = val0
+                                        rv.DataType = t
+                                        rv.LValue = true</span>
+
+                                        //default:
+                                        //        eval.SetErrorInfo(&amp;rv, "Error (Eval00009): ID Invalid type %d/%s for %s\n", t, eval.Ctx.NameOfType(t), eval.Mm[eval.Pos].Match)
+                                        //        return
+                                }
+                        }<span class="cov8" title="1"> else if eval.Mm[eval.Pos].CreateId </span><span class="cov8" title="1">{
+                                eval.Ctx.SetInContext(eval.Mm[eval.Pos].Match, CtxType_Int, 0)
+                                rv.Match = eval.Mm[eval.Pos].Match
+                                rv.CurValue = 0
+                                rv.DataType = CtxType_Int
+                                rv.LValue = true
+                        }</span><span class="cov8" title="1"> else {
+                                eval.SetErrorInfo(&amp;rv, "Error (Eval00010): ID Missing %s\n", eval.Mm[eval.Pos].Match)
+                                return
+                        }</span>
+                <span class="cov8" title="1">case gen.Tok_OP:
+                        // fmt.Printf("At: %s\n", com.LF())
+                        eval.Pos++ // Step past the '('
+                        rv = eval.PresG()
+                        if rv.Error </span><span class="cov8" title="1">{
+                                return
+                        }</span>
+                        <span class="cov8" title="1">if eval.Pos &lt; len(eval.Mm) &amp;&amp; eval.Mm[eval.Pos].TokNo == gen.Tok_CL </span><span class="cov8" title="1">{
+                                eval.Pos++
+                                // fmt.Printf("Return from recrusive () call -- Sitting on Close Paren\n")
+                        }</span><span class="cov8" title="1"> else {
+                                eval.SetErrorInfo(&amp;rv, "Error (Eval00011): missing ')' Close Paren\n")
+                                return
+                        }</span>
+                <span class="cov8" title="1">case gen.Tok_OP_SQ:
+                        // fmt.Printf("JSON data found (array) : At: %s\n", com.LF())
+                        rv = eval.ParseJSON()
+                        // fmt.Printf("TestCase=%s, eval.Pos=%d\n", eval.TestCase, eval.Pos)
+                        if rv.Error </span><span class="cov8" title="1">{
+                                return
+                        }</span>
+                <span class="cov8" title="1">case gen.Tok_OP_BRACE:
+                        // fmt.Printf("JSON data found (hash) : At: %s\n", com.LF())
+                        rv = eval.ParseJSON()
+                        if rv.Error </span><span class="cov8" title="1">{
+                                return
+                        }</span>
+                <span class="cov8" title="1">case gen.Tok_Str0:
+                        rv.CurValue = eval.Mm[eval.Pos].CurValue
+                        rv.DataType = eval.Mm[eval.Pos].DataType
+                        rv.LValue = false</span>
+                <span class="cov8" title="1">case gen.Tok_NUM:
+                        rv.CurValue = eval.Mm[eval.Pos].CurValue
+                        // fmt.Printf("Num = %d, %s\n", rv.CurValue.(int), com.LF())
+                        rv.DataType = eval.Mm[eval.Pos].DataType
+                        rv.LValue = false</span>
+                <span class="cov8" title="1">case gen.Tok_Float:
+                        // fmt.Printf("At: %s\n", com.LF())
+                        rv.CurValue = eval.Mm[eval.Pos].CurValue
+                        rv.DataType = eval.Mm[eval.Pos].DataType
+                        rv.LValue = false</span>
+                <span class="cov8" title="1">case gen.Tok_true, gen.Tok_false, gen.Tok_Tree_Bool:
+                        // fmt.Printf("At: %s\n", com.LF())
+                        rv.DataType = CtxType_Bool
+                        rv.CurValue = eval.Mm[eval.Pos].CurValue
+                        rv.LValue = false</span>
+                }
+                <span class="cov8" title="1">eval.Pos++</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) ParseJSON() (rv tok.Token) <span class="cov8" title="1">{
+        // Have { or [ leading token, remember to pick off matching one at end.
+        // if [ then array, if { then hash
+        opTk := eval.Mm[eval.Pos].TokNo
+
+        Adv := func() </span><span class="cov8" title="1">{
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        eval.Pos++
+                }</span>
+                <span class="cov8" title="1">opTk = gen.Tok_null
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opTk = eval.Mm[eval.Pos].TokNo
+                }</span>
+        }
+        <span class="cov8" title="1">Set := func() </span><span class="cov8" title="1">{
+                opTk = gen.Tok_null
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opTk = eval.Mm[eval.Pos].TokNo
+                }</span>
+        }
+
+        <span class="cov8" title="1">switch opTk </span>{
+        <span class="cov8" title="1">case gen.Tok_OP_SQ:
+                rv.DataType = CtxType_ArrayOf
+                // opCLTK_s := "[]"
+                r0 := make([]tok.Token, 0, 5)
+                rv.CurValue = r0
+
+                Adv()
+                // fmt.Printf("IN ParseJSON-[] -00-: %s\n", com.LF())
+
+                for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        // fmt.Printf("IN ParseJSON-%s -loop top-: %s\n", opCLTK_s, com.LF())
+                        opTk = eval.Mm[eval.Pos].TokNo
+                        if opTk == gen.Tok_COMMA </span><span class="cov8" title="1">{ //                                                           Walk over ,
+                                // fmt.Printf("IN ParseJSON-%s -BB-: %s\n", opCLTK_s, com.LF())
+                                Adv()
+                        }</span>
+                        <span class="cov8" title="1">if opTk == gen.Tok_CL_SQ </span><span class="cov8" title="1">{ //                                                           Walk over ], then return
+                                Adv()
+                                // fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, com.LF())
+                                return
+                        }</span>
+                        <span class="cov8" title="1">if opTk == gen.Tok_OP_SQ || opTk == gen.Tok_OP_BRACE </span><span class="cov8" title="1">{ //  Found [ or {
+                                // fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, com.LF())
+                                Tk := eval.ParseJSON()
+                                Set()
+                                r0 = append(r0, Tk)
+                                rv.CurValue = r0
+                                if Tk.Error </span><span class="cov8" title="1">{
+                                        rv.Error = true
+                                        rv.ErrorMsg = Tk.ErrorMsg
+                                }</span>
+                        }<span class="cov8" title="1"> else {
+                                // fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, com.LF())
+                                Tk := eval.PresG()
+                                Set()
+                                r0 = append(r0, Tk)
+                                rv.CurValue = r0
+                                if Tk.Error </span><span class="cov8" title="1">{
+                                        rv.Error = true
+                                        rv.ErrorMsg = Tk.ErrorMsg
+                                }</span>
+                        }
+                        <span class="cov8" title="1">if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                                opTk = eval.Mm[eval.Pos].TokNo
+                        }</span><span class="cov8" title="1"> else {
+                                opTk = gen.Tok_CL_SQ
+                                // error/recovered - added CL to close plist!
+                                eval.SetErrorInfo(&amp;rv, "Error (Eval00012):  invalid JSON data.\n")
+                                return
+                        }</span>
+                        // fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, com.LF())
+                }
+
+        <span class="cov8" title="1">case gen.Tok_OP_BRACE:
+                rv.DataType = CtxType_MapOf
+                // opCLTK_s := "{}"
+                r1 := make(map[string]tok.Token)
+                rv.CurValue = r1
+
+                name := ""
+                Adv()
+                // fmt.Printf("IN ParseJSON-{} -00-: %s\n", com.LF())
+
+                for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        // fmt.Printf("IN ParseJSON-%s -loop top-: %s\n", opCLTK_s, com.LF())
+                        haveOne := true
+
+                        // fmt.Printf("IN ParseJSON-%s -value-: %s\n", opCLTK_s, com.LF())
+                        opTk = eval.Mm[eval.Pos].TokNo
+
+                        if opTk == gen.Tok_ID </span><span class="cov8" title="1">{ // xyzzy - ID : -- handle this also -&gt; Name
+                                // fmt.Printf("IN ParseJSON-%s -ID-: %s\n", opCLTK_s, com.LF())
+                                name = eval.Mm[eval.Pos].Match
+                                Adv()
+                        }</span><span class="cov8" title="1"> else if opTk == gen.Tok_Str0 </span><span class="cov8" title="1">{ // xyzzy - "name" :  -- Handle this
+                                // fmt.Printf("IN ParseJSON-%s -STR-: %s\n", opCLTK_s, com.LF())
+                                name = eval.Mm[eval.Pos].Match
+                                Adv()
+                        }</span><span class="cov8" title="1"> else if opTk == gen.Tok_CL_BRACE </span><span class="cov8" title="1">{ //                                                           Walk over ], then return
+                                Adv()
+                                // fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, com.LF())
+                                return
+                        }</span><span class="cov8" title="1"> else {
+                                name = ""
+                                // fmt.Printf("************* setting to empty *************\n")
+                                haveOne = false
+                                eval.SetErrorInfo(&amp;rv, "Error (Eval00013):  invalid JSON data.\n")
+                                return
+                        }</span>
+
+                        // fmt.Printf("************* name=&gt;%s&lt;- *************\n", name)
+                        <span class="cov8" title="1">if opTk == gen.Tok_COLON </span><span class="cov8" title="1">{
+                                // fmt.Printf("IN ParseJSON-%s -colon-: %s\n", opCLTK_s, com.LF())
+                                Adv()
+                        }</span>
+
+                        <span class="cov8" title="1">if opTk == gen.Tok_OP_SQ || opTk == gen.Tok_OP_BRACE </span><span class="cov8" title="1">{ // [ or { found
+                                // fmt.Printf("IN ParseJSON-%s -Sub-JSON-: %s\n", opCLTK_s, com.LF())
+                                Tk := eval.ParseJSON()
+                                Set()
+                                if haveOne </span><span class="cov8" title="1">{
+                                        r1[name] = Tk
+                                        rv.CurValue = r1
+                                }</span>
+                                <span class="cov8" title="1">if Tk.Error </span><span class="cov8" title="1">{
+                                        rv.Error = true
+                                        rv.ErrorMsg = Tk.ErrorMsg
+                                }</span>
+                        }<span class="cov8" title="1"> else {
+                                // fmt.Printf("IN ParseJSON-%s -expression-: %s\n", opCLTK_s, com.LF())
+                                Tk := eval.PresG()
+                                Set()
+                                if haveOne </span><span class="cov8" title="1">{
+                                        r1[name] = Tk
+                                        rv.CurValue = r1
+                                }</span>
+                                // fmt.Printf("TestCase=%s, eval.Pos=%d, %s\n", eval.TestCase, eval.Pos, com.LF())
+                                <span class="cov8" title="1">if Tk.Error </span><span class="cov8" title="1">{
+                                        rv.Error = true
+                                        rv.ErrorMsg = Tk.ErrorMsg
+                                }</span>
+                        }
+
+                        <span class="cov8" title="1">Set()
+                        if opTk == gen.Tok_COMMA </span><span class="cov8" title="1">{ //                                                           Walk over ,
+                                // fmt.Printf("IN ParseJSON-%s -BB-: %s\n", opCLTK_s, com.LF())
+                                Adv()
+                        }</span><span class="cov8" title="1"> else if opTk == gen.Tok_CL_BRACE </span><span class="cov8" title="1">{ //                                                           Walk over }, then return
+                                Adv()
+                                // fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, com.LF())
+                                return
+                        }</span><span class="cov8" title="1"> else {
+                                // fmt.Printf("IN ParseJSON-%s -EvalThis 555 555 5555 -: %s, Pos=%d\n", opCLTK_s, com.LF(), eval.Pos)
+                                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                                        // fmt.Printf("IN At:%s\n", com.LF())
+                                        Tk := eval.PresG()
+                                        Set()
+                                        if haveOne </span><span class="cov8" title="1">{
+                                                // fmt.Printf("IN At:%s\n", com.LF())
+                                                r1[name] = Tk
+                                                rv.CurValue = r1
+                                        }</span>
+                                        // fmt.Printf("TestCase=%s, eval.Pos=%d, %s\n", eval.TestCase, eval.Pos, com.LF())
+                                        <span class="cov8" title="1">if Tk.Error </span><span class="cov8" title="1">{
+                                                rv.Error = true
+                                                rv.ErrorMsg = Tk.ErrorMsg
+                                        }</span>
+                                }<span class="cov8" title="1"> else {
+                                        return
+                                }</span>
+                        }
+                        // fmt.Printf("IN At:%s\n", com.LF())
+                }
+
+        }
+
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) ParseArrayRef() (rv tok.Token) <span class="cov8" title="1">{
+        return eval.PresG()
+}</span>
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+//
+// Array Slice Ops
+//        Expr [ : Expr ]
+//        Expr [ Expr : ]
+//        Expr [ : ]
+//        Expr [ ExprID ]                                                        --                         -- Map Ref
+//        Expr . Name                                                                --                         -- Map Ref xyzzy
+//
+// ArrayId(expr) [ ... ]
+// MapId(expr) . Name List
+//
+// xyzzy1857 - not working
+//
+// Array is just a postfix '[' or '.' operator (Could have been -&gt; too)
+// --&gt;&gt; search for occurrence of "name" in hash
+//
+func (eval *EvalType) Pres1() (TkL tok.Token) <span class="cov8" title="1">{
+        var Tk0, Tk1 tok.Token
+        opTk := eval.Mm[eval.Pos].TokNo
+        TkL = eval.Pres0()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+
+        <span class="cov8" title="1">Adv := func() </span><span class="cov8" title="1">{
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        eval.Pos++
+                }</span>
+                <span class="cov8" title="1">if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opTk = eval.Mm[eval.Pos].TokNo
+                }</span><span class="cov8" title="1"> else {
+                        opTk = gen.Tok_null
+                }</span>
+        }
+
+        // XXX if !(TkL.CurValue.(type) == []tok.Token || TkL.CurValue.(type) == []interface{}) {
+        // XXX if !eval.IsArray(TkL) {
+        <span class="cov8" title="1">if TkL.DataType != CtxType_ArrayOf &amp;&amp; TkL.DataType != CtxType_MapOf </span><span class="cov8" title="1">{
+                return
+        }</span>
+
+        // match := ""
+        <span class="cov8" title="1">if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opTk = eval.Mm[eval.Pos].TokNo
+        }</span>
+
+        // fmt.Printf("Before Loop TkL = %s, %s\n", sizlib.SVarI(TkL), com.LF())
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+
+                // fmt.Printf("At loop top eval.Pos=%d, %s\n", eval.Pos, com.LF())
+                if TkL.DataType != CtxType_ArrayOf &amp;&amp; TkL.DataType != CtxType_MapOf </span><span class="cov8" title="1">{
+                        return
+                }</span>
+
+                // Array [ a : b ] [ ...
+                // Array [ : b ] . id ...
+                // Array [ : ]
+                // Array [ x ]
+                // Array . ID/Name
+                //       ^----------------------------------- Pos
+
+                <span class="cov8" title="1">if TkL.DataType == CtxType_ArrayOf </span><span class="cov8" title="1">{
+
+                        // fetch data from expression for Array // output to verify
+                        // get array or hash from symboltable or expression and put into token
+
+                        // fmt.Printf("At 1st Adv(), after eval.Pos=%d, TokNo=%d %s\n", eval.Pos, opTk, com.LF())
+                        // Array [ a : b ]
+                        // Array [ : b ]
+                        // Array [ : ]
+                        // Array [ x ]
+                        //       ^----------------------------------- Pos
+
+                        if opTk != gen.Tok_OP_SQ </span><span class="cov8" title="1">{ // if it is an Array but not a '[' to ref it, then return
+                                return
+                        }</span>
+
+                        <span class="cov8" title="1">Adv()
+                        // Array [ a : b ]
+                        // Array [ : b ]
+                        // Array [ : ]
+                        // Array [ x ]
+                        //         ^----------------------------------- Pos
+
+                        isRef := false
+                        // if eval.Mm[eval.Pos].TokNo == gen.Tok_COLON {
+                        if eval.Mm[eval.Pos].TokNo == gen.Tok_COLON </span><span class="cov8" title="1">{
+                                Adv()
+                                // Array [ : b ]
+                                // Array [ : ]
+                                //           ^----------------------------------- Pos
+                                // fmt.Printf("At Step Over Colon Adv(), after eval.Pos=%d, TokNo=%d %s\n", eval.Pos, opTk, com.LF())
+                                Tk0.TokNo = gen.Tok_NUM
+                                Tk0.CurValue = 0
+                        }</span><span class="cov8" title="1"> else {
+                                Tk0 = eval.ParseArrayRef()
+                                // Array [ a : b ]
+                                // Array [ x ]
+                                //           ^----------------------------------- Pos
+                                if Tk0.Error </span><span class="cov8" title="1">{
+                                        TkL = Tk0
+                                        return
+                                }</span>
+                                <span class="cov8" title="1">if Tk0.DataType != CtxType_Int </span><span class="cov8" title="1">{
+                                        TkL = Tk0
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00014):  Attempted to index array with non-integer data.\n")
+                                        //TkL.CurValue = 0 // Add in a magic 0 or something for doing ops off of end of tokens
+                                        //TkL.DataType = CtxType_Int
+                                        return
+                                }</span>
+                                // fmt.Printf("eval.Pos=%d token=%d\n", eval.Pos, eval.Mm[eval.Pos].TokNo)
+                                <span class="cov8" title="1">if eval.Mm[eval.Pos].TokNo == gen.Tok_COLON </span><span class="cov8" title="1">{
+                                        Adv()
+                                        // Array [ a : b ]
+                                        //             ^----------------------------------- Pos
+                                }</span><span class="cov8" title="1"> else if eval.Mm[eval.Pos].TokNo == gen.Tok_CL_SQ </span><span class="cov8" title="1">{
+                                        // Array [ x ]
+                                        //           ^----------------------------------- Pos
+                                        isRef = true
+                                        Adv()
+                                        // Array [ x ]
+                                        //             ^----------------------------------- Pos
+                                        Tk1.TokNo = gen.Tok_NUM
+                                        switch TkL.CurValue.(type) </span>{
+                                        <span class="cov8" title="1">case []tok.Token:
+                                                Tk1.CurValue = len(TkL.CurValue.([]tok.Token))</span>
+                                                //case []interface{}:
+                                                //        Tk1.CurValue = len(TkL.CurValue.([]interface{}))
+                                        }
+                                        <span class="cov8" title="1">goto evalIt</span>
+                                }<span class="cov8" title="1"> else {
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00015): invalid array reference\n")
+                                        return
+                                }</span>
+                        }
+                        // Array [ a : ]
+                        // Array [   : ]
+                        // Array [ a : b ]
+                        //             ^----------------------------------- Pos
+                        <span class="cov8" title="1">if eval.Mm[eval.Pos].TokNo == gen.Tok_CL_SQ </span><span class="cov8" title="1">{
+                                Adv()
+                                // Array [ a : ]
+                                // Array [   : ]
+                                //                 ^----------------------------------- Pos
+                                Tk1.TokNo = gen.Tok_NUM
+                                switch TkL.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case []tok.Token:
+                                        Tk1.CurValue = len(TkL.CurValue.([]tok.Token))</span>
+                                        //case []interface{}:
+                                        //        Tk1.CurValue = len(TkL.CurValue.([]interface{}))
+                                }
+                                <span class="cov8" title="1">goto evalIt</span>
+                        }
+
+                        <span class="cov8" title="1">Tk1 = eval.ParseArrayRef()
+                        // Array [ a : b ]
+                        //               ^----------------------------------- Pos
+                        if Tk1.Error </span><span class="cov8" title="1">{
+                                TkL = Tk1
+                                return
+                        }</span>
+                        <span class="cov8" title="1">if Tk1.DataType != CtxType_Int </span><span class="cov8" title="1">{
+                                TkL = Tk1
+                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00016):  Attempted to index array with non-integer data.\n")
+                                //TkL.CurValue = 0 // Add in a magic 0 or something for doing ops off of end of tokens
+                                //TkL.DataType = CtxType_Int
+                                return
+                        }</span>
+                        <span class="cov8" title="1">if eval.Mm[eval.Pos].TokNo == gen.Tok_CL_SQ </span><span class="cov8" title="1">{
+                                Adv()
+                                // Array [ a : b ]
+                                //                 ^----------------------------------- Pos
+                                // goto evalIt
+                        }</span><span class="cov8" title="1"> else {
+                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00017): invalid array reference\n")
+                                return
+                        }</span>
+                <span class="cov8" title="1">evalIt:
+
+                        n := Tk0.CurValue.(int)
+                        if isRef </span><span class="cov8" title="1">{
+                                switch TkL.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case []tok.Token:
+                                        x := TkL.CurValue.([]tok.Token)
+                                        TkL.DataType = x[n].DataType
+                                        TkL.CurValue = x[n].CurValue
+                                        TkL.LValue = true</span>
+                                        //case []interface{}:
+                                        //        x := TkL.CurValue.([]interface{})
+                                        //        TkL.CurValue = x[n]
+                                }
+                        }<span class="cov8" title="1"> else {
+                                m := Tk1.CurValue.(int)
+                                // fmt.Printf("N=%d M=%d CurValue=%s\n", n, m, sizlib.SVar(TkL.CurValue))
+                                switch TkL.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case []tok.Token:
+                                        x := TkL.CurValue.([]tok.Token)
+                                        TkL.DataType = CtxType_ArrayOf
+                                        TkL.CurValue = x[n:m]</span>
+                                        //case []interface{}:
+                                        //        x := TkL.CurValue.([]interface{})
+                                        //        TkL.DataType = CtxType_ArrayOf
+                                        //        TkL.CurValue = x[n:m]
+                                }
+                        }
+
+                        // Array . ID/Name
+                        //       ^----------------------------------- Pos
+                }<span class="cov8" title="1"> else if TkL.DataType == CtxType_MapOf </span><span class="cov8" title="1">{
+
+                        name := ""
+
+                        if opTk != gen.Tok_DOT </span><span class="cov8" title="1">{ // if it is an Map but not a '.' to ref it, then return
+                                return
+                        }</span>
+
+                        <span class="cov8" title="1">Adv()
+                        // Map . ID/Name
+                        //       ^----------------------------------- Pos
+
+                        if opTk == gen.Tok_ID </span><span class="cov8" title="1">{ // xyzzy - ID : -- handle this also -&gt; Name
+                                // fmt.Printf("IN MapRef -ID-: %s\n", com.LF())
+                                name = eval.Mm[eval.Pos].Match
+                                Adv()
+                                // Map . ID/Name
+                                //               ^----------------------------------- Pos
+                        }</span><span class="cov8" title="1"> else if opTk == gen.Tok_Str0 </span><span class="cov8" title="1">{ // xyzzy - "name" :  -- Handle this
+                                // fmt.Printf("IN MapRef -STR-: %s\n", com.LF())
+                                name = eval.Mm[eval.Pos].Match
+                                Adv()
+                                // Map . ID/Name
+                                //               ^----------------------------------- Pos
+                        }</span><span class="cov8" title="1"> else {
+                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00018):  Attempted to reference into map with non-string type\n")
+                                return
+                        }</span>
+
+                        // fmt.Printf("name=%s CurValue=%s\n", name, sizlib.SVar(TkL.CurValue))
+                        <span class="cov8" title="1">switch TkL.CurValue.(type) </span>{
+                        <span class="cov8" title="1">case map[string]tok.Token:
+                                x := TkL.CurValue.(map[string]tok.Token)
+                                TkL.DataType = x[name].DataType
+                                TkL.CurValue = x[name].CurValue</span>
+                                //case map[string]interface{}:
+                                //        x := TkL.CurValue.(map[string]interface{})
+                                //        // TkL.DataType = x[name].DataType
+                                //        TkL.CurValue = x[name]
+                        }
+
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Unary !
+func (eval *EvalType) Pres2() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("Pos:%d At: %s\n", eval.Pos, com.LF())
+        neg := false
+        found := false
+        if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                for (eval.Pos &lt; len(eval.Mm)) &amp;&amp; (eval.Mm[eval.Pos].TokNo == gen.Tok_EXCLAM) </span><span class="cov8" title="1">{
+                        found = true
+                        neg = !neg
+                        eval.Pos++
+                }</span>
+                <span class="cov8" title="1">TkL = eval.Pres1()
+                if TkL.Error </span><span class="cov8" title="1">{
+                        return
+                }</span>
+                <span class="cov8" title="1">if found </span><span class="cov8" title="1">{
+                        // if type is string &amp;&amp; loose -&gt; "" is false
+                        // if type is array &amp;&amp; loose -&gt; [] is false
+                        // if type is map/hash &amp;&amp; loose -&gt; {} is false
+                        // if type is float &amp;&amp; loose &amp;&amp; thr -&gt; |x|&lt;Thr is false
+                        // if type is float &amp;&amp; loose &amp;&amp; !thr -&gt; x == 0 is false
+                        switch TkL.CurValue.(type) </span>{
+                        <span class="cov8" title="1">case int:
+                                ii := TkL.CurValue.(int)
+                                TkL.CurValue = (ii == 0)
+                                // fmt.Printf("IN NOT(int): neg=%v\n", neg)
+                                if neg </span><span class="cov8" title="1">{
+                                        TkL.CurValue = !TkL.CurValue.(bool)
+                                }</span>
+                                // fmt.Printf("IN NOT(int), result: %v\n", TkL.CurValue.(bool))
+                        <span class="cov8" title="1">case bool:
+                                // fmt.Printf("IN NOT: neg=%v\n", neg)
+                                if neg </span><span class="cov8" title="1">{
+                                        TkL.CurValue = !TkL.CurValue.(bool)
+                                        // fmt.Printf("IN NOT, result: %v\n", TkL.CurValue.(bool))
+                                }</span>
+                        <span class="cov8" title="1">default:
+                                TkL.CurValue = false
+                                TkL.DataType = CtxType_Bool
+                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00019):  Attempted to use '!' operator on invalid type\n")
+                                return</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Unary +, -
+func (eval *EvalType) Pres3() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("Unary-+: Pos:%d At: %s\n", eval.Pos, com.LF())
+        found := false
+        neg := false
+        if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                for (eval.Pos &lt; len(eval.Mm)) &amp;&amp; (eval.Mm[eval.Pos].TokNo == gen.Tok_MINUS || eval.Mm[eval.Pos].TokNo == gen.Tok_PLUS) </span><span class="cov8" title="1">{
+                        // fmt.Printf(" Top Of Loop TokNo=%d, Pos:%d\n", eval.Mm[eval.Pos].TokNo, eval.Pos)
+                        found = true
+                        if eval.Mm[eval.Pos].TokNo == gen.Tok_MINUS </span><span class="cov8" title="1">{
+                                neg = !neg
+                        }</span>
+                        <span class="cov8" title="1">eval.Pos++</span>
+                }
+                <span class="cov8" title="1">TkL = eval.Pres2()
+                if found </span><span class="cov8" title="1">{
+                        // fmt.Printf("Unary-+: Found is true - :%d At: %s\n", eval.Pos, com.LF())
+                        switch TkL.DataType </span>{
+                        <span class="cov8" title="1">case CtxType_Int:
+                                if neg </span><span class="cov8" title="1">{
+                                        TkL.CurValue = -TkL.CurValue.(int)
+                                }</span>
+                        <span class="cov8" title="1">case CtxType_Float:
+                                if neg </span><span class="cov8" title="1">{
+                                        TkL.CurValue = -TkL.CurValue.(float64)
+                                }</span>
+                        <span class="cov8" title="1">default:
+                                // fmt.Printf("Unary-+: error type - :%d At: %s\n", eval.Pos, com.LF())
+                                //TkL.CurValue = 0
+                                //TkL.DataType = CtxType_Int
+                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00020):  Attempted to use '+', '-' operator on invalid type\n")
+                                return</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Parse multiplication and division, *, /, %
+func (eval *EvalType) Pres4() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("Pos:%d At: %s\n", eval.Pos, com.LF())
+        TkL = eval.Pres3()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_STAR &amp;&amp; opTk != gen.Tok_SLASH &amp;&amp; opTk != gen.Tok_PCT </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres3()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_STAR:
+                                // fmt.Printf("IN MUL: %d * %d = %d\n", TkL.CurValue.(int), TkR.CurValue.(int), TkL.CurValue.(int)*TkR.CurValue.(int))
+                                TkL.CurValue = TkL.CurValue.(int) * TkR.CurValue.(int)</span>
+                        <span class="cov8" title="1">case gen.Tok_SLASH:
+                                // fmt.Printf("IN DIV: %d / %d = %d\n", TkL.CurValue.(int), TkR.CurValue.(int), TkL.CurValue.(int)/TkR.CurValue.(int))
+                                TkL.CurValue = TkL.CurValue.(int) / TkR.CurValue.(int)</span> // xyzzy zero devide
+                        <span class="cov8" title="1">case gen.Tok_PCT:
+                                // fmt.Printf("IN MOD: %d %% %d = %d\n", TkL.CurValue.(int), TkR.CurValue.(int), TkL.CurValue.(int)%TkR.CurValue.(int))
+                                TkL.CurValue = TkL.CurValue.(int) % TkR.CurValue.(int)</span>
+                        }
+                }<span class="cov8" title="1"> else if (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Int) || (TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Float) || (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Float) </span><span class="cov8" title="1">{
+
+                        if TkL.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                TkL.DataType = CtxType_Float
+                                TkL.CurValue = float64(TkL.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">if TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                TkR.DataType = CtxType_Float
+                                TkR.CurValue = float64(TkR.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_STAR:
+                                TkL.CurValue = TkL.CurValue.(float64) * TkR.CurValue.(float64)
+                                TkL.DataType = CtxType_Float</span>
+                        <span class="cov8" title="1">case gen.Tok_SLASH:
+                                TkL.CurValue = TkL.CurValue.(float64) / TkR.CurValue.(float64)
+                                TkL.DataType = CtxType_Float</span>
+                        <span class="cov8" title="1">case gen.Tok_PCT:
+                                //TkL.CurValue = 0
+                                //TkL.DataType = CtxType_Int
+                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00021):  '%%' (modulous devision) not defined on float data.\n")</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00022):  Attempted to use '/', '%%', '*' operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Parse addition and subtraction, -, + (binary)
+func (eval *EvalType) Pres5() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.Pres4()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_PLUS &amp;&amp; opTk != gen.Tok_MINUS </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres4()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">TkL = eval.TypeConvertToNumber(TkL)
+                TkR = eval.TypeConvertToNumber(TkR)
+                if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_PLUS:
+                                // fmt.Printf("IN ADD: %d + %d = %d\n", TkL.CurValue.(int), TkR.CurValue.(int), TkL.CurValue.(int)+TkR.CurValue.(int))
+                                TkL.CurValue = TkL.CurValue.(int) + TkR.CurValue.(int)</span>
+                        <span class="cov8" title="1">case gen.Tok_MINUS:
+                                // fmt.Printf("IN SUB: %d - %d = %d\n", TkL.CurValue.(int), TkR.CurValue.(int), TkL.CurValue.(int)-TkR.CurValue.(int))
+                                TkL.CurValue = TkL.CurValue.(int) - TkR.CurValue.(int)</span>
+                        }
+                }<span class="cov8" title="1"> else if TkL.DataType == CtxType_Str &amp;&amp; TkR.DataType == CtxType_Str </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_PLUS:
+                                TkL.CurValue = TkL.CurValue.(string) + TkR.CurValue.(string)</span>
+                        <span class="cov8" title="1">case gen.Tok_MINUS:
+                                //TkL.CurValue = 0
+                                //TkL.DataType = CtxType_Int
+                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00023):  Attempted to use '-', operator on two strings - not defined.\n")
+                                return</span>
+                        }
+                }<span class="cov8" title="1"> else if (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Int) || (TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Float) || (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Float) </span><span class="cov8" title="1">{
+
+                        if TkL.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                TkL.DataType = CtxType_Float
+                                TkL.CurValue = float64(TkL.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">if TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                TkR.DataType = CtxType_Float
+                                TkR.CurValue = float64(TkR.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_PLUS:
+                                TkL.CurValue = TkL.CurValue.(float64) + TkR.CurValue.(float64)
+                                TkL.DataType = CtxType_Float</span>
+                        <span class="cov8" title="1">case gen.Tok_MINUS:
+                                TkL.CurValue = TkL.CurValue.(float64) - TkR.CurValue.(float64)
+                                TkL.DataType = CtxType_Float</span>
+                        }
+
+                        // xyzzyPMHash - operators +, - on Arrays, Hashes
+
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00024):  Attempted to use '+', '-' operator on invalid or mixed data types, %d, %d\n", TkL.DataType, TkR.DataType)
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Parse addition and subtraction, &lt;&lt;, &gt;&gt; (binary)
+func (eval *EvalType) Pres5a() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.Pres5()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_S_L &amp;&amp; opTk != gen.Tok_S_R </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres5()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">TkL = eval.TypeConvertToNumber(TkL)
+                TkR = eval.TypeConvertToNumber(TkR)
+                if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_S_L:
+                                // fmt.Printf("IN S-L: %d &lt;&lt; %d = %d\n", TkL.CurValue.(int), TkR.CurValue.(int), TkL.CurValue.(int)&lt;&lt;uint(TkR.CurValue.(int)))
+                                TkL.CurValue = TkL.CurValue.(int) &lt;&lt; uint(TkR.CurValue.(int))</span>
+                        <span class="cov8" title="1">case gen.Tok_S_R:
+                                // fmt.Printf("IN S-R: %d &gt;&gt; %d = %d\n", TkL.CurValue.(int), TkR.CurValue.(int), TkL.CurValue.(int)&gt;&gt;uint(TkR.CurValue.(int)))
+                                TkL.CurValue = TkL.CurValue.(int) &gt;&gt; uint(TkR.CurValue.(int))</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00025):  Attempted to use '&lt;&lt;', '&gt;&gt;' operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) TypeConvertToNumber(TkL tok.Token) (rv tok.Token) <span class="cov8" title="1">{
+        rv = TkL
+        fmt.Printf("Just before got a %T for type\n", TkL.CurValue)
+        switch TkL.CurValue.(type) </span>{
+        //case byte:
+        //        TkL.DataType = CtxType_Int
+        //        TkL.CurValue = int(TkL.CurValue.(byte))
+        <span class="cov0" title="0">case int64:
+                rv.DataType = CtxType_Int
+                rv.CurValue = int(TkL.CurValue.(int64))</span>
+        <span class="cov0" title="0">case int32:
+                rv.DataType = CtxType_Int
+                rv.CurValue = int(TkL.CurValue.(int32))</span>
+        <span class="cov0" title="0">case float32:
+                rv.DataType = CtxType_Float
+                rv.CurValue = float64(TkL.CurValue.(float32))</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Parse Compare OPS, &lt;, &lt;=, &gt;, &gt;=
+func (eval *EvalType) Pres6() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.Pres5a()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_LE &amp;&amp; opTk != gen.Tok_LT &amp;&amp; opTk != gen.Tok_GE &amp;&amp; opTk != gen.Tok_GT </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres5a()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+
+                <span class="cov8" title="1">TkL = eval.TypeConvertToNumber(TkL)
+                TkR = eval.TypeConvertToNumber(TkR)
+
+                if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_LT:
+                                TkL.CurValue = TkL.CurValue.(int) &lt; TkR.CurValue.(int)</span>
+                        <span class="cov8" title="1">case gen.Tok_LE:
+                                TkL.CurValue = TkL.CurValue.(int) &lt;= TkR.CurValue.(int)</span>
+                        <span class="cov8" title="1">case gen.Tok_GT:
+                                TkL.CurValue = TkL.CurValue.(int) &gt; TkR.CurValue.(int)</span>
+                        <span class="cov8" title="1">case gen.Tok_GE:
+                                TkL.CurValue = TkL.CurValue.(int) &gt;= TkR.CurValue.(int)</span>
+                        }
+                        <span class="cov8" title="1">TkL.DataType = CtxType_Bool</span>
+                }<span class="cov8" title="1"> else if (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Int) || (TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Float) || (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Float) </span><span class="cov8" title="1">{
+
+                        if TkL.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                TkL.DataType = CtxType_Float
+                                TkL.CurValue = float64(TkL.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">if TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                TkR.DataType = CtxType_Float
+                                TkR.CurValue = float64(TkR.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_LT:
+                                TkL.CurValue = TkL.CurValue.(float64) &lt; TkR.CurValue.(float64)</span>
+                        <span class="cov8" title="1">case gen.Tok_LE:
+                                TkL.CurValue = TkL.CurValue.(float64) &lt;= TkR.CurValue.(float64)</span>
+                        <span class="cov8" title="1">case gen.Tok_GT:
+                                TkL.CurValue = TkL.CurValue.(float64) &gt; TkR.CurValue.(float64)</span>
+                        <span class="cov8" title="1">case gen.Tok_GE:
+                                TkL.CurValue = TkL.CurValue.(float64) &gt;= TkR.CurValue.(float64)</span>
+                        }
+
+                        <span class="cov8" title="1">TkL.DataType = CtxType_Bool</span>
+                }<span class="cov8" title="1"> else if TkL.DataType == CtxType_Str &amp;&amp; TkR.DataType == CtxType_Str </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_LT:
+                                TkL.CurValue = TkL.CurValue.(string) &lt; TkR.CurValue.(string)</span>
+                        <span class="cov8" title="1">case gen.Tok_LE:
+                                TkL.CurValue = TkL.CurValue.(string) &lt;= TkR.CurValue.(string)</span>
+                        <span class="cov8" title="1">case gen.Tok_GT:
+                                TkL.CurValue = TkL.CurValue.(string) &gt; TkR.CurValue.(string)</span>
+                        <span class="cov8" title="1">case gen.Tok_GE:
+                                TkL.CurValue = TkL.CurValue.(string) &gt;= TkR.CurValue.(string)</span>
+                        }
+                        <span class="cov8" title="1">TkL.DataType = CtxType_Bool</span>
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00026):  Attempted to use '!=', '&lt;&gt;', '==' operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// !=, ==, &lt;&gt;
+func (eval *EvalType) Pres7() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.Pres6()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_NE &amp;&amp; opTk != gen.Tok_L_EQ </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres6()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">TkL = eval.TypeConvertToNumber(TkL)
+                TkR = eval.TypeConvertToNumber(TkR)
+                if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_NE:
+                                TkL.CurValue = TkL.CurValue.(int) != TkR.CurValue.(int)</span>
+                        <span class="cov8" title="1">case gen.Tok_L_EQ:
+                                TkL.CurValue = TkL.CurValue.(int) == TkR.CurValue.(int)</span>
+                        }
+                        <span class="cov8" title="1">TkL.DataType = CtxType_Bool</span>
+                }<span class="cov8" title="1"> else if (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Int) || (TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Float) || (TkL.DataType == CtxType_Float &amp;&amp; TkR.DataType == CtxType_Float) </span><span class="cov8" title="1">{
+                        // fmt.Printf("At: %s\n", com.LF())
+
+                        if TkL.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                // fmt.Printf("At: %s\n", com.LF())
+                                TkL.DataType = CtxType_Float
+                                TkL.CurValue = float64(TkL.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">if TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                                // fmt.Printf("At: %s\n", com.LF())
+                                TkR.DataType = CtxType_Float
+                                TkR.CurValue = float64(TkR.CurValue.(int))
+                        }</span>
+
+                        <span class="cov8" title="1">switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_NE:
+                                // fmt.Printf("At: %s\n", com.LF())
+                                TkL.CurValue = TkL.CurValue.(float64) != TkR.CurValue.(float64)</span>
+                        <span class="cov8" title="1">case gen.Tok_L_EQ:
+                                // fmt.Printf("At: %s\n", com.LF())
+                                TkL.CurValue = TkL.CurValue.(float64) == TkR.CurValue.(float64)</span>
+                        }
+                        // fmt.Printf("At: %s\n", com.LF())
+                        <span class="cov8" title="1">TkL.DataType = CtxType_Bool</span>
+                }<span class="cov8" title="1"> else if TkL.DataType == CtxType_Bool &amp;&amp; TkR.DataType == CtxType_Bool </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_NE:
+                                TkL.CurValue = TkL.CurValue.(bool) != TkR.CurValue.(bool)</span>
+                        <span class="cov8" title="1">case gen.Tok_L_EQ:
+                                TkL.CurValue = TkL.CurValue.(bool) == TkR.CurValue.(bool)</span>
+                        }
+                        <span class="cov8" title="1">TkL.DataType = CtxType_Bool</span>
+                }<span class="cov8" title="1"> else if TkL.DataType == CtxType_Str &amp;&amp; TkR.DataType == CtxType_Str </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_NE:
+                                TkL.CurValue = TkL.CurValue.(string) != TkR.CurValue.(string)</span>
+                        <span class="cov8" title="1">case gen.Tok_L_EQ:
+                                TkL.CurValue = TkL.CurValue.(string) == TkR.CurValue.(string)</span>
+                        }
+                        <span class="cov8" title="1">TkL.DataType = CtxType_Bool</span>
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00027):  Attempted to use '/', '%%', '*' operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// &amp;
+func (eval *EvalType) Pres8() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.Pres7()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_B_AND </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres7()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_B_AND:
+                                TkL.CurValue = TkL.CurValue.(int) &amp; TkR.CurValue.(int)</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00028):  Attempted to use '&amp;' (bit-and),  operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// |                -- Change to "bor" token/ID
+func (eval *EvalType) Pres9() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.Pres8()
+        for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_B_OR </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres8()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_B_OR:
+                                TkL.CurValue = TkL.CurValue.(int) | TkR.CurValue.(int)</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00029):  Attempted to use 'bor',  operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// ^
+func (eval *EvalType) PresA() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.Pres9()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_CARRET </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.Pres9()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">if TkL.DataType == CtxType_Int &amp;&amp; TkR.DataType == CtxType_Int </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_CARRET:
+                                TkL.CurValue = TkL.CurValue.(int) ^ TkR.CurValue.(int)</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00030):  Attempted to use '^' (bit-xor),  operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// &amp;&amp;
+func (eval *EvalType) PresB() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.PresA()
+        for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_L_AND </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.PresA()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">if TkL.DataType == CtxType_Bool &amp;&amp; TkR.DataType == CtxType_Bool </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_L_AND:
+                                TkL.CurValue = TkL.CurValue.(bool) &amp;&amp; TkR.CurValue.(bool)</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00031):  Attempted to use '&amp;&amp;' (logical and),  operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// ||
+func (eval *EvalType) PresC() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.PresB()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                opPos := eval.Pos
+                opTk := eval.Mm[opPos].TokNo
+                if opTk != gen.Tok_L_OR </span><span class="cov8" title="1">{
+                        return TkL
+                }</span>
+                <span class="cov8" title="1">eval.Pos++
+                TkR := eval.PresB()
+                if TkR.Error </span><span class="cov8" title="1">{
+                        TkL = TkR
+                        return
+                }</span>
+                <span class="cov8" title="1">if TkL.DataType == CtxType_Bool &amp;&amp; TkR.DataType == CtxType_Bool </span><span class="cov8" title="1">{
+                        switch opTk </span>{
+                        <span class="cov8" title="1">case gen.Tok_L_OR:
+                                TkL.CurValue = TkL.CurValue.(bool) || TkR.CurValue.(bool)</span>
+                        }
+                }<span class="cov8" title="1"> else {
+                        //TkL.CurValue = 0
+                        //TkL.DataType = CtxType_Int
+                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00032):  Attempted to use '&amp;&amp;' (logical and),  operator on invalid or mixed data types\n")
+                }</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Not Used Uet
+func (eval *EvalType) PresD() (TkL tok.Token) <span class="cov8" title="1">{
+        TkL = eval.PresC() // TkL = eval.ParseJsonExpression()
+        return
+}</span>
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// = (assignment), += etc. :=??
+// Right To Left - how, Recursion?? array and append??
+// xyzzy R-&gt;L not implemented - just one assignemtn at the moment
+func (eval *EvalType) PresE() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+
+        if eval.Mm[eval.Pos].TokNo == gen.Tok_ID </span><span class="cov8" title="1">{
+                eval.Mm[eval.Pos].CreateId = (eval.Pos+1 &lt; len(eval.Mm) &amp;&amp; eval.Mm[eval.Pos+1].TokNo == gen.Tok_DCL_VAR)
+                // fmt.Printf("CreateID is set to %v, for %s\n", eval.Mm[eval.Pos].CreateId, eval.Mm[eval.Pos].Match)
+        }</span>
+        <span class="cov8" title="1">TkL = eval.PresD()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">if TkL.LValue </span><span class="cov8" title="1">{
+                // fmt.Printf("IS Lvalue TkL=%+v At: %s\n", TkL, com.LF())
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opPos := eval.Pos
+                        opTk := eval.Mm[opPos].TokNo
+                        if opTk != gen.Tok_EQ &amp;&amp; opTk != gen.Tok_DCL_VAR &amp;&amp; opTk != gen.Tok_PLUS_EQ &amp;&amp; opTk != gen.Tok_MINUS_EQ &amp;&amp; opTk != gen.Tok_STAR_EQ &amp;&amp; opTk != gen.Tok_DIV_EQ &amp;&amp; opTk != gen.Tok_MOD_EQ &amp;&amp; opTk != gen.Tok_CAROT_EQ &amp;&amp; opTk != gen.Tok_B_OR_EQ &amp;&amp; opTk != gen.Tok_B_AND_EQ &amp;&amp; opTk != gen.Tok_TILDE_EQ &amp;&amp; opTk != gen.Tok_S_L_EQ &amp;&amp; opTk != gen.Tok_S_R_EQ </span><span class="cov8" title="1">{
+                                return TkL
+                        }</span>
+                        <span class="cov8" title="1">eval.Pos++
+                        TkR := eval.PresD()
+                        if TkR.Error </span><span class="cov8" title="1">{
+                                TkL = TkR
+                                return
+                        }</span>
+                        <span class="cov8" title="1">isInt := true
+                        isAssign := false
+                        // xyzzy - hand check that all types have been placed in each and every switch
+                        switch TkL.CurValue.(type) </span>{
+                        <span class="cov8" title="1">case int:
+                                switch TkR.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case int:</span>
+                                <span class="cov8" title="1">case float64:
+                                        isInt = false
+                                        TkL.DataType = CtxType_Float
+                                        TkL.CurValue = float64(TkL.CurValue.(int))</span>
+                                <span class="cov8" title="1">case []interface{}, []tok.Token, map[string]interface{}, map[string]tok.Token, tok.Token, string, bool:
+                                        if opTk == gen.Tok_EQ || opTk == gen.Tok_DCL_VAR </span><span class="cov8" title="1">{
+                                                isAssign = true
+                                        }</span><span class="cov8" title="1"> else {
+                                                isInt = false
+                                                //TkL.CurValue = 0
+                                                //TkL.DataType = CtxType_Int
+                                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00033):  Invalid type conversion. Type=%s\n", fmt.Sprintf("%T = %T", TkL.CurValue, TkR.CurValue))
+                                                return
+                                        }</span>
+                                }
+                        <span class="cov8" title="1">case float64:
+                                isInt = false
+                                switch TkR.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case int:
+                                        TkR.DataType = CtxType_Float
+                                        TkR.CurValue = float64(TkR.CurValue.(int))</span>
+                                <span class="cov8" title="1">case float64:</span>
+                                <span class="cov8" title="1">case []interface{}, []tok.Token, map[string]interface{}, map[string]tok.Token, tok.Token, string, bool:
+                                        if opTk == gen.Tok_EQ || opTk == gen.Tok_DCL_VAR </span><span class="cov8" title="1">{
+                                                isAssign = true
+                                        }</span><span class="cov8" title="1"> else {
+                                                isInt = false
+                                                //TkL.CurValue = 0
+                                                //TkL.DataType = CtxType_Int
+                                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00034):  Invalid type conversion. Type=%s\n", fmt.Sprintf("%T = %T", TkL.CurValue, TkR.CurValue))
+                                                return
+                                        }</span>
+                                }
+                        <span class="cov8" title="1">case string:
+                                switch TkR.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case []interface{}, []tok.Token, map[string]interface{}, map[string]tok.Token, tok.Token, string, bool, float64, int:
+                                        if opTk == gen.Tok_EQ || opTk == gen.Tok_DCL_VAR </span><span class="cov8" title="1">{
+                                                isAssign = true
+                                        }</span><span class="cov8" title="1"> else {
+                                                isInt = false
+                                                //TkL.CurValue = 0
+                                                //TkL.DataType = CtxType_Int
+                                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00035):  Invalid type conversion. Type=%s\n", fmt.Sprintf("%T = %T", TkL.CurValue, TkR.CurValue))
+                                                return
+                                        }</span>
+                                }
+                        <span class="cov8" title="1">case bool:
+                                switch TkR.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case []interface{}, []tok.Token, map[string]interface{}, map[string]tok.Token, tok.Token, string, bool, float64, int:
+                                        if opTk == gen.Tok_EQ || opTk == gen.Tok_DCL_VAR </span><span class="cov8" title="1">{
+                                                isAssign = true
+                                        }</span><span class="cov8" title="1"> else {
+                                                isInt = false
+                                                //TkL.CurValue = 0
+                                                //TkL.DataType = CtxType_Int
+                                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00036):  Invalid type conversion. Type=%s\n", fmt.Sprintf("%T = %T", TkL.CurValue, TkR.CurValue))
+                                                return
+                                        }</span>
+                                }
+                        <span class="cov8" title="1">case []interface{}, []tok.Token, map[string]interface{}, map[string]tok.Token, tok.Token:
+                                switch TkR.CurValue.(type) </span>{
+                                <span class="cov8" title="1">case []interface{}, []tok.Token, map[string]interface{}, map[string]tok.Token, tok.Token, string, bool, float64, int:
+                                        if opTk == gen.Tok_EQ || opTk == gen.Tok_DCL_VAR </span><span class="cov8" title="1">{
+                                                isAssign = true
+                                        }</span><span class="cov8" title="1"> else {
+                                                isInt = false
+                                                //TkL.CurValue = 0
+                                                //TkL.DataType = CtxType_Int
+                                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00037):  Invalid type conversion. Type=%s\n", fmt.Sprintf("%T = %T", TkL.CurValue, TkR.CurValue))
+                                                return
+                                        }</span>
+                                }
+                        }
+                        <span class="cov8" title="1">if isAssign </span><span class="cov8" title="1">{
+                                switch opTk </span>{
+                                <span class="cov8" title="1">case gen.Tok_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkR.CurValue</span>
+                                <span class="cov8" title="1">case gen.Tok_DCL_VAR:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkR.CurValue</span>
+                                }
+                        }<span class="cov8" title="1"> else if isInt </span><span class="cov8" title="1">{
+                                switch opTk </span>{
+                                <span class="cov8" title="1">case gen.Tok_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkR.CurValue</span>
+                                <span class="cov8" title="1">case gen.Tok_DCL_VAR:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkR.CurValue</span>
+                                <span class="cov8" title="1">case gen.Tok_PLUS_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) + TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_MINUS_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) - TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_STAR_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) * TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_DIV_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) / TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_MOD_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) % TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_CAROT_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) ^ TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_B_OR_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) | TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_B_AND_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) &amp; TkR.CurValue.(int)</span>
+                                <span class="cov8" title="1">case gen.Tok_TILDE_EQ:
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00038):  ~= operator not implemented yet.\n")
+                                        return</span>
+                                <span class="cov8" title="1">case gen.Tok_S_L_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) &lt;&lt; uint(TkR.CurValue.(int))</span>
+                                <span class="cov8" title="1">case gen.Tok_S_R_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(int) &gt;&gt; uint(TkR.CurValue.(int))</span>
+                                }
+                        }<span class="cov8" title="1"> else {
+                                TkR.DataType = CtxType_Float
+                                switch opTk </span>{
+                                <span class="cov8" title="1">case gen.Tok_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkR.CurValue</span>
+                                <span class="cov8" title="1">case gen.Tok_DCL_VAR:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkR.CurValue</span>
+                                <span class="cov8" title="1">case gen.Tok_PLUS_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(float64) + TkR.CurValue.(float64)</span>
+                                <span class="cov8" title="1">case gen.Tok_MINUS_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(float64) - TkR.CurValue.(float64)</span>
+                                <span class="cov8" title="1">case gen.Tok_STAR_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(float64) * TkR.CurValue.(float64)</span>
+                                <span class="cov8" title="1">case gen.Tok_DIV_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        TkL.CurValue = TkL.CurValue.(float64) / TkR.CurValue.(float64)</span>
+                                <span class="cov8" title="1">case gen.Tok_MOD_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00039):  %= operator not defined for floating point data.\n")
+                                        return</span>
+                                <span class="cov8" title="1">case gen.Tok_CAROT_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00040):  ^= operator not defined for floating point data.\n")
+                                        return</span>
+                                <span class="cov8" title="1">case gen.Tok_B_OR_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00041):  |= operator not defined for floating point data.\n")
+                                        return</span>
+                                <span class="cov8" title="1">case gen.Tok_B_AND_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00042):  &amp;= operator not defined for floating point data.\n")
+                                        return</span>
+                                <span class="cov8" title="1">case gen.Tok_TILDE_EQ:
+                                        // fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+                                        //TkL.DataType = TkR.DataType
+                                        //TkL.CurValue = TkL.CurValue.(float64) ~ TkR.CurValue.(float64)
+                                        //eval.Ctx.SetInContext(TkL.Match, TkL.DataType, TkL.CurValue)
+                                        // xyzzy - error
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00043):  ~= operator not implemented yet.\n")
+                                        return</span>
+                                <span class="cov8" title="1">case gen.Tok_S_L_EQ:
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00044):  &lt;&lt;= operator not defined for floating point data.\n")
+                                        return</span>
+                                <span class="cov8" title="1">case gen.Tok_S_R_EQ:
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00045):  &gt;&gt;= operator not defined for floating point data.\n")
+                                        return</span>
+                                }
+                        }
+                        <span class="cov8" title="1">TkL.DataType = TkR.DataType
+                        eval.Ctx.SetInContext(TkL.Match, TkL.DataType, TkL.CurValue)</span>
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// Computational IF ?:
+func (eval *EvalType) PresF() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.PresE()
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+
+        <span class="cov8" title="1">opPos := 0
+        opTk := 0
+
+        Adv := func() </span><span class="cov8" title="1">{
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        eval.Pos++
+                        opPos = eval.Pos
+                }</span>
+                <span class="cov8" title="1">opTk = gen.Tok_null
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opTk = eval.Mm[eval.Pos].TokNo
+                }</span>
+        }
+        <span class="cov8" title="1">Set := func() </span><span class="cov8" title="1">{
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opPos = eval.Pos
+                }</span>
+                <span class="cov8" title="1">opTk = gen.Tok_null
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opTk = eval.Mm[eval.Pos].TokNo
+                }</span>
+        }
+
+        // fmt.Printf("Before Loop At: %s\n", com.LF())
+        <span class="cov8" title="1">for eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                // fmt.Printf("Loop Top At: %s\n", com.LF())
+                Set()
+
+                if opTk != gen.Tok_QUEST </span><span class="cov8" title="1">{
+                        // fmt.Printf("At: %s\n", com.LF())
+                        return
+                }</span><span class="cov8" title="1"> else {
+                        Adv() // Move over '?'
+                        // fmt.Printf("At: %s\n", com.LF())
+                        if TkL.DataType == CtxType_Bool &amp;&amp; TkL.CurValue.(bool) </span><span class="cov8" title="1">{ // Eval True Part
+                                // fmt.Printf("At: %s\n", com.LF())
+                                TkL = eval.PresE()
+                                if TkL.Error </span><span class="cov8" title="1">{
+                                        return
+                                }</span>
+                                <span class="cov8" title="1">Set()
+                                if opTk == gen.Tok_COLON </span><span class="cov8" title="1">{
+                                        Adv()
+                                        _ = eval.PresE() // xyzzy - error - if error then what? -- Must take no action! No Side Effects
+                                        Set()
+                                }</span><span class="cov8" title="1"> else {
+                                        // fmt.Printf("At: %s\n", com.LF())
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00046):  Missing ':' in conditional if.\n")
+                                        return
+                                }</span>
+                        }<span class="cov8" title="1"> else {
+                                // fmt.Printf("At: %s\n", com.LF())
+                                _ = eval.PresE() // xyzzy - error - if error then what? -- Must take no action! No Side Effects
+                                Set()
+                                if opTk == gen.Tok_COLON </span><span class="cov8" title="1">{
+                                        Adv()
+                                        // fmt.Printf("At: %s\n", com.LF())
+                                        TkL = eval.PresE()
+                                        if TkL.Error </span><span class="cov8" title="1">{
+                                                return
+                                        }</span>
+                                        <span class="cov8" title="1">Set()</span>
+                                }<span class="cov8" title="1"> else {
+                                        // fmt.Printf("At: %s\n", com.LF())
+                                        //TkL.CurValue = 0
+                                        //TkL.DataType = CtxType_Int
+                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00047):  Missing ':' in conditional if.\n")
+                                        return
+                                }</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// This is called form PresG (pipe) during error conditions.
+func (eval *EvalType) ListTokens() string <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        s := "Tokens are ("
+        com := ""
+        for j := eval.Pos; j &lt; len(eval.Mm); j++ </span><span class="cov8" title="1">{
+                // s += fmt.Sprintf("%s [%d] = %d/%s", com, j, eval.Mm[j].TokNo, eval.Mm[j].TokNo)
+                s += fmt.Sprintf("%s [%d] = %d", com, j, eval.Mm[j].TokNo)
+        }</span>
+        <span class="cov8" title="1">s += " )"
+        return s</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+//
+// expr | function-name ( values, ... ) | function-name ( values, ... )
+//
+// x | Fx | Fy ( w, v ) | Fy ( m, n )
+//
+// a, b := Fx ( x )
+// c, err := Fy ( a, b, w, v )
+// d := Fy ( c, m, n )
+//
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) PresG() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.PresF() // Eval 1st expression in possible pipe
+        if TkL.Error </span><span class="cov8" title="1">{
+                return
+        }</span>
+
+        <span class="cov8" title="1">opPos := 0
+        opTk := 0
+
+        Adv := func() </span><span class="cov8" title="1">{
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        eval.Pos++
+                        opPos = eval.Pos
+                }</span>
+                <span class="cov8" title="1">opTk = gen.Tok_null
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opTk = eval.Mm[eval.Pos].TokNo
+                }</span>
+        }
+        <span class="cov8" title="1">Set := func() </span><span class="cov8" title="1">{
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opPos = eval.Pos
+                }</span>
+                <span class="cov8" title="1">opTk = gen.Tok_null
+                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                        opTk = eval.Mm[eval.Pos].TokNo
+                }</span>
+        }
+
+        <span class="cov8" title="1">if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                // fmt.Printf("At: %s\n", com.LF())
+                if eval.Mm[eval.Pos].TokNo == gen.Tok_PIPE </span><span class="cov8" title="1">{
+                        Tk0 := TkL
+                        // fmt.Printf("At: %s\n", com.LF())
+                        Set()
+                        for eval.Pos &lt; len(eval.Mm) &amp;&amp; eval.Mm[eval.Pos].TokNo == gen.Tok_PIPE </span><span class="cov8" title="1">{
+                                Adv()
+                                // fmt.Printf("At: %s\n", com.LF())
+                                if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                                        match := eval.Mm[eval.Pos].Match
+                                        // fmt.Printf("At: %s\n", com.LF())
+                                        if eval.Mm[eval.Pos].TokNo == gen.Tok_ID </span><span class="cov8" title="1">{
+                                                // fmt.Printf("At: %s\n", com.LF())
+                                                if /*val0*/ _, t, f := eval.Ctx.GetFromContext(eval.Mm[eval.Pos].Match); f </span><span class="cov8" title="1">{
+                                                        // fmt.Printf("At: %s\n", com.LF())
+                                                        // fmt.Printf("   Found, Type=%d/%s, %s\n", t, eval.Ctx.NameOfType(t), com.LF())
+                                                        switch t </span>{
+                                                        <span class="cov8" title="1">case CtxType_Func:
+                                                                // fmt.Printf("At: %s\n", com.LF())
+                                                                Adv()
+                                                                if eval.Pos &lt; len(eval.Mm) &amp;&amp; eval.Mm[eval.Pos].TokNo == gen.Tok_OP </span><span class="cov8" title="1">{
+                                                                        Plist := eval.ParsePlist()
+                                                                        // fmt.Printf("Found a Func with a plist\n")
+                                                                        P2 := make([]tok.Token, 0, len(Plist)+1) // Make the piped value the 1st parameter -- xyzzy is this how go templates work?
+                                                                        P2 = append(P2, Tk0)
+                                                                        P2 = append(P2, Plist...)
+                                                                        Tk0 = eval.CallFunction(match, P2)
+                                                                        Set()
+                                                                }</span><span class="cov8" title="1"> else {
+                                                                        // fmt.Printf("At: %s\n", com.LF())
+                                                                        Tk0 = eval.CallFunction(match, []tok.Token{Tk0})
+                                                                        Set()
+                                                                }</span>
+                                                        <span class="cov8" title="1">default:
+                                                                // fmt.Printf("At: %s\n", com.LF())
+                                                                //TkL.CurValue = 0
+                                                                //TkL.DataType = CtxType_Int
+                                                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00048): Function refrenced %s is not a function -- can not call it\n", match)
+                                                                return</span>
+                                                        }
+                                                }<span class="cov8" title="1"> else {
+                                                        // fmt.Printf("At: %s\n", com.LF())
+                                                        //TkL.CurValue = 0
+                                                        //TkL.DataType = CtxType_Int
+                                                        eval.SetErrorInfo(&amp;TkL, "Error (Eval00049): Function refrenced %s missing () to make call\n", match)
+                                                        return
+                                                }</span>
+                                        }<span class="cov8" title="1"> else {
+                                                // fmt.Printf("At: %s\n", com.LF())
+                                                //TkL.CurValue = 0
+                                                //TkL.DataType = CtxType_Int
+                                                eval.SetErrorInfo(&amp;TkL, "Error (Eval00050): Token found after pipe is not an ID, found %s\n", match)
+                                                return
+                                        }</span>
+                                }
+                                // fmt.Printf("At: %s\n", com.LF())
+                                <span class="cov8" title="1">TkL = Tk0
+                                if TkL.Error </span><span class="cov8" title="1">{
+                                        return
+                                }</span>
+                                // fmt.Printf("At: %s\n", com.LF())
+                        }
+                }
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+func (eval *EvalType) PresTop() (TkL tok.Token) <span class="cov8" title="1">{
+        // fmt.Printf("At: %s\n", com.LF())
+        TkL = eval.PresG()
+        if eval.Pos &lt; len(eval.Mm) </span><span class="cov8" title="1">{
+                // fmt.Printf("At: %s\n", com.LF())
+                //TkL.CurValue = 0
+                //TkL.DataType = CtxType_Int
+                eval.SetErrorInfo(&amp;TkL, "Error (Eval00051): Extra tokens found at end of expressions, %s\n", eval.ListTokens())
+                return
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+/* vim: set noai ts=4 sw=4: */
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package eval
+
+import (
+        "errors"
+        "fmt"
+        "reflect"
+        "sync"
+
+        "../com"
+
+        // "../com"
+        // "../../../go-lib/sizlib"
+)
+
+const (
+        CtxType_NULL     = 0
+        CtxType_Int      = 1
+        CtxType_Str      = 2
+        CtxType_Bool     = 3
+        CtxType_Float    = 4
+        CtxType_ArrayOf  = 5
+        CtxType_MapOf    = 6
+        CtxType_SMapOf   = 7
+        CtxType_KMapOf   = 8
+        CtxType_Error    = 9
+        CtxType_ID       = 10
+        CtxType_Func     = 11
+        CtxType_TypeCast = 12
+        CtxType_Token    = 13 // Id is equvilant token (and, or, xor etc)
+)
+
+// fmt.Printf("   Found, Type=%d\n", t, eval.Ctx.NameOfType(t))
+func (ctx *ContextType) NameOfType(t int) (rv string) <span class="cov8" title="1">{
+        switch t </span>{
+        <span class="cov0" title="0">case CtxType_NULL:
+                rv = "CtxType_NULL"</span>
+        <span class="cov8" title="1">case CtxType_Int:
+                rv = "CtxType_Int"</span>
+        <span class="cov8" title="1">case CtxType_Str:
+                rv = "CtxType_Str"</span>
+        <span class="cov8" title="1">case CtxType_Bool:
+                rv = "CtxType_Bool"</span>
+        <span class="cov8" title="1">case CtxType_Float:
+                rv = "CtxType_Float"</span>
+        <span class="cov8" title="1">case CtxType_ArrayOf:
+                rv = "CtxType_ArrayOf"</span>
+        <span class="cov8" title="1">case CtxType_MapOf:
+                rv = "CtxType_MapOf"</span>
+        <span class="cov0" title="0">case CtxType_SMapOf:
+                rv = "CtxType_SMapOf"</span>
+        <span class="cov0" title="0">case CtxType_KMapOf:
+                rv = "CtxType_KMapOf"</span>
+        <span class="cov0" title="0">case CtxType_Error:
+                rv = "CtxType_Error"</span>
+        <span class="cov0" title="0">case CtxType_ID:
+                rv = "CtxType_ID"</span>
+        <span class="cov8" title="1">case CtxType_Func:
+                rv = "CtxType_Func"</span>
+        <span class="cov0" title="0">case CtxType_TypeCast:
+                rv = "CtxType_TypeCast"</span>
+        <span class="cov0" title="0">case CtxType_Token:
+                rv = "CtxType_Token"</span>
+        <span class="cov0" title="0">default:
+                rv = fmt.Sprintf("CtxType_%d", t)</span>
+        }
+        <span class="cov8" title="1">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Set a value in the context -- Context Implementation --
+// xyzzySetGet
+//        1. Locking
+//        2. Tests
+//        3. Read Json -&gt; Context
+//         4. Context Search
+//                1. With context
+//                2. Arrays
+//                3. Structs/Maps of data
+//        5. Iteration over a set of data
+//
+
+type ContextValueType struct {
+        TypeOf int
+        Val    interface{}
+        Func   reflect.Value
+        Prev   *ContextValueType
+}
+
+type ContextType struct {
+        Store map[string]*ContextValueType
+        mutex sync.RWMutex
+}
+
+var (
+        ErrParamsNotAdapted = errors.New("The number of params is not adapted.")
+)
+
+func NewContextType() (rv *ContextType) <span class="cov8" title="1">{
+        rv = &amp;ContextType{
+                Store: make(map[string]*ContextValueType),
+        }
+        rv.Store["true"] = &amp;ContextValueType{TypeOf: CtxType_Bool, Val: true}
+        rv.Store["TRUE"] = &amp;ContextValueType{TypeOf: CtxType_Bool, Val: true}
+        rv.Store["false"] = &amp;ContextValueType{TypeOf: CtxType_Bool, Val: false}
+        rv.Store["FALSE"] = &amp;ContextValueType{TypeOf: CtxType_Bool, Val: false}
+
+        // rv.Store["nullFunc"] = &amp;ContextValueType{TypeOf: CtxType_Func, Val: func() {}}
+        // rv.Store["nullFuncSSN"] = &amp;ContextValueType{TypeOf: CtxType_Func, Val: func() {}}
+        rv.SetInContext("nullFunc", CtxType_Func, func() </span><span class="cov0" title="0">{}</span>)
+        <span class="cov8" title="1">rv.SetInContext("nullFuncSSN", CtxType_Func, func(s, t string, n int) </span><span class="cov8" title="1">{}</span>)
+        <span class="cov8" title="1">rv.SetInContext("nullFuncSSB", CtxType_Func, func(s, t string, b bool) </span><span class="cov0" title="0">{}</span>)
+
+        // Xyzzy - add __version__, __file__, __line__, __col_no__
+        <span class="cov8" title="1">return</span>
+}
+
+func (ctx *ContextType) SetInContext(id string, ty int, val interface{}) (err error) <span class="cov8" title="1">{
+        if ty == CtxType_Func </span><span class="cov8" title="1">{
+                defer func() </span><span class="cov8" title="1">{
+                        if e := recover(); e != nil </span><span class="cov0" title="0">{
+                                err = errors.New(id + " is not callable.")
+                        }</span>
+                }()
+                <span class="cov8" title="1">v := reflect.ValueOf(val)
+                v.Type().NumIn() //                                                                 Test if this is a function that can be called.
+                w := &amp;ContextValueType{
+                        TypeOf: ty,
+                        Val:    val,
+                        Func:   v,
+                }
+                ctx.mutex.Lock()
+                ctx.Store[id] = w
+                ctx.mutex.Unlock()
+                return</span>
+        }
+        <span class="cov8" title="1">w := &amp;ContextValueType{
+                TypeOf: ty,
+                Val:    val,
+        }
+        ctx.mutex.Lock()
+        ctx.Store[id] = w
+        ctx.mutex.Unlock()
+        return</span>
+}
+
+// Call a function that has been placed in the table
+func (ctx *ContextType) Call(name string, params ...interface{}) (result []reflect.Value, err error) <span class="cov8" title="1">{
+        ctx.mutex.RLock()
+        fx, ok := ctx.Store[name]
+        ctx.mutex.RUnlock()
+        if !ok </span><span class="cov0" title="0">{ //                                                                 Need to have a mutext - lock
+                err = errors.New(name + " function does not exist.")
+                return
+        }</span>
+        <span class="cov8" title="1">np := len(params)
+        fmt.Printf("np=%d, name=%s\n", np, name)
+        if np != fx.Func.Type().NumIn() </span><span class="cov8" title="1">{ //                 Posssibility of default params? // Should save # of params from SetInContext call?
+                err = ErrParamsNotAdapted
+                return
+        }</span>
+        <span class="cov8" title="1">in := make([]reflect.Value, np) //                         Type check params for correctness?
+        for k, param := range params </span><span class="cov8" title="1">{
+                if params[k] == nil </span><span class="cov0" title="0">{
+                        in[k] = reflect.ValueOf((*string)(nil))
+                }</span><span class="cov8" title="1"> else {
+                        in[k] = reflect.ValueOf(param)
+                }</span>
+        }
+        <span class="cov8" title="1">fmt.Printf("Just Before %s %d %+v, %s\n", name, np, params[0], com.LF())
+        result = fx.Func.Call(in)
+        return</span>
+}
+
+func (ctx *ContextType) GetFromContext(id string) (v interface{}, t int, f bool) <span class="cov8" title="1">{
+        t = CtxType_Error
+        f = false
+        ctx.mutex.RLock()
+        if x, ok := ctx.Store[id]; ok </span><span class="cov8" title="1">{
+                v = x.Val
+                t = x.TypeOf
+                f = true
+        }</span>
+        <span class="cov8" title="1">ctx.mutex.RUnlock()
+        return</span>
+}
+
+func (ctx *ContextType) DumpContext() <span class="cov8" title="1">{
+        ctx.mutex.RLock()
+        if ctx == nil </span><span class="cov0" title="0">{
+                fmt.Printf("Context is NIL - never created\n")
+        }</span><span class="cov8" title="1"> else {
+                // fmt.Printf("Context = %s\n", sizlib.SVarI(ctx.Store))
+                for ii, vv := range ctx.Store </span><span class="cov8" title="1">{
+                        if vv.TypeOf != CtxType_Func </span><span class="cov8" title="1">{
+                                fmt.Printf("\t[%s] = Type %d/%s %+v\n", ii, vv.TypeOf, ctx.NameOfType(vv.TypeOf), vv.Val)
+                        }</span><span class="cov8" title="1"> else {
+                                fmt.Printf("\t[%s] = Type %d/%s &lt;&lt;&lt;function&gt;&gt;&gt;\n", ii, vv.TypeOf, ctx.NameOfType(vv.TypeOf))
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">fmt.Printf("\n\n")
+        ctx.mutex.RUnlock()</span>
+}
+
+func (ctx *ContextType) PushInContext(id string, ty int, val interface{}) <span class="cov0" title="0">{
+        var p *ContextValueType
+        var ok bool
+        ctx.mutex.Lock()
+        if p, ok = ctx.Store[id]; !ok </span><span class="cov0" title="0">{
+                p = nil
+        }</span>
+        <span class="cov0" title="0">v := &amp;ContextValueType{
+                TypeOf: ty,
+                Val:    val,
+                Prev:   p,
+        }
+        ctx.Store[id] = v
+        ctx.mutex.Unlock()</span>
+}
+
+func (ctx *ContextType) PopFromContext(id string) <span class="cov0" title="0">{
+        ctx.mutex.Lock()
+        if t, ok := ctx.Store[id]; ok </span><span class="cov0" title="0">{
+                ctx.Store[id] = t.Prev
+        }</span>
+        <span class="cov0" title="0">ctx.mutex.Unlock()</span>
+}
+
+func (ctx *ContextType) IsDefinedContext(id string) (f bool) <span class="cov0" title="0">{
+        ctx.mutex.RLock()
+        _, f = ctx.Store[id]
+        ctx.mutex.RUnlock()
+        return
+}</span>
+
+// ------------------------------------------------------------------------------------------------------------
+//
+// ExtendItem
+//
+// Given: From{}, New{}, List of Params - produce New{} as extend of From
+// From - has a set of Params in it.
+//
+
+// ------------------------------------------------------------------------------------------------------------
+//
+// DefineTemplate
+//
+// Input: Name{} + Set of Params with Defaults
+//
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible = document.getElementById('file0');
+		files.addEventListener('change', onChange, false);
+		function onChange() {
+			visible.style.display = 'none';
+			visible = document.getElementById(files.value);
+			visible.style.display = 'block';
+			window.scrollTo(0, 0);
+		}
+	})();
+	</script>
+</html>
