@@ -5,6 +5,15 @@
 
 Thanks for taking a look at *Lexie*.
 
+*Note*  I use this code on a regular basis.  The "cli/cli" main program with the dgango2.lex input specification supports about 20 websites at this point.
+It is run like this:
+
+```bash
+
+	$ ./cli -l ../in/django3.lex -i ./site/www_pschlump_com/index.html -o ./www/www_pschlump_com/index.html >,a
+
+```
+
 Lexie is designed to generate fast lexical analyzer based on
 transforming a set of regular expressions into a nondeterministic
 finite state machine (NFA) and then taking that NFA and transforming
