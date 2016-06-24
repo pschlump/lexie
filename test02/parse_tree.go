@@ -65,15 +65,15 @@ import (
 	"strconv"
 	"strings"
 
-	"../com"
-	"../dfa"
-	"../eval"
-	"../gen"
-	"../st"
-	"../tok"
+	"github.com/pschlump/uuid"
 
-	//
-	"../../../go-lib/uuid" //
+	"github.com/pschlump/lexie/com"
+
+	"github.com/pschlump/lexie/dfa"
+	"github.com/pschlump/lexie/eval"
+	"github.com/pschlump/lexie/gen"
+	"github.com/pschlump/lexie/st"
+	"github.com/pschlump/lexie/tok"
 )
 
 const (

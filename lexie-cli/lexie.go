@@ -32,12 +32,13 @@ import (
 	"os"
 	"strings"
 
-	"../com"
-	"../dfa"
-	"../in"
-	"../tok"
+	"github.com/jessevdk/go-flags"
 
-	"../flags" //		"github.com/jessevdk/go-flags"
+	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/in"
+
+	"github.com/pschlump/lexie/dfa"
+	"github.com/pschlump/lexie/tok"
 )
 
 var opts struct {

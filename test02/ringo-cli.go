@@ -12,18 +12,19 @@ package main
 
 /*
 
-*/
+ */
 
 import (
 	"fmt"
 	"os"
 	"strings"
 
-	"../com"
-	"../dfa"
-	"../pbread"
+	"www.2c-why.com/go-lib/flags"
 
-	"../flags" //		"github.com/jessevdk/go-flags"
+	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/pbread"
+
+	"github.com/pschlump/lexie/dfa"
 )
 
 var opts struct {
