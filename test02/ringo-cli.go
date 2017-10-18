@@ -19,12 +19,10 @@ import (
 	"os"
 	"strings"
 
-	"www.2c-why.com/go-lib/flags"
-
 	"github.com/pschlump/lexie/com"
-	"github.com/pschlump/lexie/pbread"
-
 	"github.com/pschlump/lexie/dfa"
+	"github.com/pschlump/lexie/flags"
+	"github.com/pschlump/lexie/pbread"
 )
 
 var opts struct {
