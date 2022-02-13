@@ -36,6 +36,7 @@ import (
 
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/in"
+	"github.com/pschlump/lexie/pbread"
 
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/tok"
@@ -126,7 +127,8 @@ func CategorizeToken(tl []tok.Token) []tok.Token {
 		if vv.TokNo == Tok_ID {
 			vv.Typ = TokenIdentifier
 			if t, ok := MapRW[vv.Match]; ok {
-				vv.TokNo = tok.TokenNoType(t)
+				// vv.TokNo = tok.TokenNoType(t)
+				vv.TokNo = int(t)
 				vv.Typ = TokenKeyword
 			}
 			vv.TokNo = 0
@@ -195,7 +197,10 @@ func main() {
 	if opts.Input != "" {
 
 		s := in.ReadFileIntoString(opts.Input)
-		r := strings.NewReader(s)
+		// 		r := strings.NewReader(s)
+		r := pbread.NewPbRead() // func NewPbRead() (rv *PBReadType) { // PJS Sun Oct 31 13:47:42 MDT 2021
+		r.PbString(s)
+
 		lex.MatcherLexieTable(r, "S_Init")
 
 		lex.TokList.TokenData = CategorizeToken(lex.TokList.TokenData)
@@ -206,7 +211,9 @@ func main() {
 
 		for ii, fn := range ifnList[1:] {
 			s := in.ReadFileIntoString(fn)
-			r := strings.NewReader(s)
+			// r := strings.NewReader(s)
+			r := pbread.NewPbRead() // func NewPbRead() (rv *PBReadType) { // PJS Sun Oct 31 13:47:42 MDT 2021
+			r.PbString(s)
 			lex.MatcherLexieTable(r, "S_Init")
 
 			lex.TokList.TokenData = CategorizeToken(lex.TokList.TokenData)
