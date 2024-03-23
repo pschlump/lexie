@@ -1,5 +1,0 @@
-com/db.go
-dfa/dfa.go
-nfa/nfa.go
-re/re.go
-re/re_test.go
