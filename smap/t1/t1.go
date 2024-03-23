@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 
@@ -14,3 +15,4 @@ func main() {
 	xv := smap.NewSMapType("def ghi\u2022", rune(0xf812))
 	fmt.Printf("Results = %s\n", xv.String())
 }
+*/

@@ -397,6 +397,7 @@ func MapIsEmpty(t map[string]tok.Token) bool {
 }
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
+//
 //	rv.CurValue = mapLength(x.CurValue.(map[string]tok.Token))
 func MapLength(t map[string]tok.Token) (l int) {
 	l = 0
@@ -412,7 +413,8 @@ func MapLength(t map[string]tok.Token) (l int) {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // ToDo:
-// 	IsEmpty - array/map - if len == 0, rueturn true (faster than len)
+//
+//	IsEmpty - array/map - if len == 0, rueturn true (faster than len)
 //
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 func x_len_e(x interface{}) (rv int) {
@@ -851,6 +853,7 @@ func (eval *EvalType) ParseArrayRef() (rv tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 //
 // Array Slice Ops
+//
 //	Expr [ : Expr ]
 //	Expr [ Expr : ]
 //	Expr [ : ]
@@ -864,7 +867,6 @@ func (eval *EvalType) ParseArrayRef() (rv tok.Token) {
 //
 // Array is just a postfix '[' or '.' operator (Could have been -> too)
 // -->> search for occurrence of "name" in hash
-//
 func (eval *EvalType) Pres1() (TkL tok.Token) {
 	var Tk0, Tk1 tok.Token
 	opTk := eval.Mm[eval.Pos].TokNo
@@ -1968,6 +1970,7 @@ func (eval *EvalType) PresF() (TkL tok.Token) {
 
 	opPos := 0
 	opTk := 0
+	_, _ = opPos, opTk
 
 	Adv := func() {
 		if eval.Pos < len(eval.Mm) {
@@ -2077,6 +2080,7 @@ func (eval *EvalType) PresG() (TkL tok.Token) {
 
 	opPos := 0
 	opTk := 0
+	_, _ = opPos, opTk
 
 	Adv := func() {
 		if eval.Pos < len(eval.Mm) {
