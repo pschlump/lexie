@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/lexie/com"
 )
 
 type In01TestType struct {
@@ -96,13 +95,13 @@ var In01Test = []In01TestType{
 // func ParseAction(ln string) [][]string {
 func Test_ParseAction(t *testing.T) {
 	tst1 := false
-	com.DbOnFlags["in-echo-machine"] = true // Output machine
+	dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 	for ii, vv := range In01Test {
 		if !vv.SkipTest {
 			// fmt.Printf("\nTest %s ------------------------------------------------------------------------------------ \n", vv.Test)
 			if tst1 {
 				x := ParseAction(vv.Inp)
-				fmt.Printf("%3d=%s\n", ii, com.SVarI(x))
+				fmt.Printf("%3d=%s\n", ii, dbgo.SVarI(x))
 			}
 			if vv.ResultTst4 != "" {
 

@@ -84,20 +84,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/russross/blackfriday"
-
+	"github.com/jessevdk/go-flags"
 	"github.com/pschlump/dbgo"
+	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/bluemonday"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/pbread"
 	"github.com/pschlump/lexie/test01"
-
-	// "../blackfriday" // "github.com/russross/blackfriday"
-	// "../bluemonday"  // "github.com/microcosm-cc/bluemonday"
-	// "github.com/pschlump/lexie/flags" //	"github.com/jessevdk/go-flags"
-
-	"github.com/jessevdk/go-flags"
+	"github.com/russross/blackfriday"
 )
 
 var opts struct {
@@ -142,7 +137,7 @@ func main() {
 		com.DbOnFlags[opts.Debug] = true
 		for _, v := range s {
 			if len(v) > 5 && v[0:4] == "out:" {
-				test01.Dbf, _ = com.Fopen(v[4:], "w")
+				test01.Dbf, _ = filelib.Fopen(v[4:], "w")
 			} else {
 				com.DbOnFlags[v] = true
 			}
@@ -476,7 +471,7 @@ func ProcessFileList(pt *test01.Parse2Type, inList []string, outFn string) (err 
 	var fp *os.File
 
 	if outFn != "" {
-		fp, err = com.Fopen(outFn, "w")
+		fp, err = filelib.Fopen(outFn, "w")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Fatal: Unable to create output file\n")
 			err = fmt.Errorf("Fatal: Unable to create output file")
@@ -511,7 +506,7 @@ func ProcessFileList(pt *test01.Parse2Type, inList []string, outFn string) (err 
 	pt.ExecuteFunctions(0)
 	if false {
 		fmt.Fprintf(test01.Dbf, "----------------------------------- debug output ----------------------------------------------------\n")
-		fmt.Fprintf(test01.Dbf, "%s\n", com.SVarI(xpt))
+		fmt.Fprintf(test01.Dbf, "%s\n", dbgo.SVarI(xpt))
 	}
 	fmt.Fprintf(test01.Dbf, "----------------------------------- errors ----------------------------------------------------\n")
 	pp := pt.CollectErrorNodes(0)
@@ -627,7 +622,7 @@ func CopyInAssets(optsSiteName string, BaseAssets string, SiteAssets string, opt
 	}
 	MkDirArray(dirs)
 	if db_debug4 {
-		fmt.Printf("cp: %s\n", com.SVarI(cpList2))
+		fmt.Printf("cp: %s\n", dbgo.SVarI(cpList2))
 	}
 	CopyFilesInHash(cpList2)
 

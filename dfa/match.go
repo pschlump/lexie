@@ -68,6 +68,7 @@ import (
 	"strings"
 
 	"github.com/pschlump/dbgo"
+	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/lexie/nfa"
@@ -322,11 +323,11 @@ func (lex *Lexie) NewReadFile(path string) {
 			gvFile := fmt.Sprintf("../ref/mmm_%s_%d.gv", "machine", last)
 			svgFile := fmt.Sprintf("../ref/mmm_%s_%d.svg", "machine", last)
 
-			fp, _ := com.Fopen(newFile, "w")
+			fp, _ := filelib.Fopen(newFile, "w")
 			lex.DFA_Machine[last].DumpPoolJSON(fp, fmt.Sprintf("Lex-Machine-%d", last), 1)
 			fp.Close()
 
-			gv, _ := com.Fopen(gvFile, "w")
+			gv, _ := filelib.Fopen(gvFile, "w")
 			lex.DFA_Machine[last].GenerateGVFile(gv, fmt.Sprintf("Lex-Machine-%d", last), 1)
 			gv.Close()
 

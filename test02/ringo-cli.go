@@ -20,7 +20,7 @@ import (
 	"strings"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/flags"
 	"github.com/pschlump/lexie/pbread"
@@ -47,14 +47,13 @@ func main() {
 
 	if opts.Debug != "" {
 		s := strings.Split(opts.Debug, ",")
-		com.DbOnFlags[opts.Debug] = true
 		for _, v := range s {
-			com.DbOnFlags[v] = true
+			dbgo.SetADbFlag(s, true)
 		}
 	}
 
 	if opts.Echo != "" {
-		com.DbOnFlags["in-echo-machine"] = true // Output machine
+		dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 	}
 
 	fmt.Fprintf(os.Stderr, "Test Matcher test from %s file, %s\n", opts.LexPat, dbgo.LF())
@@ -82,7 +81,7 @@ func main() {
 
 	// -------------------------------------------------- start scanning process  ----------------------------------------------------------
 	if opts.Tokens != "" {
-		fp, _ = com.Fopen(opts.Tokens, "w")
+		fp, _ = filelib.Fopen(opts.Tokens, "w")
 	} else {
 		fp = os.Stdout
 	}
@@ -122,7 +121,7 @@ func main() {
 		pt.ExecuteFunctions(0)
 		fmt.Printf("----------------------------------- debug output ----------------------------------------------------\n")
 		if true {
-			fmt.Printf("%s\n", com.SVarI(xpt))
+			fmt.Printf("%s\n", dbgo.SVarI(xpt))
 		}
 		fmt.Printf("----------------------------------- output ----------------------------------------------------\n")
 		for i := 0; i < 1000000; i++ {

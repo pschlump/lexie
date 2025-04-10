@@ -1229,11 +1229,11 @@ func (lex *Lexie) NewReadFile(path string) <span class="cov8" title="1">{
                         gvFile := fmt.Sprintf("../ref/mmm_%s_%d.gv", "machine", last)
                         svgFile := fmt.Sprintf("../ref/mmm_%s_%d.svg", "machine", last)
 
-                        fp, _ := com.Fopen(newFile, "w")
+                        fp, _ := filelib.Fopen(newFile, "w")
                         lex.DFA_Machine[last].DumpPoolJSON(fp, fmt.Sprintf("Lex-Machine-%d", last), 1)
                         fp.Close()
 
-                        gv, _ := com.Fopen(gvFile, "w")
+                        gv, _ := filelib.Fopen(gvFile, "w")
                         lex.DFA_Machine[last].GenerateGVFile(gv, fmt.Sprintf("Lex-Machine-%d", last), 1)
                         gv.Close()
 

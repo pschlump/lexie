@@ -35,7 +35,6 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/filelib"
-	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/lexie/pbread"
@@ -160,16 +159,13 @@ func main() {
 	}
 
 	if opts.Debug != "" {
-		s := strings.Split(opts.Debug, ",")
-		com.DbOnFlags[opts.Debug] = true
-		for _, v := range s {
-			com.DbOnFlags[v] = true
+		for _, v := range strings.Split(opts.Debug, ",") {
+			dbgo.SetADbFlag(v, true)
 		}
-		dbgo.SetADbFlag(opts.Debug, true)
 	}
 
 	if opts.Echo != "" {
-		com.DbOnFlags["in-echo-machine"] = true // Output machine
+		dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 		dbgo.SetADbFlag("in-echo-machine", true)
 	}
 

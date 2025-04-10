@@ -66,15 +66,12 @@ import (
 	"strings"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/uuid"
-
-	"github.com/pschlump/lexie/com"
-
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/eval"
 	"github.com/pschlump/lexie/gen"
 	"github.com/pschlump/lexie/st"
 	"github.com/pschlump/lexie/tok"
+	"github.com/pschlump/uuid"
 )
 
 const (
@@ -844,9 +841,9 @@ func (mt *MtType) EvalExpr(Context *eval.ContextType, n, m int) bool {
 		Ctx: Context,
 		Mm:  mt.TokVal[n:m], // []tok.Token
 	}
-	fmt.Printf("INPUT m=%d n=%d, %s ----------------------------------------------------- \n", m, n, com.SVarI(evalData))
+	fmt.Printf("INPUT m=%d n=%d, %s ----------------------------------------------------- \n", m, n, dbgo.SVarI(evalData))
 	tr := evalData.Pres2()
-	fmt.Printf("BOTTOM: %s ----------------------------------------------------- \n", com.SVarI(tr))
+	fmt.Printf("BOTTOM: %s ----------------------------------------------------- \n", dbgo.SVarI(tr))
 	s := sv[0]
 	v, t, _ := Context.GetFromContext(s)
 	fmt.Printf("At: %s - in EvalExpr, v=%v t=%v for >%s<-\n", dbgo.LF(), v, t, s)
@@ -1034,7 +1031,7 @@ func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *MtType
 	fmt.Printf("Fx_If Called, %d\n", callNo)
 	fmt.Printf("---------------------------------------------------------------------------- if tree -------------------------------------------------------------------------\n")
 	if false {
-		fmt.Printf("%s\n\n", com.SVarI(curTree))
+		fmt.Printf("%s\n\n", dbgo.SVarI(curTree))
 	} else {
 		curTree.DumpMtType(os.Stdout, 0, 0)
 	}
@@ -1077,7 +1074,7 @@ func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *MtType
 						fmt.Printf("At AT: %s, ct=%+v\n", dbgo.LF(), ct)          //
 						if ct.DataType == eval.CtxType_Bool && ct.XValue.(bool) { // If true value for expression
 							x := tmpMt(curTree.List[0].List[ifp[i]+1 : ifp[i+1]])
-							fmt.Printf("At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
+							fmt.Printf("At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], dbgo.SVarI(x))
 							pt.x_walk(x, pt.pos, pt.depth)
 							return
 						}
@@ -1139,7 +1136,7 @@ func FxFor(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *MtTyp
 	fmt.Printf("Fx_For Called, %d\n", callNo)
 	fmt.Printf("---------------------------------------------------------------------------- for tree -------------------------------------------------------------------------\n")
 	if false {
-		fmt.Printf("%s\n\n", com.SVarI(curTree))
+		fmt.Printf("%s\n\n", dbgo.SVarI(curTree))
 	} else {
 		curTree.DumpMtType(os.Stdout, 0, 0)
 	}

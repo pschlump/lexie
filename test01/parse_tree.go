@@ -117,16 +117,14 @@ import (
 	"strings"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/uuid"
-
 	"github.com/pschlump/lexie/com"
-	"github.com/pschlump/lexie/mt"
-
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/eval"
 	"github.com/pschlump/lexie/gen"
+	"github.com/pschlump/lexie/mt"
 	"github.com/pschlump/lexie/st"
 	"github.com/pschlump/lexie/tok"
+	"github.com/pschlump/uuid"
 )
 
 var Dbf *os.File
@@ -684,7 +682,7 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 
 	pt.x_walk = walkTreePass2
 
-	fmt.Fprintf(Dbf, "Tree Is: %s\n", com.SVarI(pt.TheTree))
+	fmt.Fprintf(Dbf, "Tree Is: %s\n", dbgo.SVarI(pt.TheTree))
 
 	if pt.TheTree == nil {
 		return
@@ -983,7 +981,7 @@ func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.Mt
 						// -- xyzzy - use native .(type) and a switch
 						if ct.DataType == eval.CtxType_Bool && ct.XValue.(bool) { // If true value for expression
 							x := tmpMt((*curTree).List[0].List[ifp[i]+1 : ifp[i+1]])
-							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
+							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], dbgo.SVarI(x))
 							pt.x_walk(&x, pt.pos, pt.depth) // xyzzy
 							return
 						}
@@ -1189,7 +1187,7 @@ func FxFor(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.M
 	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_For Called, %d\n", callNo)
 	// fmt.Fprintf(Dbf, "---------------------------------------------------------------------------- for tree -------------------------------------------------------------------------\n")
 	// if false {
-	// 	fmt.Fprintf(Dbf, "%s\n\n", com.SVarI((*curTree)))
+	// 	fmt.Fprintf(Dbf, "%s\n\n", dbgo.SVarI((*curTree)))
 	// } else {
 	// 	(*curTree).DumpMtType(os.Stdout, 0, 0)
 	// }
@@ -1530,7 +1528,7 @@ func FxIfChanged(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree 
 						// -- xyzzy - use native .(type) and a switch
 						if ct.DataType == eval.CtxType_Bool && ct.XValue.(bool) { // If true value for expression
 							x := tmpMt((*curTree).List[0].List[ifp[i]+1 : ifp[i+1]])
-							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
+							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], dbgo.SVarI(x))
 							pt.x_walk(&x, pt.pos, pt.depth) // xyzzy
 							return
 						}
@@ -1976,15 +1974,15 @@ func FxExtend(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **m
 		if err != nil {
 			fmt.Fprintf(Dbf, "Error: Template %s is not defined\n", name)
 		} else {
-			fmt.Fprintf(Dbf, "Good: Template %s found, --- lookup tree is ---\n\n%s\n\n---end---\n", name, com.SVarI(ss.AnyData.(*mt.MtType)))
+			fmt.Fprintf(Dbf, "Good: Template %s found, --- lookup tree is ---\n\n%s\n\n---end---\n", name, dbgo.SVarI(ss.AnyData.(*mt.MtType)))
 			walkTree((*curTree), 0, 0)
 			newtree := mt.DuplicateTree(ss.AnyData.(*mt.MtType)) // Make copy of item -- - change with extention blocks - --
-			fmt.Fprintf(Dbf, "---- newtree ---\n%s\n\n--end--\n", com.SVarI(newtree))
+			fmt.Fprintf(Dbf, "---- newtree ---\n%s\n\n--end--\n", dbgo.SVarI(newtree))
 			for _, ww := range e_block {
 				fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 				mt.ReplaceBlocksWithNew(&newtree, ww)
 			}
-			fmt.Fprintf(Dbf, "---- block repalced  ---\n%s\n\n--end--\n", com.SVarI(newtree))
+			fmt.Fprintf(Dbf, "---- block repalced  ---\n%s\n\n--end--\n", dbgo.SVarI(newtree))
 			if !output_template {
 				fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 				pt.DefineTemplate(thisname, newtree)  // pt.DefineTemplate(name string, (*curTree) *mt.MtType)

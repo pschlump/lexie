@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/pschlump/dbgo"
+	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/com"
 
 	. "gopkg.in/check.v1"
@@ -101,11 +102,11 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 	// return
 	fmt.Fprintf(os.Stderr, "Test Parsing of REs, Test genration of NFAs %s\n", dbgo.LF())
 
-	com.DbOnFlags["db_NFA"] = true
-	com.DbOnFlags["db_NFA_LnNo"] = true
-	com.DbOnFlags["db_DumpPool"] = true
-	com.DbOnFlags["parseExpression"] = true
-	com.DbOnFlags["CalcLength"] = true
+	dbgo.SetADbFlag("db_NFA", true)
+	dbgo.SetADbFlag("db_NFA_LnNo", true)
+	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("parseExpression", true)
+	dbgo.SetADbFlag("CalcLength", true)
 
 	// Add a test for any issue
 	c.Check(42, Equals, 42)
@@ -129,7 +130,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			Pool.Sigma = Pool.GenerateSigma()
 
 			if false {
-				dbgo.DbPrintf("test7", "Pool=%s\n", com.SVarI(Pool))
+				dbgo.DbPrintf("test7", "Pool=%s\n", dbgo.SVarI(Pool))
 			}
 			Pool.DumpPool(false)
 			Pool.DumpPoolJSON(os.Stdout, vv.Re, vv.Rv)
@@ -140,7 +141,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			cmpFile := fmt.Sprintf("../ref/nfa_%s.ref", vv.Test)
 			gvFile := fmt.Sprintf("../ref/nfa_%s.gv", vv.Test)
 			svgFile := fmt.Sprintf("../ref/nfa_%s.svg", vv.Test)
-			fp, _ := com.Fopen(newFile, "w")
+			fp, _ := filelib.Fopen(newFile, "w")
 			Pool.DumpPoolJSON(fp, vv.Re, vv.Rv)
 			fp.Close()
 			newData, err := ioutil.ReadFile(newFile)
@@ -148,21 +149,21 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 				panic("unable to read file, " + cmpFile)
 			}
 
-			if com.Exists(cmpFile) {
+			if flielib.Exists(cmpFile) {
 				ref, err := ioutil.ReadFile(cmpFile)
 				if err != nil {
 					panic("unable to read file, " + cmpFile)
 				}
 				if string(ref) != string(newData) {
 					c.Check(string(newData), Equals, string(ref))
-					fmt.Printf("%sError%s: Test case %s failed to match\n", com.Red, com.Reset, vv.Test)
+					fmt.Printf("%(red)Error%(reset): Test case %s failed to match\n", vv.Test)
 					n_err++
 				}
 			} else {
 				n_skip++
 			}
 
-			gv, _ := com.Fopen(gvFile, "w")
+			gv, _ := filelib.Fopen(gvFile, "w")
 			Pool.GenerateGVFile(gv, vv.Re, vv.Rv)
 			gv.Close()
 
@@ -174,15 +175,15 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 		}
 	}
 	if n_skip > 0 {
-		fmt.Fprintf(os.Stderr, "%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(yellow)Skipped, # of files without automated checks = %d\n", n_skip)
+		dbgo.DbPrintf("debug", "\n\n%(yellow)Skipped, # of files without automated checks = %d\n", n_skip)
 	}
 	if n_err > 0 {
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n", n_err)
+		dbgo.DbPrintf("debug", "\n\n%(red)Failed, # of errors = %d\n", n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(green)PASS\n")
+		dbgo.DbPrintf("debug", "\n\n%(green)PASS\n")
 	}
 }
 
@@ -199,10 +200,10 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	n_err := 0
 
-	com.DbOnFlags["db_NFA"] = true
-	com.DbOnFlags["db_NFA_LnNo"] = true
-	com.DbOnFlags["db_DumpPool"] = true
-	com.DbOnFlags["parseExpression"] = true
+	dbgo.SetADbFlag("db_NFA", true)
+	dbgo.SetADbFlag("db_NFA_LnNo", true)
+	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("parseExpression", true)
 
 	// {Test: "0011", Re: `a(bcd)*(ghi)+(jkl)*X`, Rv: 1011},     //
 	Pool := NewNFA_Pool()
@@ -220,7 +221,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	fmt.Printf("\n\nr1(4,1,5)=%v\n", r1)
 
 	if len(com.CompareSlices([]int{4, 1, 5}, r1)) != 0 {
-		fmt.Printf("%sError%s: Test case 1 failed to match\n", com.Red, com.Reset)
+		fmt.Printf("%(red)Error%(reset): Test case 1 failed to match\n")
 		n_err++
 	}
 	c.Check(len(com.CompareSlices([]int{4, 1, 5}, r1)), Equals, 0)
@@ -230,7 +231,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	fmt.Printf("\n\nr2(5,9,12,9,13)=%v\n", r2)
 
 	if len(com.CompareSlices([]int{12, 9, 13}, r2)) != 0 {
-		fmt.Printf("%sError%s: Test case 2 failed to match\n", com.Red, com.Reset)
+		fmt.Printf("%(red)Error%(reset): Test case 2 failed to match\n")
 		n_err++
 	}
 	c.Check(len(com.CompareSlices([]int{12, 9, 13}, r2)), Equals, 0)
@@ -240,7 +241,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	fmt.Printf("\n\nr3(12,9,13)=%v\n", r3)
 
 	if len(com.CompareSlices([]int{12, 9, 13}, r3)) != 0 {
-		fmt.Printf("%sError%s: Test case 3 failed to match\n", com.Red, com.Reset)
+		fmt.Printf("%(red)Error%(reset): Test case 3 failed to match\n")
 		n_err++
 	}
 	c.Check(len(com.CompareSlices([]int{12, 9, 13}, r3)), Equals, 0)
@@ -250,7 +251,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 		c.Check(1, Equals, 0)
 		// c.Assert(2, Equals, 0) // Failure of an assert ends test (exit)
 		sss := c.GetTestLog()
-		fp, err := com.Fopen(",g", "w")
+		fp, err := filelib.Fopen(",g", "w")
 		c.Check(err, Equals, nil)
 		fmt.Fprintf(fp, "c.GetTestLog: ->%s<-\n", sss)
 	}
@@ -258,11 +259,11 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	// ------------------------- eval results now ---------------------------------------
 
 	if n_err > 0 {
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n", n_err)
+		dbgo.DbPrintf("debug", "\n\n%(red)Failed, # of errors = %d\n", n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(green)PASS\n")
+		dbgo.DbPrintf("debug", "\n\n%(green)PASS\n")
 	}
 }
 
@@ -344,7 +345,7 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 		cmpFile := fmt.Sprintf("../ref/n2_%s.ref", vv.Test)
 		gvFile := fmt.Sprintf("../ref/n2_%s.gv", vv.Test)
 		svgFile := fmt.Sprintf("../ref/n2_%s.svg", vv.Test)
-		fp, _ := com.Fopen(newFile, "w")
+		fp, _ := filelib.Fopen(newFile, "w")
 		Pool.DumpPoolJSON(fp, vv.Test, 0)
 		fp.Close()
 		newData, err := ioutil.ReadFile(newFile)
@@ -352,21 +353,21 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 			panic("unable to read file, " + cmpFile)
 		}
 
-		if com.Exists(cmpFile) {
+		if flielib.Exists(cmpFile) {
 			ref, err := ioutil.ReadFile(cmpFile)
 			if err != nil {
 				panic("unable to read file, " + cmpFile)
 			}
 			if string(ref) != string(newData) {
 				c.Check(string(newData), Equals, string(ref))
-				fmt.Printf("%sError%s: Test case %s failed to match\n", com.Red, com.Reset, vv.Test)
+				fmt.Printf("%(red)Error%(reset): Test case %s failed to match\n", vv.Test)
 				n_err++
 			}
 		} else {
 			n_skip++
 		}
 
-		gv, _ := com.Fopen(gvFile, "w")
+		gv, _ := filelib.Fopen(gvFile, "w")
 		Pool.GenerateGVFile(gv, vv.Test, 0)
 		gv.Close()
 
@@ -381,15 +382,15 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 	// ------------------------- ------------------------- --------------------------------------- ---------------------------------------
 
 	if n_skip > 0 {
-		fmt.Fprintf(os.Stderr, "%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(yellow)Skipped, # of files without automated checks = %d\n", n_skip)
+		dbgo.DbPrintf("debug", "\n\n%(yellow)Skipped, # of files without automated checks = %d\n", n_skip)
 	}
 	if n_err > 0 {
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n", n_err)
+		dbgo.DbPrintf("debug", "\n\n%(red)Failed, # of errors = %d\n", n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(green)PASS\n")
+		dbgo.DbPrintf("debug", "\n\n%(green)PASS\n")
 	}
 
 	_ = n_skip

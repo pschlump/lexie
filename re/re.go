@@ -48,7 +48,7 @@ type LexReMatcherType struct {
 
 func init() {
 	if false {
-		fmt.Printf("", com.SVarI(nil), dbgo.LF())
+		fmt.Printf("", dbgo.SVarI(nil), dbgo.LF())
 	}
 }
 
@@ -395,7 +395,7 @@ func (lr *LexReType) DumpParseNodes() {
 		}
 	}
 	dbgo.DbPrintf("DumpParseNodes", "DumpParseNodes: Done %s\n\n", dbgo.LF())
-	dbgo.DbPrintf("DumpParseNodesX", "DumpParseNodes: %s\n\n", com.SVarI(lr.Tree))
+	dbgo.DbPrintf("DumpParseNodesX", "DumpParseNodes: %s\n\n", dbgo.SVarI(lr.Tree))
 }
 
 func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard bool) {
@@ -403,7 +403,7 @@ func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard b
 
 	hard = false
 	if d == 1 {
-		dbgo.DbPrintf("CalcLength", "CalcLengthChild at top: %s\n\n", com.SVarI(tree))
+		dbgo.DbPrintf("CalcLength", "CalcLengthChild at top: %s\n\n", dbgo.SVarI(tree))
 	}
 
 	switch tree.LR_Tok {
@@ -505,7 +505,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 	c, w := lr.Next()
 	for w != LR_EOF {
 		dbgo.DbPrintf("parseExpression", "%sat %s !!!top!!!, depth=%d c=->%s<- w=%d %s -- Loop Top -- xTree=%s\n\n",
-			pre, dbgo.LF(), depth, c, w, NameOfLR_TokType(w), com.SVarI(xTree))
+			pre, dbgo.LF(), depth, c, w, NameOfLR_TokType(w), dbgo.SVarI(xTree))
 		switch w {
 		case LR_CL_BR: // }
 			fallthrough
@@ -546,13 +546,13 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 				if newTree.Mm == 0 && newTree.Nn == InfiniteIteration {
 					ll := len(xTree.Children) - 1
 					tmp := xTree.Children[ll]
-					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
+					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), com.SVarI(tmp))
 					xTree.Children[ll] = ReTreeNodeType{Item: "*", LR_Tok: LR_STAR, Children: []ReTreeNodeType{tmp}}
 				} else {
 					if newTree.Mm > newTree.Nn {
 						lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid Range, Start is bigger than end, {%d,%d}, %s", newTree.Mm, newTree.Nn, dbgo.LF())))
 					}
-					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
+					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), com.SVarI(tmp))
 					// xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: LR_OP_BR, Children: []ReTreeNodeType{tmp}, Mm: newTree.Mm, Nn: newTree.Nn}
 					newTree.Children = []ReTreeNodeType{tmp}
 					xTree.Children[ll] = newTree
@@ -572,7 +572,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 			} else {
 				ll := len(xTree.Children) - 1
 				tmp := xTree.Children[ll]
-				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
+				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), com.SVarI(tmp))
 				xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: w, Children: []ReTreeNodeType{tmp}}
 				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			}
@@ -602,7 +602,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 				newTop.Children = append(newTop.Children, leftNode) // only if no "or" node, else ref to "or" node
 				xTree.Children = xTree.Children[:0]
 				xTree.Children = append(xTree.Children, newTop)
-				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, left=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), com.SVarI(left))
+				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, left=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), dbgo.SVarI(left))
 			} else {
 				if kk >= 0 {
 					if kk < len(xTree.Children) {
@@ -655,7 +655,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 			} else {
 				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 				if inOr {
-					dbgo.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
+					dbgo.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), dbgo.SVarI(xTree))
 					kk := -1
 					for jj := len(xTree.Children) - 1; jj >= 0; jj-- {
 						if xTree.Children[jj].LR_Tok == LR_OR {
@@ -674,7 +674,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 							xTree.Children[kk].Children = append(xTree.Children[kk].Children, newNode)
 						}
 					}
-					dbgo.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
+					dbgo.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), dbgo.SVarI(xTree))
 				}
 				return xTree.Children
 			}
@@ -691,12 +691,12 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 			return xTree.Children
 		}
 		isFirst = false
-		dbgo.DbPrintf("parseExpression", "%sAT %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
+		dbgo.DbPrintf("parseExpression", "%sAT %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), dbgo.SVarI(xTree))
 		c, w = lr.Next()
 	}
 	// If in "or" node set - then collect last section to "or" ------------------------ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	if inOr {
-		dbgo.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
+		dbgo.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), dbgo.SVarI(xTree))
 		kk := -1
 		for jj := len(xTree.Children) - 1; jj >= 0; jj-- {
 			if xTree.Children[jj].LR_Tok == LR_OR {
@@ -715,7 +715,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 				xTree.Children[kk].Children = append(xTree.Children[kk].Children, newNode)
 			}
 		}
-		dbgo.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
+		dbgo.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), dbgo.SVarI(xTree))
 	}
 	return xTree.Children
 }

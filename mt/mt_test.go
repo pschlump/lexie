@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/gen"
 )
-
-// "../../../go-lib/sizlib"
 
 // test tree duplicate -------------------------------------------------------------------------------------------------------------------------------
 func Test_Mt01(t *testing.T) {
@@ -80,7 +78,7 @@ func Test_Mt02(t *testing.T) {
 	bob.List[2].List = append(bob.List[2].List, NewMtType(1, "bob.3.5"))
 	bob.List = append(bob.List, NewMtType(1, "bob.4"))
 	bob.List = append(bob.List, NewMtType(1, "bob.5"))
-	fmt.Printf("bob before change =%s\n\n", com.SVarI(bob))
+	fmt.Printf("bob before change =%s\n\n", dbgo.SVarI(bob))
 
 	var repl *MtType
 	repl = NewMtType(gen.Fx_block, "bob")
@@ -90,9 +88,9 @@ func Test_Mt02(t *testing.T) {
 	repl.List = append(repl.List, NewMtType(1, "repl.1.1"))
 	repl.List[0].HTML_Output = "Replacement Text 1.1"
 	repl.List = append(repl.List, NewMtType(1, "repl.1.2"))
-	fmt.Printf("repl before change =%s\n\n", com.SVarI(repl))
+	fmt.Printf("repl before change =%s\n\n", dbgo.SVarI(repl))
 
 	ReplaceBlocksWithNew(&bob, repl)
-	fmt.Printf("bob after change =%s\n\n", com.SVarI(bob))
+	fmt.Printf("bob after change =%s\n\n", dbgo.SVarI(bob))
 
 }

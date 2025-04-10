@@ -118,9 +118,9 @@ func (mt *MtType) EvalExpr(Context *eval.ContextType, n, m int) bool {
 	// hot patch - xyzzy
 
 	evalData.InitFunctions()
-	fmt.Printf("INPUT m=%d n=%d, %s ----------------------------------------------------- \n", m, n, com.SVarI(evalData))
+	fmt.Printf("INPUT m=%d n=%d, %s ----------------------------------------------------- \n", m, n, dbgo.SVarI(evalData))
 	tr := evalData.PresTop()
-	fmt.Printf("BOTTOM: %s ----------------------------------------------------- \n", com.SVarI(tr))
+	fmt.Printf("BOTTOM: %s ----------------------------------------------------- \n", dbgo.SVarI(tr))
 	//s := sv[0]
 	//v, t, _ := Context.GetFromContext(s)
 	//fmt.Printf("At: %s - in EvalExpr, v=%v t=%v for >%s<-\n", dbgo.LF(), v, t, s)

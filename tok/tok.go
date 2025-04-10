@@ -194,7 +194,7 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 			},
 */
 func (tl *TokenList) DumpTokenBuffer() {
-	// dbgo.DbPrintf("db_tok01","TokenList: %s \n", com.SVarI(tl.TL))
+	// dbgo.DbPrintf("db_tok01","TokenList: %s \n", dbgo.SVarI(tl.TL))
 	fmt.Printf("TokenList:\n")
 	fmt.Printf("\t%3s %-5s %-5s %-4s %-5s %8s %-20s \n", "row", "Start", "End", "Hard", "TokNo", "sL/C", "Match")
 	for ii, jj := range tl.TL {

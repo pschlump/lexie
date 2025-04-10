@@ -144,7 +144,6 @@ import (
 	"strings"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/gen"
 	"github.com/pschlump/lexie/tok"
 	// "../../../go-lib/sizlib"
@@ -256,7 +255,7 @@ func (eval *EvalType) CallFunction(match string, plist []tok.Token) (rv tok.Toke
 
 	// fmt.Printf("=============================================================================================================\n")
 	// fmt.Printf("IN CallFunction: %s\n", dbgo.LF())
-	// fmt.Printf("IN CallFunction: Call >>>%s<<< with %s\n", match, com.SVarI(plist))
+	// fmt.Printf("IN CallFunction: Call >>>%s<<< with %s\n", match, dbgo.SVarI(plist))
 	// fmt.Printf("=============================================================================================================\n")
 
 	t := eval.Pos - 1
@@ -403,7 +402,7 @@ func MapIsEmpty(t map[string]tok.Token) bool {
 func MapLength(t map[string]tok.Token) (l int) {
 	l = 0
 	// fmt.Printf("At: %s\n", dbgo.LF())
-	// fmt.Printf("t=%s\n", com.SVarI(t))
+	// fmt.Printf("t=%s\n", dbgo.SVarI(t))
 	for _, _ = range t {
 		// fmt.Printf("At: %s\n", dbgo.LF())
 		l++
@@ -898,7 +897,7 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 		opTk = eval.Mm[eval.Pos].TokNo
 	}
 
-	// fmt.Printf("Before Loop TkL = %s, %s\n", com.SVarI(TkL), dbgo.LF())
+	// fmt.Printf("Before Loop TkL = %s, %s\n", dbgo.SVarI(TkL), dbgo.LF())
 	for eval.Pos < len(eval.Mm) {
 
 		// fmt.Printf("At loop top eval.Pos=%d, %s\n", eval.Pos, dbgo.LF())
@@ -2175,7 +2174,7 @@ func (eval *EvalType) PresG() (TkL tok.Token) {
 func (eval *EvalType) PresTop() (TkL tok.Token) {
 	// fmt.Printf("At: %s\n", dbgo.LF())
 	if false {
-		fmt.Printf("PresTop INPUT %s\n", com.SVarI(eval))
+		fmt.Printf("PresTop INPUT %s\n", dbgo.SVarI(eval))
 	} else {
 		fmt.Printf("PresTop INPUT %+v\n", eval)
 	}

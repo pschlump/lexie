@@ -16,10 +16,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/pschlump/lexie/com"
-	"github.com/pschlump/lexie/mt"
-
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/gen"
+	"github.com/pschlump/lexie/mt"
 )
 
 // Add to this Fx - pointer to function for eval of builtins?
@@ -127,7 +126,7 @@ func (st *SymbolTable) DumpSymbolTable(fo io.Writer) {
 		if vv.SymType == gen.Tok_Template {
 			fmt.Fprintf(fo, "\t\tTemplate\n")
 			mtv := vv.AnyData.(*mt.MtType)
-			fmt.Fprintf(fo, "AnyData = %s\n", com.SVarI(mtv))
+			fmt.Fprintf(fo, "AnyData = %s\n", dbgo.SVarI(mtv))
 		}
 	}
 }

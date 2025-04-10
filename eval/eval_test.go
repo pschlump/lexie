@@ -12,7 +12,6 @@ import (
 	"testing"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/gen"
 	"github.com/pschlump/lexie/tok"
 	// "../../../go-lib/sizlib"
@@ -3667,7 +3666,7 @@ func Test_St01(t *testing.T) {
 					evalData.InitFunctions()
 					evalData.TestCase = fmt.Sprintf("%04s: %d", vv.Test, pc)
 					tr = evalData.PresTop()
-					fmt.Printf("Results %s ----------------------------------------------------- \n", com.SVarI(tr))
+					fmt.Printf("Results %s ----------------------------------------------------- \n", dbgo.SVarI(tr))
 					// fmt.Printf("!!! %v %T\n", tr.CurValue, tr.CurValue)
 				case CmdCmpTo:
 					switch tr.CurValue.(type) {

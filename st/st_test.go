@@ -121,7 +121,7 @@ func Test_St01(t *testing.T) {
 					if ww.Data == "" {
 						SymbolTable.Dump01(os.Stdout)
 					} else {
-						fp, err := com.Fopen(ww.Data, "w")
+						fp, err := filelib.Fopen(ww.Data, "w")
 						if err == nil {
 							SymbolTable.Dump01(fp)
 							fp.Close()

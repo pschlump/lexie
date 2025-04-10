@@ -279,14 +279,13 @@ var _ = Suite(&ReTesteSuite{})
 func (s *ReTesteSuite) TestLexie(c *C) {
 
 	// Test of Parseing REs into RE-TParseTrees
-	// return
 	fmt.Fprintf(os.Stderr, "Test Parsing of REs, %s\n", dbgo.LF())
 
-	com.DbOnFlags["db_DumpPool"] = true
-	com.DbOnFlags["parseExpression"] = true
-	com.DbOnFlags["CalcLength"] = true
-	com.DbOnFlags["DumpParseNodes"] = true
-	com.DbOnFlags["DumpParseNodesX"] = true
+	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("parseExpression", true)
+	dbgo.SetADbFlag("CalcLength", true)
+	dbgo.SetADbFlag("DumpParseNodes", true)
+	dbgo.SetADbFlag("DumpParseNodesX", true)
 
 	fmt.Printf("**** In Test RE\n")
 
@@ -351,23 +350,22 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 
 	// -------------------------------------------------------------------------------------------------------------------------------------------------
 	lr := NewLexReType()
-	com.DbOnFlags["DumpParseNodes"] = true
-	com.DbOnFlags["DumpParseNodesX"] = true
-	com.DbOnFlags["db_DumpPool"] = true
-	com.DbOnFlags["parseExpression"] = true
+	dbgo.SetADbFlag("DumpParseNodes", true)
+	dbgo.SetADbFlag("DumpParseNodesX", true)
+	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("parseExpression", true)
 	for i, v := range Test6Data {
 		dbgo.DbPrintf("debug", "\nTest[%03d]: `%s` %s\n\n", i, v.Re, strings.Repeat("-", 120-len(v.Re)))
-		// fmt.Printf("%s *** com.Red *** %s\n", ansi.ColorCode("red"), ansi.ColorCode("reset"))
 		lr.ParseRe(v.Re)
 		lr.DumpParseNodes()
 		if len(v.TopTok) > 0 {
 			if len(v.TopTok) != len(lr.Tree.Children) {
-				dbgo.DbPrintf("debug", "%sError%s: wrong number of tokens prsed, Expected: %d Got %d\n", com.Red, com.Reset, len(v.TopTok), len(lr.Tree.Children))
+				dbgo.DbPrintf("debug", "%(red)Error%(reset): wrong number of tokens prsed, Expected: %d Got %d\n",  len(v.TopTok), len(lr.Tree.Children))
 				n_err++
 			} else {
 				for i := 0; i < len(v.TopTok); i++ {
 					if v.TopTok[i] != lr.Tree.Children[i].LR_Tok {
-						dbgo.DbPrintf("debug", "%sError%s: invalid token returnd at postion %d\n", com.Red, com.Reset, i)
+						dbgo.DbPrintf("debug", "%(red)Error%(reset): invalid token returnd at postion %d\n",  i)
 						c.Check(v.TopTok[i], Equals, lr.Tree.Children[i].LR_Tok)
 						n_err++
 					}
@@ -376,45 +374,45 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 		}
 		if len(v.TopVal) > 0 {
 			if len(v.TopVal) != len(lr.Tree.Children) {
-				dbgo.DbPrintf("debug", "%sError%s: wrong number of tokens prsed, Expected: %d Got %d - Based on number of values, TopVal\n", com.Red, com.Reset, len(v.TopVal), len(lr.Tree.Children))
+				dbgo.DbPrintf("debug", "%(red)Error%(reset): wrong number of tokens prsed, Expected: %d Got %d - Based on number of values, TopVal\n",  len(v.TopVal), len(lr.Tree.Children))
 				n_err++
 			} else {
 				for i := 0; i < len(v.TopVal); i++ {
 					if v.TopVal[i] != lr.Tree.Children[i].Item {
-						dbgo.DbPrintf("debug", "%sError%s: invalid value at postion %d, %s\n", com.Red, com.Reset, i, dbgo.LF())
+						dbgo.DbPrintf("debug", "%(red)Error%(reset): invalid value at postion %d, %s\n",  i, dbgo.LF())
 						n_err++
 					}
 				}
 			}
 		}
 		if len(lr.Error) > v.NExpectedErr {
-			dbgo.DbPrintf("debug", "%sError%s: Errors reported in R.E. parsing %d\n", com.Red, com.Reset, len(lr.Error))
+			dbgo.DbPrintf("debug", "%(red)Error%(reset): Errors reported in R.E. parsing %d\n",  len(lr.Error))
 			n_err++
 		} else if len(lr.Error) > 0 {
-			dbgo.DbPrintf("debug", "%sNote%s: Errors reported in R.E. parsing %d\n", com.Green, com.Reset, len(lr.Error))
+			dbgo.DbPrintf("debug", "%(green)Note%(reset): Errors reported in R.E. parsing %d\n",  len(lr.Error))
 		}
 		lr.Error = lr.Error[:0]
 		dbgo.DbPrintf("debug", "\nDone[%03d]: `%s` %s\n\n", i, v.Re, strings.Repeat("-", 120-len(v.Re)))
 	}
 	if n_err > 0 {
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n",  n_err )
+		dbgo.DbPrintf("debug", "\n\n%(red)Failed, # of errors = %d\n",  n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(green)PASS\n")
+		dbgo.DbPrintf("debug", "\n\n%(green)PASS\n")
 	}
 
 	if n_skip > 0 {
-		fmt.Fprintf(os.Stderr, "%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(yellow)Skipped, # of files without automated checks = %d\n", n_skip)
+		dbgo.DbPrintf("debug", "\n\n%(yellow)Skipped, # of files without automated checks = %d\n",  n_skip)
 	}
 	if n_err > 0 {
 		c.Check(n_err, Equals, 0)
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n",  n_err)
+		dbgo.DbPrintf("debug", "\n\n%(red)Failed, # of errors = %d\n",  n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		fmt.Fprintf(os.Stderr, "%(red)PASS\n", 
+		dbgo.DbPrintf("debug", "\n\n%(red)PASS\n"
 	}
 }
 

@@ -7,8 +7,6 @@ import (
 	"sync"
 
 	"github.com/pschlump/dbgo"
-	// "../com"
-	// "../../../go-lib/sizlib"
 )
 
 const (
@@ -188,7 +186,7 @@ func (ctx *ContextType) DumpContext() {
 	if ctx == nil {
 		fmt.Printf("Context is NIL - never created\n")
 	} else {
-		// fmt.Printf("Context = %s\n", com.SVarI(ctx.Store))
+		// fmt.Printf("Context = %s\n", dbgo.SVarI(ctx.Store))
 		for ii, vv := range ctx.Store {
 			if vv.TypeOf != CtxType_Func {
 				fmt.Printf("\t[%s] = Type %d/%s %+v\n", ii, vv.TypeOf, ctx.NameOfType(vv.TypeOf), vv.Val)

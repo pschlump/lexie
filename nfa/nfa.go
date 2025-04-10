@@ -254,7 +254,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 
 	for _, vv := range Children {
 
-		dbgo.DbPrintf("db_NFA", "CurIn: %d Loop TOP, vv=%s, %s\n", Cur, com.SVarI(vv), dbgo.LF())
+		dbgo.DbPrintf("db_NFA", "CurIn: %d Loop TOP, vv=%s, %s\n", Cur, dbgo.SVarI(vv), dbgo.LF())
 
 		switch vv.LR_Tok {
 
@@ -368,7 +368,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 				dest := nn.GetNFA()
 				beg := Cur
 				nn.Mark(Cur, re.LR_OR)
-				dbgo.DbPrintf("db_NFA", "*************************** OR dest = %d, Tree is (vv)=%s, %s\n", dest, com.SVarI(vv), dbgo.LF())
+				dbgo.DbPrintf("db_NFA", "*************************** OR dest = %d, Tree is (vv)=%s, %s\n", dest, dbgo.SVarI(vv), dbgo.LF())
 				dbgo.DbPrintf("db_NFA", "*************************** This would be the point to add (N) terms to graph\n")
 				for jj := range vv.Children {
 					// dbgo.DbPrintf("db_NFA", "OR Before recursive call\n")
@@ -433,8 +433,8 @@ func (nn *NFA_PoolType) AddReInfo(Re string, reFlags string, tRuleMatchId int, t
 	reLen, isHard := lr.CalcLength()
 	nn.ReSet[p].ParsedRe = lr
 
-	dbgo.DbPrintf("DumpParseNodes2", "DumpParseNodes: Pass 1 in AddReInfo %s\n\n", com.SVarI(lr))
-	dbgo.DbPrintf("DumpParseNodes2", "DumpParseNodes: As Passed %s\n\n", com.SVarI(lr.Tree.Children))
+	dbgo.DbPrintf("DumpParseNodes2", "DumpParseNodes: Pass 1 in AddReInfo %s\n\n", dbgo.SVarI(lr))
+	dbgo.DbPrintf("DumpParseNodes2", "DumpParseNodes: As Passed %s\n\n", dbgo.SVarI(lr.Tree.Children))
 
 	// ------------------------------------------------------------------------------------------------------------
 	// xyzzy - add HasDot, HasNCCL to this.

@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/pschlump/dbgo"
+	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/pbread"
 
@@ -30,28 +32,28 @@ var data_01 = []string{
 // ---------------------------------------------------------------------------------------------------------------------------------------
 func Test_Test01_01(t *testing.T) {
 
-	com.DbOnFlags["trace-builtin"] = true
-	com.DbOnFlags["match"] = true
+	dbgo.SetADbFlag("trace-builtin", true)
+	dbgo.SetADbFlag("match", true)
 
-	com.DbOnFlags["db_DumpDFAPool"] = true
-	com.DbOnFlags["db_DumpPool"] = true
-	com.DbOnFlags["db_Matcher_02"] = true
-	// com.DbOnFlags["db_NFA_LnNo"] = true
-	com.DbOnFlags["match"] = true
-	// com.DbOnFlags["nfa3"] = true
-	com.DbOnFlags["output-machine"] = true
-	com.DbOnFlags["match"] = true
-	com.DbOnFlags["match4"] = true
-	com.DbOnFlags["match_x"] = true
-	// com.DbOnFlags["nfa3"] = true
-	// com.DbOnFlags["nfa4"] = true
-	// com.DbOnFlags["db_DFAGen"] = true
-	// com.DbOnFlags["pbbuf02"] = true
-	// com.DbOnFlags["DumpParseNodes2"] = true
-	com.DbOnFlags["db_FlushTokenBeforeBefore"] = true
-	com.DbOnFlags["db_FlushTokenBeforeAfter"] = true
-	com.DbOnFlags["db_tok01"] = true
-	com.DbOnFlags["in-echo-machine"] = true // Output machine
+	dbgo.SetADbFlag("db_DumpDFAPool", true)
+	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("db_Matcher_02", true)
+	// dbgo.SetADbFlag("db_NFA_LnNo", true)
+	dbgo.SetADbFlag("match", true)
+	// dbgo.SetADbFlag("nfa3", true)
+	dbgo.SetADbFlag("output-machine", true)
+	dbgo.SetADbFlag("match", true)
+	dbgo.SetADbFlag("match4", true)
+	dbgo.SetADbFlag("match_x", true)
+	// dbgo.SetADbFlag("nfa3", true)
+	// dbgo.SetADbFlag("nfa4", true)
+	// dbgo.SetADbFlag("db_DFAGen", true)
+	// dbgo.SetADbFlag("pbbuf02", true)
+	// dbgo.SetADbFlag("DumpParseNodes2", true)
+	dbgo.SetADbFlag("db_FlushTokenBeforeBefore", true)
+	dbgo.SetADbFlag("db_FlushTokenBeforeAfter", true)
+	dbgo.SetADbFlag("db_tok01", true)
+	dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 
 	Dbf = os.Stdout
 
@@ -87,9 +89,9 @@ func (pt *Parse2Type) ReadFileAndRun(fn, fn_o string) {
 	xpt := pt.GenParseTree(0)
 	pt.TheTree = xpt
 	pt.ExecuteFunctions(0)
-	fmt.Printf("Tree Dump = %s\n", com.SVarI(xpt))
+	fmt.Printf("Tree Dump = %s\n", dbgo.SVarI(xpt))
 
-	fp_o, err := com.Fopen(fn_o, "w")
+	fp_o, err := filelib.Fopen(fn_o, "w")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	} else {

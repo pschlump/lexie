@@ -328,7 +328,7 @@ func ParsePattern(cls string, ln string) (pat string, flag string, opt []string)
 	pat, rest := PickOffPatternAtBeginning(cls, ln)
 	// fmt.Printf("pat >%s< rest >%s<, %s\n", pat, rest, dbgo.LF())
 	re := ParseAction(rest)
-	// fmt.Printf("ln ->%s<- re %s\n", ln, com.SVarI(re))
+	// fmt.Printf("ln ->%s<- re %s\n", ln, dbgo.SVarI(re))
 
 	for i := 1; i < len(re); i++ {
 		if re[i][0] != "" {
@@ -342,7 +342,7 @@ func ParsePattern(cls string, ln string) (pat string, flag string, opt []string)
 func ParseNameValue(nv string) (name string, value string) {
 	name, value = "", ""
 	t1 := pnv_re.FindAllStringSubmatch(nv, -1)
-	dbgo.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
+	dbgo.DbPrintf("in", "t1=%s\n", dbgo.SVarI(t1))
 	if t1 != nil && len(t1[0]) > 0 {
 		name = t1[0][1]
 		if len(t1[0]) > 3 {
@@ -367,7 +367,7 @@ func ParseActionItem(act string) (aa string, pp string) {
 	aa, pp = "", ""
 	t1 := fx_re.FindAllStringSubmatch(act, -1)
 	if t1 != nil {
-		dbgo.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
+		dbgo.DbPrintf("in", "t1=%s\n", dbgo.SVarI(t1))
 		aa = t1[0][1]
 		if len(t1[0]) > 1 {
 			pp = t1[0][2]
@@ -381,7 +381,7 @@ func ParseActionItem(act string) (aa string, pp string) {
 func ParsePlist(pl string) (aa []string) {
 	t1 := pl_re.FindAllStringSubmatch(pl, -1)
 	if t1 != nil {
-		dbgo.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
+		dbgo.DbPrintf("in", "t1=%s\n", dbgo.SVarI(t1))
 		for _, vv := range t1 {
 			if len(vv) > 3 && vv[2] != "" {
 				aa = append(aa, vv[2])
