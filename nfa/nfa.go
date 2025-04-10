@@ -9,6 +9,7 @@
 //
 
 // xyzzy-NCCL - add in NCCL at this point
+// xyzzy400 - possible error --
 
 package nfa
 
@@ -321,6 +322,8 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 			childStart, childEnd := nn.ConvParsedReToNFA(depth+1, lr, Cur, vv.Children[0:1])
 			dbgo.DbPrintf("db_NFA", "Return from PLUS call, %d, %d, %s\n", childStart, childEnd, dbgo.LF())
 			nn.Mark(Cur, re.LR_PLUS)
+			// xyzzy400 - possible error --
+			// xyzzy400 - possible error --
 			// nn.AddLambda(Cur, childStart)
 			nn.AddLambda(childEnd, childStart)
 			tail := nn.GetNFA()
