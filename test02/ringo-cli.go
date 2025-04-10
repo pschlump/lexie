@@ -26,8 +26,6 @@ import (
 	"github.com/pschlump/lexie/pbread"
 )
 
-// "github.com/pschlump/lexie/flags"
-
 var opts struct {
 	Config      string `short:"c" long:"config"      description:"Config Input File"       default:"./config.json"` //
 	Tokens      string `short:"t" long:"tokens"      description:"Token Output File"          default:""`           //     *3* Output from running machine on Input File

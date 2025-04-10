@@ -1671,7 +1671,7 @@ func FxDebug(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt
 				b = com.ParseBool((*curTree).SVal[1]) // b = (*curTree).SVal[1] == "on" || (*curTree).SVal[1] == "yes"
 			}
 			name := (*curTree).SVal[0]
-			com.DbOnFlags[name] = b
+			dbgo.SetADbFlag(name, b)
 		}
 	}
 
