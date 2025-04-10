@@ -88,7 +88,9 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 
 	init = lex.Im.LookupMachine(s_init)
 	for ii := range lex.DFA_Machine {
-		fmt.Printf("At: %s\n", com.LF())
+		if db1 {
+			fmt.Printf("At: %s\n", com.LF())
+		}
 		com.DbPrintf("match", "Machine[%d] =\n", ii)
 		dfa = lex.DFA_Machine[ii]
 		dfa.MachineId = ii
@@ -349,3 +351,5 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	// lex.Message <- tt
 
 }
+
+const db1 = false

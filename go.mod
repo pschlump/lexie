@@ -1,6 +1,6 @@
 module github.com/pschlump/lexie
 
-go 1.22.0
+go 1.24.0
 
 require (
 	github.com/jessevdk/go-flags v1.5.0

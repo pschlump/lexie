@@ -1,4 +1,4 @@
-# Lexie - A Lexical Analizer Genrator and Lexical Analyzer
+# Lexie - A Lexical Analyzer Generator and Lexical Analyzer
 
  [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/pschlump/Go-FTL/master/LICENSE)
 
@@ -70,10 +70,10 @@ It is fast and usable.
 ## Features
 
 1) Works with UTF8 / Unicode.
-2) Runs multiple sets of pattern matchers in a context dependent fasion.
+2) Runs multiple sets of pattern matchers in a context dependent fashion.
 3) Changeable on the fly at runtime.
 4) Clear error reporting.
-5) Embedable - can be used inside another proram.
+5) Embedable - can be used inside another program.
 6) Stand alone - can be run as a fast pattern maching tool in a stand alone configuraiton.
 7) Fast.  Fast to perform pattern matches.  Fast to modify an existing matcher.
 8) Clear error messages if a modification of a pattern matcher breaks the matcher.

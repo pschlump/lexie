@@ -1,5 +1,3 @@
-go build
-./lexie-cli -l ../in/django3.lex -i ./bob.in -o ./out/bob.out
 At: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa/nm.go LineNo:213
 TokenBuffer:
 	row TokNo Match               

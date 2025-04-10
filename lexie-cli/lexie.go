@@ -33,19 +33,17 @@ import (
 	"strings"
 
 	"github.com/jessevdk/go-flags"
-
 	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/lexie/pbread"
-
-	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/tok"
 )
 
 var opts struct {
 	LexPat      string `short:"l" long:"lex"         description:"Lex Input File"             default:""`                   //     *1* Input
 	ReadMachine string `short:"r" long:"read"        description:"Machine Input File"         default:""`                   // <x>
-	Echo        string `short:"e" long:"echo"     description:"Output Machine "        default:""`                          //     *** <x> Output in .mlex format
+	Echo        string `short:"e" long:"echo"        description:"Output Machine "            default:""`                   //     *** <x> Output in .mlex format
 	Machine     string `short:"m" long:"machine"     description:"Machine Output File"        default:""`                   // <x> Output in .mlex format
 	Output      string `short:"o" long:"output"      description:"Output File"                default:""`                   // <x>
 	Format      string `short:"f" long:"fmt"         description:"Format of output File"      default:"go"`                 // <x>
