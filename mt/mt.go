@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/eval"
 	"github.com/pschlump/lexie/gen"
 	"github.com/pschlump/lexie/tok"

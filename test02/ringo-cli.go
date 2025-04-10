@@ -19,19 +19,26 @@ import (
 	"os"
 	"strings"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/dfa"
-	"github.com/pschlump/lexie/flags"
 	"github.com/pschlump/lexie/pbread"
 )
 
+// "github.com/pschlump/lexie/flags"
+
 var opts struct {
-	Config   string `short:"c" long:"config"      description:"Config Input File"       default:"./config.json"` //
-	Input    string `short:"i" long:"input"       description:"Input File"              default:""`              //
-	Output   string `short:"o" long:"output"      description:"Output File"             default:""`              //
-	TraceOut string `short:"t" long:"trace"       description:"Trace Output"            default:""`              //
-	Debug    string `short:"X" long:"debug"       description:"Debug Flags"             default:""`              //
+	Config      string `short:"c" long:"config"      description:"Config Input File"       default:"./config.json"` //
+	Tokens      string `short:"t" long:"tokens"      description:"Token Output File"          default:""`           //     *3* Output from running machine on Input File
+	ReadMachine string `short:"r" long:"read"        description:"Machine Input File"         default:""`           // <x>
+	Input       string `short:"i" long:"input"       description:"Input File"              default:""`              //
+	Output      string `short:"o" long:"output"      description:"Output File"             default:""`              //
+	Machine     string `short:"m" long:"machine"     description:"Machine Output File"        default:""`           // <x> Output in .mlex format
+	TraceOut    string `short:"t" long:"trace"       description:"Trace Output"            default:""`              //
+	Debug       string `short:"X" long:"debug"       description:"Debug Flags"             default:""`              //
+	Echo        string `short:"e" long:"echo"        description:"Output Machine "            default:""`           //     *** <x> Output in .mlex format
+	LexPat      string `short:"l" long:"lex"         description:"Lex Input File"             default:""`           //     *1* Input
 }
 
 func main() {
@@ -46,8 +53,7 @@ func main() {
 	}
 
 	if opts.Debug != "" {
-		s := strings.Split(opts.Debug, ",")
-		for _, v := range s {
+		for _, s := range strings.Split(opts.Debug, ",") {
 			dbgo.SetADbFlag(s, true)
 		}
 	}

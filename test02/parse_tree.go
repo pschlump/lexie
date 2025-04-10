@@ -391,6 +391,24 @@ func NewParse2Type() (pt *Parse2Type) {
 	return
 }
 
+// xyzzy
+// if t0, cv, f := pt.LookupReservedWord(tk.Match); f {
+// func (pt *Parse2Type) GetToken() (tk tok.Token) {
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Use func (st *SymbolTable) DefineReservedWord(name string, fxid int) (ss *SymbolType) { to define
+func (pt *Parse2Type) LookupReservedWord(name string) (tk int, cv int, f bool) {
+	tk, cv, f = 0, 0, false
+	ss, err := pt.St.LookupSymbol(name)
+	if err != nil {
+		return
+	}
+	tk = ss.FxId
+	f = true
+	return
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 func (pt *Parse2Type) GetToken() (tk tok.Token) {
 	var t1 dfa.LexieChanelType
 	t1 = <-pt.Lex.Message
