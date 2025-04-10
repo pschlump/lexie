@@ -333,7 +333,7 @@ func (lex *Lexie) NewReadFile(path string) {
 
 			out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
-				dbgo.DbPrintf("match", "%sError%s from dot, %s, %s\n", com.Red, com.Reset, err, dbgo.LF())
+				dbgo.DbPrintf("match", "%(red)Error%(reset) from dot, %s, %(LF)\n", err)
 				dbgo.DbPrintf("match", "Output: %s\n", out)
 			}
 		}

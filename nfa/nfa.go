@@ -123,7 +123,7 @@ func (nn *NFA_PoolType) GetNFA() int {
 	nn.Pool[tmp].Next2 = nn.Pool[tmp].Next2[:0]
 	nn.Pool[tmp].IsUsed = true
 	nn.Pool[tmp].A_IAm = tmp
-	nn.Pool[tmp].LineNo = com.LINE(2)
+	nn.Pool[tmp].LineNo = dbgo.LINE(2)
 	return tmp
 }
 
@@ -191,7 +191,7 @@ func (nn *NFA_PoolType) AddLambda(fr, to int) {
 		return
 	}
 	if !nn.EdgeExists(fr, to, "", true) {
-		nn.Pool[fr].Next2 = append(nn.Pool[fr].Next2, TransitionType{IsLambda: true, To: to, From: fr, LineNo: com.LINE(2)})
+		nn.Pool[fr].Next2 = append(nn.Pool[fr].Next2, TransitionType{IsLambda: true, To: to, From: fr, LineNo: dbgo.LINE(2)})
 	}
 }
 
@@ -203,7 +203,7 @@ func (nn *NFA_PoolType) AddLambdaSpecial(fr, to int) {
 	}
 	if !nn.EdgeExists(fr, to, "", true) {
 		// Is0ChMatch bool // false(default) => not set,       true(set) => match occures on any char that is not an accepted char (a*)-> next state on 'b'
-		nn.Pool[fr].Next2 = append(nn.Pool[fr].Next2, TransitionType{IsLambda: true, Is0ChMatch: true, To: to, From: fr, LineNo: com.LINE(2)})
+		nn.Pool[fr].Next2 = append(nn.Pool[fr].Next2, TransitionType{IsLambda: true, Is0ChMatch: true, To: to, From: fr, LineNo: dbgo.LINE(2)})
 	}
 }
 
@@ -214,7 +214,7 @@ func (nn *NFA_PoolType) Mark(cur int, t re.LR_TokType) {
 func (nn *NFA_PoolType) AddEdge(fr, to int, on string) {
 	// Check if edge already exists - if so skip this
 	if !nn.EdgeExists(fr, to, on, false) {
-		nn.Pool[fr].Next2 = append(nn.Pool[fr].Next2, TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: com.LINE(2)})
+		nn.Pool[fr].Next2 = append(nn.Pool[fr].Next2, TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: dbgo.LINE(2)})
 	}
 }
 

@@ -114,7 +114,7 @@ func (dfa *DFA_PoolType) GetDFA() int {
 	dfa.Pool[tmp].Next2 = dfa.Pool[tmp].Next2[:0]
 	dfa.Pool[tmp].IsUsed = true
 	dfa.Pool[tmp].A_IAm = tmp
-	dfa.Pool[tmp].LineNo = com.LINE(2)
+	dfa.Pool[tmp].LineNo = dbgo.LINE(2)
 	return tmp
 }
 
@@ -369,7 +369,7 @@ func (dfa *DFA_PoolType) GetDFAName(StateSet []int) int {
 func (dfa *DFA_PoolType) AddEdge(fr, to int, on string) {
 	// Check if edge already exists - if so skip this
 	if !dfa.EdgeExists(fr, to, on) {
-		dfa.Pool[fr].Next2 = append(dfa.Pool[fr].Next2, nfa.TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: com.LINE(2)})
+		dfa.Pool[fr].Next2 = append(dfa.Pool[fr].Next2, nfa.TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: dbgo.LINE(2)})
 	}
 }
 

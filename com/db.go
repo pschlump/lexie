@@ -11,6 +11,14 @@
 package com
 
 import (
+	"fmt"
+
+	"github.com/pschlump/dbgo"
+)
+
+/*
+
+import (
 	"errors"
 	"fmt"
 	"io"
@@ -79,6 +87,8 @@ func Fopen(fn string, mode string) (file *os.File, err error) {
 	return
 }
 
+*/
+
 type ErrorBufferType struct {
 	Err []string
 }
@@ -86,12 +96,13 @@ type ErrorBufferType struct {
 var ErrorBuffer ErrorBufferType
 
 func StashError(s string) {
-	if DbOn("OutputErrors") {
+	if dbgo.IsDbOn("OutputErrors") {
 		fmt.Printf("%s\n", s)
 	}
 	ErrorBuffer.Err = append(ErrorBuffer.Err, s)
 }
 
+/*
 // Return the File name and Line no as a string.
 func LF(d ...int) (rv string) {
 	depth := 1
@@ -146,5 +157,7 @@ func LINEn(d ...int) (rv int) {
 	}
 	return
 }
+
+*/
 
 /* vim: set noai ts=4 sw=4: */

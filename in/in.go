@@ -474,7 +474,7 @@ func (Im *ImType) ParseFile(data []string) {
 	var st = 0
 	var MNo = 0
 	// Im.SaveDef("Tokens", []string{"Tok_null=0", "Tok_ID=1", "Tok_Ignore=2"}, com.LINEn(), com.FILE())
-	Im.SaveDef("Tokens", []string{"Tok_null=0"}, com.LINEn(), com.FILE())
+	Im.SaveDef("Tokens", []string{"Tok_null=0"}, dbgo.LINEn(), dbgo.FILE())
 	for line_no_m1, line := range data {
 		line_no := line_no_m1 + 1
 		line = RemoveComment(line)
@@ -518,7 +518,7 @@ func (Im *ImType) ParseFile(data []string) {
 			}
 		}
 	}
-	Im.SaveDef("Tokens", []string{"Tok_ID", "Tok_Ignore"}, com.LINEn(), com.FILE())
+	Im.SaveDef("Tokens", []string{"Tok_ID", "Tok_Ignore"}, dbgo.LINEn(), dbgo.FILE())
 	Im.FinializeFile()
 	return
 }
