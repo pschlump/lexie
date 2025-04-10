@@ -1,0 +1,22 @@
+digraph finite_state_machine {
+	rankdir=LR;
+	size="8,5"
+	node [shape = doublecircle]; s1;
+	node [shape = circle];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s2 [ label = "a" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s0 -> s1 [ label = "λ" ];
+	s2 -> s1 [ label = "λ" ];
+}

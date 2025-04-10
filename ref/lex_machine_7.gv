@@ -1,0 +1,40 @@
+digraph finite_state_machine {
+	rankdir=LR;
+	size="18,55"
+	node [shape = doublecircle]; s0 s1 s2 s4 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31;
+	node [shape = circle];
+	s0 -> s1 [ label = " " ];
+	s0 -> s2 [ label = "!" ];
+	s0 -> s3 [ label = "\"" ];
+	s0 -> s4 [ label = "%" ];
+	s0 -> s5 [ label = "&" ];
+	s0 -> s6 [ label = "'" ];
+	s0 -> s7 [ label = ")" ];
+	s0 -> s8 [ label = "*" ];
+	s0 -> s9 [ label = "+" ];
+	s0 -> s10 [ label = "," ];
+	s0 -> s11 [ label = "-" ];
+	s0 -> s12 [ label = "." ];
+	s0 -> s13 [ label = "/" ];
+	s0 -> s14 [ label = "<" ];
+	s0 -> s15 [ label = "=" ];
+	s0 -> s16 [ label = ">" ];
+	s0 -> s17 [ label = "^" ];
+	s0 -> s18 [ label = "`" ];
+	s0 -> s19 [ label = "|" ];
+	s0 -> s20 [ label = "}" ];
+	s0 -> s21 [ label = "0-9" ];
+	s0 -> s22 [ label = "a-zA-Z" ];
+	s0 -> s23 [ label = "EOF" ];
+	s2 -> s24 [ label = "=" ];
+	s4 -> s25 [ label = "}" ];
+	s5 -> s26 [ label = "&" ];
+	s14 -> s27 [ label = "=" ];
+	s14 -> s28 [ label = ">" ];
+	s15 -> s29 [ label = "=" ];
+	s16 -> s30 [ label = "=" ];
+	s19 -> s31 [ label = "|" ];
+	s20 -> s32 [ label = "}" ];
+	s21 -> s21 [ label = "0-9" ];
+	s22 -> s22 [ label = "a-zA-Z0-9" ];
+}

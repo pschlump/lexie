@@ -1,0 +1,22 @@
+digraph finite_state_machine {
+	rankdir=LR;
+	size="18,5"
+	node [shape = doublecircle]; s1 s3;
+	node [shape = circle];
+	s0 -> s1 [ label = "'" ];
+	s0 -> s2 [ label = "\\" ];
+	s0 -> s0 [ label = "◉" ];
+	s0 -> s3 [ label = "EOF" ];
+	s1 -> s1 [ label = "'" ];
+	s1 -> s2 [ label = "\\" ];
+	s1 -> s0 [ label = "◉" ];
+	s1 -> s3 [ label = "EOF" ];
+	s2 -> s1 [ label = "'" ];
+	s2 -> s2 [ label = "\\" ];
+	s2 -> s0 [ label = "◉" ];
+	s2 -> s3 [ label = "EOF" ];
+	s3 -> s1 [ label = "'" ];
+	s3 -> s2 [ label = "\\" ];
+	s3 -> s0 [ label = "◉" ];
+	s3 -> s3 [ label = "EOF" ];
+}

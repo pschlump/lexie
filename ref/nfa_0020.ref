@@ -1,0 +1,4 @@
+{"Input":"(||||||||||||||)", "Rv":1020, "Start": 0, "Sigma":"", "States":[
+ { "Sn":0, "Info":{"Action":0,"MatchLength":0,"NextState":0,"HardMatch":false,"ReplStr":""},  "Edge":[ { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }, { "On":"λ", "Fr":0, "To":1 }]}
+ { "Sn":1, "Info":{"Action":0,"MatchLength":0,"NextState":0,"HardMatch":false,"ReplStr":""},  "Term":1020,  "Edge":[ ]}
+]}

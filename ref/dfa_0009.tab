@@ -1,0 +1,27 @@
+
+Sigma = "ab\uf8f3\uf8f4"
+InitState = 0
+N_States = 6
+Width = 5
+SMap = {{{ smap.MinV = 97, smap.MaxV = 1, smap.Len = 5
+smap.NoMap = f8fc (  ), smap.NoMapTo = 4
+smap.M0 = (2 items)
+     0: [   0 0x61 a ] = 0
+     1: [   1 0x62 b ] = 1
+smap.M1 = (3 items)
+    : 2 X_BOL     \uF8F3 
+    : 3 X_EOL     \uF8F4 
+    : 4 X_else_CH \uF8FC 
+}}}
+
+State  : Rv   Actn  Hard  Next Leng    |     0    1    2    3    4
+====== : ==== ----- ----- ---- ----    |    --   --   --   --   --
+       :                               |     a    b            
+====== : ==== ----- ----- ---- ----    |    --   --   --   --   --
+m[  0] :    0     0 false    0    0    |     ☩    ☩    1    ☩    ☩
+m[  1] :    0     0 false    0    0    |     2    ☩    ☩    ☩    ☩
+m[  2] :    0     0 false    0    0    |     ☩    3    ☩    ☩    ☩
+m[  3] :    0     0 false    0    0    |     ☩    4    ☩    ☩    ☩
+m[  4] :    0     0 false    0    0    |     ☩    ☩    ☩    5    ☩
+m[  5] : 1009     0  true    0    3    |     ☩    ☩    ☩    ☩    ☩
+

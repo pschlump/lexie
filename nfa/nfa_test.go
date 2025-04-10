@@ -19,6 +19,23 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+// Test the generation of NFA - Non-Deterministic Finite state Automata.
+// ------------------------------------------------------------------------------------
+//
+// The tests are numberd.   This will match with test data and reference data that is
+// in the ../ref direcotry.   Because these are graphs a .svg graph will be generated
+// using 'dot' in GraphViz.  The output will be in the ../ref directory with a .svg
+// extention for each test.  It is much easier to undersnd the graphs in this fasion.
+//
+// Steps:
+// 1. Convert the regular exprssion to a NFA
+// 2. Output the NFA to a file, ../ref/nfa_0000.tst
+// 3. Read in the corect data from a file, ../ref/nfa_0000.ref
+// 4. Compare the strings of the generate and the ference
+// 5. Report errors.
+//
+
+// TODO - Figure out path to 'dot' so can run it.
 // var dotPath = "/opt/homebrew/bin/dot"
 var dotPath = "/opt/local/bin/dot"
 
@@ -63,7 +80,7 @@ var Lexie01Data = []Lexie01DataType{
 	{Test: "0028", Re: "(a\u03bbb|a\u0428b|aaab)", Rv: 1028, SkipTest: true, ELen: 2},                                          // Len(2)
 	{Test: "0029", Re: "[0-1]*", Rv: 1003, SkipTest: false, ELen: 2},                                                           // Len(2)
 	{Test: "0030", Re: "[0-1]+", Rv: 1003, SkipTest: false, ELen: 2},                                                           // Len(2)
-	{Test: "0031", Re: "[0-1]?", Rv: 1003, SkipTest: true, ELen: 2},                                                            // Len(2)
+	{Test: "0031", Re: "[0-1]?", Rv: 1003, SkipTest: false, ELen: 2},                                                           // Len(2)
 	{Test: "0032", Re: "([0-9]*\\.[0-9]+([eE][0-9]+(\\.[0-9]*)?)?)|([a-zA-Z][a-zA-Z0-9]*)", Rv: 1003, SkipTest: true, ELen: 2}, // Len(2)
 	{Test: "0033", Re: "aab{2,3}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                        // Len(2)
 	{Test: "0034", Re: "aab{,3}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                         // Len(2)
@@ -161,7 +178,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 				}
 				if string(ref) != string(newData) {
 					c.Check(string(newData), Equals, string(ref))
-					dbgo.Printf("%(red)Error%(reset): Test case %s failed to match\n", vv.Test)
+					dbgo.Printf("%(red)Error%(reset): Test case %s failed to match, cmpFile(.ref)=%s newFile(.tst)=%s to \n", vv.Test, cmpFile, newFile)
 					n_err++
 				}
 			} else {

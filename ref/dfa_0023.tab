@@ -1,0 +1,22 @@
+
+Sigma = "a"
+InitState = 0
+N_States = 4
+Width = 2
+SMap = {{{ smap.MinV = 97, smap.MaxV = 0, smap.Len = 2
+smap.NoMap = f8fc (  ), smap.NoMapTo = 1
+smap.M0 = (1 items)
+     0: [   0 0x61 a ] = 0
+smap.M1 = (1 items)
+    : 1 X_else_CH \uF8FC 
+}}}
+
+State  : Rv   Actn  Hard  Next Leng    |     0    1
+====== : ==== ----- ----- ---- ----    |    --   --
+       :                               |     a    
+====== : ==== ----- ----- ---- ----    |    --   --
+m[  0] :    0     0 false    0    0    |     1    ☩
+m[  1] : 1023     0  true    0    3    |     2    ☩
+m[  2] : 1023     0  true    0    3    |     3    ☩
+m[  3] : 1023     0  true    0    3    |     ☩    ☩
+

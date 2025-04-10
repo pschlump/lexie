@@ -1,0 +1,34 @@
+digraph finite_state_machine {
+	rankdir=LR;
+	size="18,8"
+	node [shape = doublecircle]; s0 s2 s4 s7 s8;
+	node [shape = circle];
+	s0 -> s1 [ label = "." ];
+	s0 -> s2 [ label = "x" ];
+	s0 -> s0 [ label = "0-9" ];
+	s0 -> s3 [ label = "EOF" ];
+	s1 -> s4 [ label = "0-9" ];
+	s2 -> s2 [ label = "A" ];
+	s2 -> s2 [ label = "B" ];
+	s2 -> s2 [ label = "C" ];
+	s2 -> s2 [ label = "D" ];
+	s2 -> s2 [ label = "E" ];
+	s2 -> s2 [ label = "F" ];
+	s2 -> s2 [ label = "a" ];
+	s2 -> s2 [ label = "b" ];
+	s2 -> s2 [ label = "c" ];
+	s2 -> s2 [ label = "d" ];
+	s2 -> s2 [ label = "e" ];
+	s2 -> s2 [ label = "f" ];
+	s2 -> s2 [ label = "0-9" ];
+	s4 -> s5 [ label = "E" ];
+	s4 -> s5 [ label = "e" ];
+	s4 -> s4 [ label = "0-9" ];
+	s5 -> s6 [ label = "+" ];
+	s5 -> s6 [ label = "-" ];
+	s5 -> s7 [ label = "0-9" ];
+	s6 -> s7 [ label = "0-9" ];
+	s7 -> s8 [ label = "." ];
+	s7 -> s7 [ label = "0-9" ];
+	s8 -> s8 [ label = "0-9" ];
+}

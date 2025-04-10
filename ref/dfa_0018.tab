@@ -1,0 +1,17 @@
+
+Sigma = ""
+InitState = 0
+N_States = 1
+Width = 0
+SMap = {{{ smap.MinV = 0, smap.MaxV = 0, smap.Len = 0
+smap.NoMap = f8fc (  ), smap.NoMapTo = 0
+smap.M0 = (0 items)
+smap.M1 = (0 items)
+}}}
+
+State  : Rv   Actn  Hard  Next Leng    | 
+====== : ==== ----- ----- ---- ----    | 
+       :                               | 
+====== : ==== ----- ----- ---- ----    | 
+m[  0] : 1018     0 false    0    0    | 
+
