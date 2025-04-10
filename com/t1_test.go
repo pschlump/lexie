@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 	"testing"
-)
 
-// "../../../go-lib/sizlib"
+	"github.com/pschlump/dbgo"
+)
 
 const db_flag = false
 
@@ -24,7 +24,7 @@ func Test_Com01(t *testing.T) {
 	fx := AllFilesInPath("./t1;./t2;./t3")
 
 	if db_flag {
-		fmt.Printf("%s\n", com.SVarI(fx))
+		fmt.Printf("%s\n", dbgo.SVarI(fx))
 	}
 
 	if len(fx) != len(v) {

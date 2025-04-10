@@ -33,6 +33,8 @@ import (
 	"strings"
 
 	"github.com/jessevdk/go-flags"
+	"github.com/pschlump/dbgo"
+	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/in"
@@ -163,13 +165,15 @@ func main() {
 		for _, v := range s {
 			com.DbOnFlags[v] = true
 		}
+		dbgo.SetADbFlag(opts.Debug, true)
 	}
 
 	if opts.Echo != "" {
 		com.DbOnFlags["in-echo-machine"] = true // Output machine
+		dbgo.SetADbFlag("in-echo-machine", true)
 	}
 
-	fmt.Fprintf(os.Stderr, "Test Matcher test from %s file, %s\n", opts.LexPat, com.LF())
+	fmt.Fprintf(os.Stderr, "Test Matcher test from %s file, %s\n", opts.LexPat, dbgo.LF())
 
 	lex := dfa.NewLexie()
 	if opts.LexPat != "" {
@@ -188,7 +192,7 @@ func main() {
 	}
 
 	if opts.Tokens != "" {
-		fp, _ = com.Fopen(opts.Tokens, "w")
+		fp, _ = filelib.Fopen(opts.Tokens, "w")
 	} else {
 		fp = os.Stdout
 	}

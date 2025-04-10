@@ -67,6 +67,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/lexie/nfa"
@@ -155,7 +156,7 @@ func KeyIntSort(in []int) (rv []int) {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//	lex .DumpTokenBuffer()
+// lex .DumpTokenBuffer()
 func (lex *Lexie) DumpTokenBuffer(fo io.Writer) {
 	lex.TokList.FDumpTokenBuffer(fo, false)
 }
@@ -166,14 +167,14 @@ func (lex *Lexie) DumpTokenBuffer2(fo io.Writer) {
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 func (lex *Lexie) OutputActionFlags(dfa *DFA_PoolType) {
-	com.DbPrintf("match", "Action Flags Are:\n")
+	dbgo.DbPrintf("match", "Action Flags Are:\n")
 	// com. ConvertActionFlagToString(kk int) (rv string) {
 	dn := make(map[int]bool)
 	for _, vv := range dfa.Pool {
 		if vv.IsUsed {
 			if vv.Info.Action != 0 {
 				if _, ok := dn[vv.Info.Action]; !ok {
-					com.DbPrintf("match", "    %2x: %s\n", vv.Info.Action, com.ConvertActionFlagToString(vv.Info.Action))
+					dbgo.DbPrintf("match", "    %2x: %s\n", vv.Info.Action, com.ConvertActionFlagToString(vv.Info.Action))
 					dn[vv.Info.Action] = true
 				}
 			}
@@ -258,7 +259,7 @@ func (lex *Lexie) NewReadFile(path string) {
 		// func (st *SymbolTable) DefineReservedWord(name string, fxid int) (ss *SymbolType) {
 		_ = ii
 		_ = vv
-		com.DbPrintf("dfa5", "vv=%T %+v, %s\n", vv, vv, com.LF())
+		dbgo.DbPrintf("dfa5", "vv=%T %+v, %s\n", vv, vv, dbgo.LF())
 	}
 
 	for ii, vv := range lex.Im.Machine {
@@ -270,19 +271,19 @@ func (lex *Lexie) NewReadFile(path string) {
 		for jj, ww := range vv.Rules {
 			rVx := ww.Rv
 			if ww.ReservedWord {
-				com.DbPrintf("dfa5", "This rule rv=%d is a reserved word rule, AAbbCC\n", rVx)
+				dbgo.DbPrintf("dfa5", "This rule rv=%d is a reserved word rule, AAbbCC\n", rVx)
 			}
 			ww_A := convRuleToActionFlag(ww)
 			if ww.Repl {
 				rVx = 9900 // 9900 is replace
-				com.DbPrintf("match", "###################################### ww.Replace: ii=%d jj=%d ->%s<-, %s\n", ii, jj, ww.ReplString, com.LF())
+				dbgo.DbPrintf("match", "###################################### ww.Replace: ii=%d jj=%d ->%s<-, %s\n", ii, jj, ww.ReplString, dbgo.LF())
 			}
 			cur := -1
 			if ww.PatternType == 2 {
-				com.DbPrintf("db_Matcher_02", "ADDING AT %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", jj, "<M_EOF>", ww.Rv, rVx, com.LF())
+				dbgo.DbPrintf("db_Matcher_02", "ADDING AT %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", jj, "<M_EOF>", ww.Rv, rVx, dbgo.LF())
 				cur = Nfa.AddReInfo(re.X_EOF, "", jj+1, rVx, nfa.InfoType{Action: ww_A, NextState: ww.Call})
 			} else {
-				com.DbPrintf("db_Matcher_02", "M= ->%s<- Adding at %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", ww.Pattern, jj, ww.Pattern, ww.Rv, rVx, com.LF())
+				dbgo.DbPrintf("db_Matcher_02", "M= ->%s<- Adding at %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", ww.Pattern, jj, ww.Pattern, ww.Rv, rVx, dbgo.LF())
 				cur = Nfa.AddReInfo(ww.Pattern, "", jj+1, rVx, nfa.InfoType{Action: ww_A, NextState: ww.Call, ReplStr: ww.ReplString})
 			}
 			if ww.ReservedWord {
@@ -290,30 +291,30 @@ func (lex *Lexie) NewReadFile(path string) {
 			}
 		}
 
-		com.DbPrintf("match", "BuildDFA_2: Nfa.Sigma Before Finialize->%s<-\n", Nfa.Sigma)
-		if com.DbOn("db_Matcher_02") {
-			com.DbPrintf("match", "NFA for (Before Finialize) ->%s<-\n", nm)
+		dbgo.DbPrintf("match", "BuildDFA_2: Nfa.Sigma Before Finialize->%s<-\n", Nfa.Sigma)
+		if dbgo.IsDbOn("db_Matcher_02") {
+			dbgo.DbPrintf("match", "NFA for (Before Finialize) ->%s<-\n", nm)
 			Nfa.DumpPool(false)
 		}
 
 		Nfa.FinializeNFA()
 
-		com.DbPrintf("match", "BuildDFA_2: Nfa.Sigma ->%s<-\n", Nfa.Sigma)
-		if com.DbOn("db_Matcher_02") {
-			com.DbPrintf("match", "Final NFA for ->%s<-\n", nm)
+		dbgo.DbPrintf("match", "BuildDFA_2: Nfa.Sigma ->%s<-\n", Nfa.Sigma)
+		if dbgo.IsDbOn("db_Matcher_02") {
+			dbgo.DbPrintf("match", "Final NFA for ->%s<-\n", nm)
 			Nfa.DumpPool(false)
 		}
 		lex.NFA_Machine = append(lex.NFA_Machine, Nfa)
 
 		Dfa := NewDFA_Pool()
 		Dfa.ConvNDA_to_DFA(Nfa)
-		if com.DbOn("db_Matcher_02") {
-			com.DbPrintf("match", "Final DFA for ->%s<-\n", nm)
+		if dbgo.IsDbOn("db_Matcher_02") {
+			dbgo.DbPrintf("match", "Final DFA for ->%s<-\n", nm)
 			Dfa.DumpPool(false)
 		}
 		lex.DFA_Machine = append(lex.DFA_Machine, Dfa)
 
-		if com.DbOn("db_Matcher_02") {
+		if dbgo.IsDbOn("db_Matcher_02") {
 
 			last := len(lex.DFA_Machine) - 1
 
@@ -331,8 +332,8 @@ func (lex *Lexie) NewReadFile(path string) {
 
 			out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
-				com.DbPrintf("match", "%sError%s from dot, %s, %s\n", com.Red, com.Reset, err, com.LF())
-				com.DbPrintf("match", "Output: %s\n", out)
+				dbgo.DbPrintf("match", "%sError%s from dot, %s, %s\n", com.Red, com.Reset, err, dbgo.LF())
+				dbgo.DbPrintf("match", "Output: %s\n", out)
 			}
 		}
 	}

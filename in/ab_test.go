@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 )
 
@@ -106,7 +107,7 @@ func Test_ParseAction(t *testing.T) {
 			if vv.ResultTst4 != "" {
 
 				cls := ClasifyLine(vv.Inp)
-				// fmt.Printf("Test %s cls: %s for -->>%s<<--, %s\n", vv.Test, cls, vv.Inp, com.LF())
+				// fmt.Printf("Test %s cls: %s for -->>%s<<--, %s\n", vv.Test, cls, vv.Inp, dbgo.LF())
 				atFront, rest := PickOffPatternAtBeginning(cls, vv.Inp)
 				_ = rest
 
@@ -114,11 +115,11 @@ func Test_ParseAction(t *testing.T) {
 					_, _, opt := ParsePattern(cls, vv.Inp)
 					r := fmt.Sprintf("%v", opt)
 					if r != vv.ResultTst2 {
-						t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst2, r, com.LF())
+						t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst2, r, dbgo.LF())
 					}
 				}
 				if atFront != vv.ResultTst4 {
-					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst4, atFront, com.LF())
+					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst4, atFront, dbgo.LF())
 				}
 
 			} else if vv.ResultTst2 != "" {
@@ -126,7 +127,7 @@ func Test_ParseAction(t *testing.T) {
 				pat, flag, opt := ParsePattern(cls, vv.Inp)
 				r := fmt.Sprintf("%v", opt)
 				if r != vv.ResultTst2 {
-					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst2, r, com.LF())
+					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst2, r, dbgo.LF())
 				}
 				if false {
 					fmt.Printf("%3d: %v %v %v\n", ii, pat, flag, opt)
@@ -137,10 +138,10 @@ func Test_ParseAction(t *testing.T) {
 				name, value := ParseNameValue(vv.Inp)
 				// fmt.Printf("name=%s value=%s\n", name, value)
 				if name != vv.ResultTst5[0] {
-					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst5[0], name, com.LF())
+					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst5[0], name, dbgo.LF())
 				}
 				if value != vv.ResultTst5[1] {
-					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst5[1], value, com.LF())
+					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst5[1], value, dbgo.LF())
 				}
 			}
 
@@ -148,22 +149,22 @@ func Test_ParseAction(t *testing.T) {
 				name, value := ParseActionItem(vv.Inp)
 				// fmt.Printf("name=%s value=%s\n", name, value)
 				if name != vv.ResultTst6[0] {
-					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst6[0], name, com.LF())
+					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst6[0], name, dbgo.LF())
 				}
 				if value != vv.ResultTst6[1] {
-					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst6[1], value, com.LF())
+					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, vv.ResultTst6[1], value, dbgo.LF())
 				}
 			}
 
 			if len(vv.ResultTst7) > 0 {
 				pl := ParsePlist(vv.Inp)
 				if len(pl) != len(vv.ResultTst7) {
-					t.Errorf("Test %s Failed, Expected %d length Got %d, %s\n", vv.Test, len(vv.ResultTst7), len(pl), com.LF())
+					t.Errorf("Test %s Failed, Expected %d length Got %d, %s\n", vv.Test, len(vv.ResultTst7), len(pl), dbgo.LF())
 				}
 				tt := fmt.Sprintf("%s", pl)
 				ss := fmt.Sprintf("%s", vv.ResultTst7)
 				if ss != tt {
-					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, ss, tt, com.LF())
+					t.Errorf("Test %s Failed, Expected ->%s<- Got ->%s<-, %s\n", vv.Test, ss, tt, dbgo.LF())
 				}
 			}
 		}

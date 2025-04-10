@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"unicode/utf8"
 
-	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/dbgo"
 )
 
 // Data from file or push back save in a buffer
@@ -47,7 +47,6 @@ type PBReadType struct {
 	PbTop       int             //
 }
 
-//
 const (
 	MaxAFew = 512
 )
@@ -65,7 +64,7 @@ func NewPbRead() (rv *PBReadType) {
 
 // Output debugging info
 func (pb *PBReadType) Dump01(fo io.Writer) {
-	fmt.Fprintf(fo, "Dump At: %s\n", com.LF())
+	fmt.Fprintf(fo, "Dump At: %s\n", dbgo.LF())
 	fmt.Fprintf(fo, "N PbBuffer=%d\n", len(pb.PbBuffer))
 	for ii := 0; ii < len(pb.PbBuffer); ii++ {
 		fmt.Fprintf(fo, "  Buffer [%d] Len: %d Pos: %d\n", ii, len(pb.PbBuffer[ii].Buffer), pb.PbBuffer[ii].Pos)
@@ -88,7 +87,7 @@ func (pb *PBReadType) Dump01(fo io.Writer) {
 // Open a file - this puts the file at the end of the input.   This is used on the command line for a list of files
 // in order.  Each opened and added to the end of the list.
 func (pb *PBReadType) OpenFile(fn string) (err error) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	pb.FileName = fn
 	pb.AbsFileName, _ = filepath.Abs(fn)
 	pb.FilesOpened[pb.AbsFileName] = true
@@ -121,7 +120,7 @@ func (pb *PBReadType) OpenFile(fn string) (err error) {
 
 // Return the next rune.  If runes have been pushed back then use those first.
 func (pb *PBReadType) NextRune() (rn rune, done bool) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	done = false
 
 	if pb.PbTop > 0 {
@@ -158,7 +157,7 @@ func (pb *PBReadType) NextRune() (rn rune, done bool) {
 
 // Take a peek at what is out there - return the next rune without advancing forward.
 func (pb *PBReadType) PeekRune() (rn rune, done bool) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	rn, done = pb.NextRune()
 	pb.PbRune(rn)
 	return
@@ -203,7 +202,7 @@ func (pb *PBReadType) pushbackIntoBuffer() {
 
 // Push back a single rune onto input.  You can call this more than one time.
 func (pb *PBReadType) PbRune(rn rune) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 
 	if pb.PbTop >= MaxAFew { // Buffer is full
 		pb.pushbackIntoBuffer()
@@ -215,7 +214,7 @@ func (pb *PBReadType) PbRune(rn rune) {
 
 // Push back a slice of runes
 func (pb *PBReadType) PbRuneArray(rns []rune) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	for ii := len(rns) - 1; ii >= 0; ii-- {
 		pb.PbRune(rns[ii])
 	}
@@ -223,7 +222,7 @@ func (pb *PBReadType) PbRuneArray(rns []rune) {
 
 // Push back a string - will be converted form string to array of runes
 func (pb *PBReadType) PbString(s string) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	rns := make([]rune, 0, len(s))
 	var rn rune
 	var sz int
@@ -236,7 +235,7 @@ func (pb *PBReadType) PbString(s string) {
 
 // Push back a string.  Will be converted from an array of byte to an array of runes.
 func (pb *PBReadType) PbByteArray(s []byte) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	rns := make([]rune, 0, len(s))
 	var rn rune
 	var sz int
@@ -249,7 +248,7 @@ func (pb *PBReadType) PbByteArray(s []byte) {
 
 // Place the contents of a file in buffers at the head so NextRune will pull from this next.
 func (pb *PBReadType) PbFile(fn string) (err error) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	err = nil
 
 	pb.pushbackIntoBuffer()
@@ -288,7 +287,7 @@ func (pb *PBReadType) PbFile(fn string) (err error) {
 
 // Have we already seen the specified file.  Useful for require(fn)
 func (pb *PBReadType) FileSeen(fn string) bool {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	a, _ := filepath.Abs(fn)
 	if t, ok := pb.FilesOpened[a]; ok && t {
 		return true
@@ -298,14 +297,14 @@ func (pb *PBReadType) FileSeen(fn string) bool {
 
 // Get the current line/col no and file name
 func (pb *PBReadType) GetPos() (LineNo int, ColNo int, FileName string) {
-	com.DbPrintf("pbbuf02", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf02", "At: %s\n", dbgo.LF())
 	if len(pb.PbBuffer) > 0 {
-		com.DbPrintf("pbbuf02", "From Buffer At: %s\n", com.LF())
+		dbgo.DbPrintf("pbbuf02", "From Buffer At: %s\n", dbgo.LF())
 		LineNo = pb.PbBuffer[0].LineNo
 		ColNo = pb.PbBuffer[0].ColNo
 		FileName = pb.PbBuffer[0].FileName
 	} else {
-		com.DbPrintf("pbbuf02", "Not set At: %s\n", com.LF())
+		dbgo.DbPrintf("pbbuf02", "Not set At: %s\n", dbgo.LF())
 		LineNo = 1
 		ColNo = 1
 		FileName = ""
@@ -315,7 +314,7 @@ func (pb *PBReadType) GetPos() (LineNo int, ColNo int, FileName string) {
 
 // Set the line/col/file-name for the current buffer - Useful for constructing something like C/Pre processor's #line
 func (pb *PBReadType) SetPos(LineNo int, ColNo int, FileName string) {
-	com.DbPrintf("pbbuf01", "At: %s\n", com.LF())
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
 	pb.pushbackIntoBuffer()
 	if len(pb.PbBuffer) > 0 {
 		pb.PbBuffer[0].LineNo = LineNo

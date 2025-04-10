@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/dbgo"
 	// "../com"
 	// "../../../go-lib/sizlib"
 )
@@ -165,7 +165,7 @@ func (ctx *ContextType) Call(name string, params ...interface{}) (result []refle
 			in[k] = reflect.ValueOf(param)
 		}
 	}
-	fmt.Printf("Just Before %s %d %+v, %s\n", name, np, params[0], com.LF())
+	fmt.Printf("Just Before %s %d %+v, %s\n", name, np, params[0], dbgo.LF())
 	result = fx.Func.Call(in)
 	return
 }

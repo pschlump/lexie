@@ -65,6 +65,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/uuid"
 
 	"github.com/pschlump/lexie/com"
@@ -487,38 +488,38 @@ func (pt *Parse2Type) GenParseTree(depth int) (mt *MtType) {
 		mt = NewMtType(gen.Tok_Tree_List, "")
 	}
 	done := false
-	fmt.Printf("At: %s\n", com.LF())
+	fmt.Printf("At: %s\n", dbgo.LF())
 	for !done {
-		fmt.Printf("At: %s\n", com.LF())
+		fmt.Printf("At: %s\n", dbgo.LF())
 		pt.Cc = pt.GetToken()
 		for pt.Cc.TokNo == gen.Tok_HTML {
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 			mt.List = append(mt.List, NewMtType(gen.Tok_HTML, pt.Cc.Match))
 			pt.Cc = pt.GetToken()
 		}
 		switch pt.Cc.TokNo {
 		case gen.Tok_OP_BL: // Open Block, Tag, {%
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 			pt.Cc = pt.GetToken()
 			if pt.Cc.TokNo == gen.Tok_ID {
 				fmt.Printf("******************** Lookup %s\n", pt.Cc.Match)
 				sym, err := pt.St.LookupSymbol(pt.Cc.Match) // lookup and determine if it is an "Item" or a "Begin-Block" or a "End-Block"
 				if err != nil {
-					fmt.Printf("Error: Name Not Found ->%s<- in symbol table - invalid tag, Cc=%+v %s\n", pt.Cc.Match, pt.Cc, com.LF())
+					fmt.Printf("Error: Name Not Found ->%s<- in symbol table - invalid tag, Cc=%+v %s\n", pt.Cc.Match, pt.Cc, dbgo.LF())
 					pt.ScanToNextMarker()
 					// error - symbol not found - not defined
 				} else {
 					switch sym.SymType {
 					case gen.Tok_Tree_Begin:
 						fmt.Printf("------------------------------------------------------------------------\n")
-						fmt.Printf("gen.Tok_Tree_Begin! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Printf("gen.Tok_Tree_Begin! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_Begin, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
 						x.List = append(x.List, pt.GenParseTree(depth+1)) // if block - then recursive call to "parse" // if end-block - then return
 						mt.List = append(mt.List, x)
 					case gen.Tok_Tree_End:
-						fmt.Printf("At: %s\n", com.LF())
+						fmt.Printf("At: %s\n", dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_End, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mt.List = append(mt.List, x)
@@ -527,7 +528,7 @@ func (pt *Parse2Type) GenParseTree(depth int) (mt *MtType) {
 							return
 						}
 					case gen.Tok_Tree_Item:
-						fmt.Printf("At: %s\n", com.LF())
+						fmt.Printf("At: %s\n", dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_Item, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mt.List = append(mt.List, x)
@@ -535,7 +536,7 @@ func (pt *Parse2Type) GenParseTree(depth int) (mt *MtType) {
 
 					case gen.Tok_Tree_If: //= 410
 						fmt.Printf("------------------------------------------------------------------------\n")
-						fmt.Printf("gen.Tok_Tree_If! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Printf("gen.Tok_Tree_If! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_If, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
@@ -543,7 +544,7 @@ func (pt *Parse2Type) GenParseTree(depth int) (mt *MtType) {
 						mt.List = append(mt.List, x)
 					case gen.Tok_Tree_Ifequal:
 						fmt.Printf("------------------------------------------------------------------------\n")
-						fmt.Printf("gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Printf("gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_Ifequal, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
@@ -551,26 +552,26 @@ func (pt *Parse2Type) GenParseTree(depth int) (mt *MtType) {
 						mt.List = append(mt.List, x)
 					case gen.Tok_Tree_Ifnotequal:
 						fmt.Printf("------------------------------------------------------------------------\n")
-						fmt.Printf("gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Printf("gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_Ifnotequal, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
 						x.List = append(x.List, pt.GenParseTree(depth+1)) // if block - then recursive call to "parse" // if end-block - then return
 						mt.List = append(mt.List, x)
 					case gen.Tok_Tree_ElsIf: //= 411
-						fmt.Printf("At: %s\n", com.LF())
+						fmt.Printf("At: %s\n", dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_ElsIf, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mt.List = append(mt.List, x)
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x) // scan across to %} - for entire begin-block/item
 					case gen.Tok_Tree_Else: //= 412
-						fmt.Printf("At: %s\n", com.LF())
+						fmt.Printf("At: %s\n", dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_Else, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mt.List = append(mt.List, x)
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x) // scan across to %} - for entire begin-block/item
 					case gen.Tok_Tree_Endif: //= 413
-						fmt.Printf("At: %s\n", com.LF())
+						fmt.Printf("At: %s\n", dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_Endif, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mt.List = append(mt.List, x)
@@ -581,20 +582,20 @@ func (pt *Parse2Type) GenParseTree(depth int) (mt *MtType) {
 
 					case gen.Tok_Tree_For:
 						fmt.Printf("------------------------------------------------------------------------\n")
-						fmt.Printf("gen.Tok_Tree_For! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Printf("gen.Tok_Tree_For! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_For, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
 						x.List = append(x.List, pt.GenParseTree(depth+1)) // if block - then recursive call to "parse" // if end-block - then return
 						mt.List = append(mt.List, x)
 					case gen.Tok_Tree_Empty:
-						fmt.Printf("At: %s\n", com.LF())
+						fmt.Printf("At: %s\n", dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_Empty, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mt.List = append(mt.List, x)
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x) // scan across to %} - for entire begin-block/item
 					case gen.Tok_Tree_EndFor:
-						fmt.Printf("At: %s\n", com.LF())
+						fmt.Printf("At: %s\n", dbgo.LF())
 						x := NewMtType(gen.Tok_Tree_EndFor, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mt.List = append(mt.List, x)
@@ -604,32 +605,32 @@ func (pt *Parse2Type) GenParseTree(depth int) (mt *MtType) {
 						}
 
 					default:
-						fmt.Printf("Error: Invalid SymbolTable.SymType=%d At: %s\n", sym.SymType, com.LF())
+						fmt.Printf("Error: Invalid SymbolTable.SymType=%d At: %s\n", sym.SymType, dbgo.LF())
 					}
 				}
 			} else {
-				fmt.Printf("Error: Tag must be followd by a name, %s/%d found instead, At: %s\n", pt.Cc.TokNo, pt.Cc.Match, com.LF())
+				fmt.Printf("Error: Tag must be followd by a name, %s/%d found instead, At: %s\n", pt.Cc.TokNo, pt.Cc.Match, dbgo.LF())
 				// error
 			}
 		case gen.Tok_CL_BL: // Close Block, Tag, {%
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 			//	// lookup and verify close block
 			//	// scan across to %} - for entire begin-block/item
 			if depth != 0 {
 				return
 			}
 		case gen.Tok_OP_VAR:
-			fmt.Printf("At: %s\n", com.LF()) // Evaluate the VAR
+			fmt.Printf("At: %s\n", dbgo.LF()) // Evaluate the VAR
 		}
-		fmt.Printf("At: %s\n", com.LF())
+		fmt.Printf("At: %s\n", dbgo.LF())
 		for pt.Cc.TokNo == gen.Tok_HTML {
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 			mt.List = append(mt.List, NewMtType(gen.Tok_HTML, pt.Cc.Match))
 			pt.Cc = pt.GetToken()
 		}
-		fmt.Printf("At: %s\n", com.LF())
+		fmt.Printf("At: %s\n", dbgo.LF())
 		if pt.Cc.TokNo == gen.Tok_EOF {
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 			done = true
 		}
 	}
@@ -667,17 +668,17 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 		switch mt.NodeType {
 		case gen.Tok_Tree_Item: // = 406 // An item like {% csrf_token %}
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
-				fmt.Printf("Found item %s to execute, %s\n", x.FxName, com.LF())
+				fmt.Printf("Found item %s to execute, %s\n", x.FxName, dbgo.LF())
 				x.Fx(0, pt, pt.Ctx, mt)
 			}
 		case gen.Tok_Tree_Begin: // = 407 // An begin token like {% block <name> %} <name>==Value, ID="block"
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
-				fmt.Printf("Found item %s to begin-block, %s\n", x.FxName, com.LF())
+				fmt.Printf("Found item %s to begin-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(1, pt, pt.Ctx, mt)
 			}
 		case gen.Tok_Tree_End: // = 408 // An begin token like {% endblock <name> %} <name>==Value, ID="block"
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
-				fmt.Printf("Found item %s to end-block, %s\n", x.FxName, com.LF())
+				fmt.Printf("Found item %s to end-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(2, pt, pt.Ctx, mt)
 			}
 		}
@@ -689,16 +690,16 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 	walkTreePass2 = func(mt *MtType, pos, depth int) {
 		switch mt.NodeType {
 		case gen.Tok_Tree_If: //           = 410
-			fmt.Printf("Found IF, %s\n", com.LF())
+			fmt.Printf("Found IF, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
-				// fmt.Printf("Run item %s if-block, %s\n", x.FxName, com.LF())
+				// fmt.Printf("Run item %s if-block, %s\n", x.FxName, dbgo.LF())
 				pt.pos = pos
 				pt.depth = depth + 1
 				x.Fx(11, pt, pt.Ctx, mt) // pass pt, walkTreePass2, pos, depth
 			}
 
 		case gen.Tok_Tree_For:
-			fmt.Printf("Found FOR, %s\n", com.LF())
+			fmt.Printf("Found FOR, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
 				pt.pos = pos
 				pt.depth = depth + 1
@@ -706,13 +707,13 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 			}
 
 		case gen.Tok_Tree_Comment:
-			fmt.Printf("Found Comment, %s\n", com.LF())
+			fmt.Printf("Found Comment, %s\n", dbgo.LF())
 		case gen.Tok_Tree_Item: // = 406 // An item like {% csrf_token %}
 			for ii, vv := range mt.List {
 				walkTreePass2(vv, ii, depth+1)
 			}
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
-				fmt.Printf("Run item %s to execute, %s\n", x.FxName, com.LF())
+				fmt.Printf("Run item %s to execute, %s\n", x.FxName, dbgo.LF())
 				x.Fx(10, pt, pt.Ctx, mt)
 			}
 		case gen.Tok_Tree_Begin: // = 407 // An begin token like {% block <name> %} <name>==Value, ID="block"
@@ -720,7 +721,7 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 				walkTreePass2(vv, ii, depth+1)
 			}
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
-				fmt.Printf("Run item %s to begin-block, %s\n", x.FxName, com.LF())
+				fmt.Printf("Run item %s to begin-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(11, pt, pt.Ctx, mt)
 			}
 		case gen.Tok_Tree_End: // = 408 // An begin token like {% endblock <name> %} <name>==Value, ID="block"
@@ -728,14 +729,14 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 			//	walkTreePass2(vv, ii, depth+1)
 			//}
 			if x, ok := pt.FxLookup[mt.FxId]; ok {
-				fmt.Printf("Run item %s to end-block, %s\n", x.FxName, com.LF())
+				fmt.Printf("Run item %s to end-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(12, pt, pt.Ctx, mt)
 			}
 		default:
 			for ii, vv := range mt.List {
 				walkTreePass2(vv, ii, depth+1)
 			}
-			fmt.Printf("Run default, %s\n", com.LF())
+			fmt.Printf("Run default, %s\n", dbgo.LF())
 			mt.HTML_Output = EscapeStr(fmt.Sprintf("%s", mt.XValue), mt.EscapeIt)
 		}
 	}
@@ -803,8 +804,8 @@ func (pt *Parse2Type) CollectTree(mt *MtType, depth int) (rv string) {
 func (mt *MtType) NOptions(n int) bool {
 	if len(mt.SVal) != n {
 		mt.Error = true
-		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of  options supplied - should have %d options, found %d, %s", n, len(mt.SVal), com.LF(2))
-		// fmt.Printf("Error: incorrect number of  options supplied - should have %d options, found %d (%v), %s", n, len(mt.SVal), mt.SVal, com.LF(2))
+		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of  options supplied - should have %d options, found %d, %s", n, len(mt.SVal), dbgo.LF(2))
+		// fmt.Printf("Error: incorrect number of  options supplied - should have %d options, found %d (%v), %s", n, len(mt.SVal), mt.SVal, dbgo.LF(2))
 		return false
 	}
 	return true
@@ -813,7 +814,7 @@ func (mt *MtType) NOptions(n int) bool {
 func (mt *MtType) MoreThan(n int) bool {
 	if len(mt.SVal) <= n {
 		mt.Error = true
-		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of options supplied - should have more than %d options, %s", n, com.LF(2))
+		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of options supplied - should have more than %d options, %s", n, dbgo.LF(2))
 		return false
 	}
 	return true
@@ -848,7 +849,7 @@ func (mt *MtType) EvalExpr(Context *eval.ContextType, n, m int) bool {
 	fmt.Printf("BOTTOM: %s ----------------------------------------------------- \n", com.SVarI(tr))
 	s := sv[0]
 	v, t, _ := Context.GetFromContext(s)
-	fmt.Printf("At: %s - in EvalExpr, v=%v t=%v for >%s<-\n", com.LF(), v, t, s)
+	fmt.Printf("At: %s - in EvalExpr, v=%v t=%v for >%s<-\n", dbgo.LF(), v, t, s)
 	// xyzzy nil, 9 -- 9 is error, not found
 	if t == eval.CtxType_Bool {
 		fmt.Printf("Setting bool to true\n")
@@ -890,7 +891,9 @@ func FindTags(mt *MtType, tag ...int) (rv []int) {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//                             Fx Funcitons
+//
+//	Fx Funcitons
+//
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 type FxCycleDataType struct {
@@ -1051,7 +1054,7 @@ func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *MtType
 	}
 
 	if callNo == 11 {
-		fmt.Printf("n options = %d, opts = %v AT: %s\n", len(curTree.SVal), curTree.SVal, com.LF())
+		fmt.Printf("n options = %d, opts = %v AT: %s\n", len(curTree.SVal), curTree.SVal, dbgo.LF())
 		if !curTree.MoreThan(0) {
 		} else {
 			ifp := FindTags(curTree.List[0], gen.Tok_Tree_ElsIf, gen.Tok_Tree_Else, gen.Tok_Tree_Endif) // find parts of if/else
@@ -1064,23 +1067,23 @@ func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *MtType
 					return
 				}
 			}
-			fmt.Printf("At AT: %s\n", com.LF())
+			fmt.Printf("At AT: %s\n", dbgo.LF())
 			for i := 0; i < len(ifp)-1; i++ {
 				ct := curTree.List[0].List[ifp[i]]
-				fmt.Printf("At AT: %s\n", com.LF())
+				fmt.Printf("At AT: %s\n", dbgo.LF())
 				if ct.NodeType == gen.Tok_Tree_ElsIf {
-					fmt.Printf("At AT, it is (((ElsIf))): %s\n", com.LF()) //
-					if ct.EvalExpr(Context, 0, 0) {                        // expression is correct
-						fmt.Printf("At AT: %s, ct=%+v\n", com.LF(), ct)           //
+					fmt.Printf("At AT, it is (((ElsIf))): %s\n", dbgo.LF()) //
+					if ct.EvalExpr(Context, 0, 0) {                         // expression is correct
+						fmt.Printf("At AT: %s, ct=%+v\n", dbgo.LF(), ct)          //
 						if ct.DataType == eval.CtxType_Bool && ct.XValue.(bool) { // If true value for expression
 							x := tmpMt(curTree.List[0].List[ifp[i]+1 : ifp[i+1]])
-							fmt.Printf("At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", com.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
+							fmt.Printf("At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
 							pt.x_walk(x, pt.pos, pt.depth)
 							return
 						}
 					}
 				} else if ct.NodeType == gen.Tok_Tree_Else {
-					fmt.Printf("At AT, it is (((Else))): %s\n", com.LF())
+					fmt.Printf("At AT, it is (((Else))): %s\n", dbgo.LF())
 					x := tmpMt(curTree.List[0].List[ifp[i]+1 : ifp[i+1]])
 					pt.x_walk(x, pt.pos, pt.depth)
 					return
@@ -1218,7 +1221,7 @@ func FxReadJson(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 			var file []byte
 			file, err = ioutil.ReadFile(path)
 			if err != nil {
-				fmt.Printf("Error(10014): %v, %s, Config File:%s\n", err, com.LF(), path)
+				fmt.Printf("Error(10014): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 				return
 			}
 			file = []byte(strings.Replace(string(file), "\t", " ", -1)) // file = []byte(ReplaceString(string(file), "^[ \t][ \t]*//.*$", ""))
@@ -1230,7 +1233,7 @@ func FxReadJson(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 
 				err = json.Unmarshal(file, &jsonData)
 				if err != nil {
-					fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, com.LF(), path)
+					fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 					return
 				}
 
@@ -1242,7 +1245,7 @@ func FxReadJson(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 
 				err = json.Unmarshal(file, &jsonData)
 				if err != nil {
-					fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, com.LF(), path)
+					fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 					return
 				}
 

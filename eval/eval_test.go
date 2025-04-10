@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/gen"
 	"github.com/pschlump/lexie/tok"
@@ -3672,19 +3673,19 @@ func Test_St01(t *testing.T) {
 					switch tr.CurValue.(type) {
 					case int:
 						if tr.CurValue.(int) != ww.NValue {
-							t.Errorf("%04s: %d error, expected %d got %d, found it, %s\n", vv.Test, pc, ww.NValue, tr.CurValue, com.LF())
+							t.Errorf("%04s: %d error, expected %d got %d, found it, %s\n", vv.Test, pc, ww.NValue, tr.CurValue, dbgo.LF())
 						}
 					case float64:
 						if tr.CurValue.(float64) != ww.FValue {
-							t.Errorf("%04s: %d error, expected %v got %v, found it, %s\n", vv.Test, pc, ww.FValue, tr.CurValue, com.LF())
+							t.Errorf("%04s: %d error, expected %v got %v, found it, %s\n", vv.Test, pc, ww.FValue, tr.CurValue, dbgo.LF())
 						}
 					case bool:
 						if tr.CurValue.(bool) != ww.BValue {
-							t.Errorf("%04s: %d error, expected %v got %v, found it, %s\n", vv.Test, pc, ww.BValue, tr.CurValue, com.LF())
+							t.Errorf("%04s: %d error, expected %v got %v, found it, %s\n", vv.Test, pc, ww.BValue, tr.CurValue, dbgo.LF())
 						}
 					case string:
 						if tr.CurValue.(string) != ww.SValue {
-							t.Errorf("%04s: %d error, expected %v got %v, found it, %s\n", vv.Test, pc, ww.SValue, tr.CurValue, com.LF())
+							t.Errorf("%04s: %d error, expected %v got %v, found it, %s\n", vv.Test, pc, ww.SValue, tr.CurValue, dbgo.LF())
 						}
 					}
 
@@ -3692,9 +3693,9 @@ func Test_St01(t *testing.T) {
 				case CmdErrorsContain:
 					fmt.Printf("***************** Check for errors %s count %d\n", ww.Id, ww.NValue)
 					if !tr.Error {
-						t.Errorf("%04s: %d error, expected error - did not get one, found it, %s\n", vv.Test, pc, com.LF())
+						t.Errorf("%04s: %d error, expected error - did not get one, found it, %s\n", vv.Test, pc, dbgo.LF())
 					} // else if strings.Contains(tr.ErrorMsg, ww.Id) {
-					// 	t.Errorf("%04s: %d error, expected error with %s in it - did not find that, got %s, found it, %s\n", vv.Test, pc, ww.Id, tr.ErrorMsg, com.LF())
+					// 	t.Errorf("%04s: %d error, expected error with %s in it - did not find that, got %s, found it, %s\n", vv.Test, pc, ww.Id, tr.ErrorMsg, dbgo.LF())
 					// }
 
 				case CmdInsertInContext:
@@ -3726,7 +3727,7 @@ func Test_St01(t *testing.T) {
 					g_global = ww.NValue
 				case CmdCmpGlob: //  = 11 // Set global to NValue
 					if g_global != ww.NValue {
-						t.Errorf("%04s: %d error, expected %d in g_global, got %d, found it, %s\n", vv.Test, pc, ww.NValue, g_global, com.LF())
+						t.Errorf("%04s: %d error, expected %d in g_global, got %d, found it, %s\n", vv.Test, pc, ww.NValue, g_global, dbgo.LF())
 					}
 
 				case CmdReadJson:
@@ -3734,7 +3735,7 @@ func Test_St01(t *testing.T) {
 					path := ww.Data
 					file, err := ioutil.ReadFile(path)
 					if err != nil {
-						fmt.Printf("Error(10014): %v, %s, Config File:%s\n", err, com.LF(), path)
+						fmt.Printf("Error(10014): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 						return
 					}
 					file = []byte(strings.Replace(string(file), "\t", " ", -1)) // file = []byte(ReplaceString(string(file), "^[ \t][ \t]*//.*$", ""))
@@ -3746,7 +3747,7 @@ func Test_St01(t *testing.T) {
 
 						err = json.Unmarshal(file, &jsonData)
 						if err != nil {
-							fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, com.LF(), path)
+							fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 							return
 						}
 
@@ -3758,7 +3759,7 @@ func Test_St01(t *testing.T) {
 
 						err = json.Unmarshal(file, &jsonData)
 						if err != nil {
-							fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, com.LF(), path)
+							fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 							return
 						}
 
@@ -3770,7 +3771,7 @@ func Test_St01(t *testing.T) {
 
 						err = json.Unmarshal(file, &jsonData)
 						if err != nil {
-							fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, com.LF(), path)
+							fmt.Printf("Error(10012): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 							return
 						}
 

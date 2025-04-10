@@ -116,6 +116,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/uuid"
 
 	"github.com/pschlump/lexie/com"
@@ -264,7 +265,7 @@ func (pt *Parse2Type) GetToken() (tk tok.Token) {
 	t1 = <-pt.Lex.Message
 	tk = t1.Token
 
-	fmt.Fprintf(Dbf, "Token %d ->%s<- At: %s\n", tk.TokNo, tk.Match, com.LF())
+	fmt.Fprintf(Dbf, "Token %d ->%s<- At: %s\n", tk.TokNo, tk.Match, dbgo.LF())
 
 	switch tk.TokNo {
 	case gen.Tok_Str0:
@@ -287,11 +288,11 @@ func (pt *Parse2Type) GetToken() (tk tok.Token) {
 			tk.DataType = eval.CtxType_Bool
 			tk.CurValue = false
 		default:
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if t0, cv, f := pt.LookupReservedWord(tk.Match); f {
 				tk.TokNo = t0
 				tk.CurValue = cv
-				fmt.Fprintf(Dbf, "TokNo changed to %d At: %s\n", t0, com.LF())
+				fmt.Fprintf(Dbf, "TokNo changed to %d At: %s\n", t0, dbgo.LF())
 			}
 		}
 
@@ -344,7 +345,7 @@ func (pt *Parse2Type) ScanToEndMarker(TokEnd int, mt *mt.MtType) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func (pt *Parse2Type) ScanToNextMarker() {
 	for pt.Cc.TokNo != gen.Tok_CL_BL {
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		pt.Cc = pt.GetToken()
 	}
 }
@@ -355,46 +356,46 @@ func (pt *Parse2Type) GenParseTree(depth int) (mtv *mt.MtType) {
 		mtv = mt.NewMtType(gen.Tok_Tree_List, "")
 	}
 	done := false
-	fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 	for !done {
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		pt.Cc = pt.GetToken()
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		if pt.Cc.TokNo == gen.Tok_EOF {
 			done = true
 		}
 		for pt.Cc.TokNo == gen.Tok_HTML {
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			mtv.List = append(mtv.List, mt.NewMtType(gen.Tok_HTML, pt.Cc.Match))
 			pt.Cc = pt.GetToken()
 			if pt.Cc.TokNo == gen.Tok_EOF {
 				done = true
 			}
 		}
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		switch pt.Cc.TokNo {
 		case gen.Tok_OP_BL: // Open Block, Tag, {%
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			pt.Cc = pt.GetToken()
 			if pt.Cc.TokNo == gen.Tok_ID || pt.Cc.TokNo >= 500 {
 				fmt.Fprintf(Dbf, "******************** Lookup %s\n", pt.Cc.Match)
 				sym, err := pt.St.LookupSymbol(pt.Cc.Match) // lookup and determine if it is an "Item" or a "Begin-Block" or a "End-Block"
 				if err != nil {
-					fmt.Fprintf(Dbf, "Error: Name Not Found ->%s<- in symbol table - invalid tag, Cc=%+v %s\n", pt.Cc.Match, pt.Cc, com.LF())
+					fmt.Fprintf(Dbf, "Error: Name Not Found ->%s<- in symbol table - invalid tag, Cc=%+v %s\n", pt.Cc.Match, pt.Cc, dbgo.LF())
 					pt.ScanToNextMarker()
 					// error - symbol not found - not defined
 				} else {
 					switch sym.SymType {
 					case gen.Tok_Tree_Begin:
 						fmt.Fprintf(Dbf, "------------------------------------------------------------------------\n")
-						fmt.Fprintf(Dbf, "gen.Tok_Tree_Begin! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Fprintf(Dbf, "gen.Tok_Tree_Begin! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_Begin, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
 						x.List = append(x.List, pt.GenParseTree(depth+1)) // if block - then recursive call to "parse" // if end-block - then return
 						mtv.List = append(mtv.List, x)
 					case gen.Tok_Tree_End:
-						fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+						fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_End, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mtv.List = append(mtv.List, x)
@@ -403,7 +404,7 @@ func (pt *Parse2Type) GenParseTree(depth int) (mtv *mt.MtType) {
 							return
 						}
 					case gen.Tok_Tree_Item:
-						fmt.Fprintf(Dbf, "ITEM %s At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Fprintf(Dbf, "ITEM %s At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_Item, pt.Cc.Match)
 						x.FxId = sym.FxId
 						fmt.Printf("FxId = %d\n", sym.FxId)
@@ -412,7 +413,7 @@ func (pt *Parse2Type) GenParseTree(depth int) (mtv *mt.MtType) {
 
 					case gen.Tok_Tree_If: //= 410
 						fmt.Fprintf(Dbf, "------------------------------------------------------------------------\n")
-						fmt.Fprintf(Dbf, "gen.Tok_Tree_If! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Fprintf(Dbf, "gen.Tok_Tree_If! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_If, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
@@ -420,7 +421,7 @@ func (pt *Parse2Type) GenParseTree(depth int) (mtv *mt.MtType) {
 						mtv.List = append(mtv.List, x)
 					case gen.Tok_Tree_Ifequal:
 						fmt.Fprintf(Dbf, "------------------------------------------------------------------------\n")
-						fmt.Fprintf(Dbf, "gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Fprintf(Dbf, "gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_Ifequal, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
@@ -428,26 +429,26 @@ func (pt *Parse2Type) GenParseTree(depth int) (mtv *mt.MtType) {
 						mtv.List = append(mtv.List, x)
 					case gen.Tok_Tree_Ifnotequal:
 						fmt.Fprintf(Dbf, "------------------------------------------------------------------------\n")
-						fmt.Fprintf(Dbf, "gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Fprintf(Dbf, "gen.Tok_Tree_IfEqual! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_Ifnotequal, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
 						x.List = append(x.List, pt.GenParseTree(depth+1)) // if block - then recursive call to "parse" // if end-block - then return
 						mtv.List = append(mtv.List, x)
 					case gen.Tok_Tree_ElsIf: //= 411
-						fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+						fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_ElsIf, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mtv.List = append(mtv.List, x)
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x) // scan across to %} - for entire begin-block/item
 					case gen.Tok_Tree_Else: //= 412
-						fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+						fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_Else, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mtv.List = append(mtv.List, x)
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x) // scan across to %} - for entire begin-block/item
 					case gen.Tok_Tree_Endif: //= 413
-						fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+						fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_Endif, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mtv.List = append(mtv.List, x)
@@ -458,20 +459,20 @@ func (pt *Parse2Type) GenParseTree(depth int) (mtv *mt.MtType) {
 
 					case gen.Tok_Tree_For:
 						fmt.Fprintf(Dbf, "------------------------------------------------------------------------\n")
-						fmt.Fprintf(Dbf, "gen.Tok_Tree_For! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, com.LF())
+						fmt.Fprintf(Dbf, "gen.Tok_Tree_For! Recursive Call Match ->%s<- At: %s\n", pt.Cc.Match, dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_For, pt.Cc.Match)
 						x.FxId = sym.FxId
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x)              // scan across to %} - for entire begin-block/item
 						x.List = append(x.List, pt.GenParseTree(depth+1)) // if block - then recursive call to "parse" // if end-block - then return
 						mtv.List = append(mtv.List, x)
 					case gen.Tok_Tree_Empty:
-						fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+						fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_Empty, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mtv.List = append(mtv.List, x)
 						pt.ScanToEndMarker(gen.Tok_CL_BL, x) // scan across to %} - for entire begin-block/item
 					case gen.Tok_Tree_EndFor:
-						fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+						fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 						x := mt.NewMtType(gen.Tok_Tree_EndFor, pt.Cc.Match)
 						x.FxId = sym.FxId
 						mtv.List = append(mtv.List, x)
@@ -483,32 +484,32 @@ func (pt *Parse2Type) GenParseTree(depth int) (mtv *mt.MtType) {
 						done = true
 
 					default:
-						fmt.Fprintf(Dbf, "Error: Invalid SymbolTable.SymType=%d At: %s\n", sym.SymType, com.LF())
+						fmt.Fprintf(Dbf, "Error: Invalid SymbolTable.SymType=%d At: %s\n", sym.SymType, dbgo.LF())
 					}
 				}
 			} else {
-				fmt.Fprintf(Dbf, "Error: Tag must be followd by a name, %d/%s found instead, At: %s\n", pt.Cc.TokNo, pt.Cc.Match, com.LF())
+				fmt.Fprintf(Dbf, "Error: Tag must be followd by a name, %d/%s found instead, At: %s\n", pt.Cc.TokNo, pt.Cc.Match, dbgo.LF())
 				// error
 			}
 		case gen.Tok_CL_BL: // Close Block, Tag, {%
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			//	// lookup and verify close block
 			//	// scan across to %} - for entire begin-block/item
 			if depth != 0 {
 				return
 			}
 		case gen.Tok_OP_VAR:
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF()) // Evaluate the VAR
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF()) // Evaluate the VAR
 		}
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		for pt.Cc.TokNo == gen.Tok_HTML {
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			mtv.List = append(mtv.List, mt.NewMtType(gen.Tok_HTML, pt.Cc.Match))
 			pt.Cc = pt.GetToken()
 		}
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		if pt.Cc.TokNo == gen.Tok_EOF {
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			done = true
 		}
 	}
@@ -538,17 +539,17 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 		switch (*mtv).NodeType {
 		case gen.Tok_Tree_Item: // = 406 // An item like {% csrf_token %}
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Found item %s to execute, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Found item %s to execute, %s\n", x.FxName, dbgo.LF())
 				x.Fx(0, pt, pt.Ctx, mtv)
 			}
 		case gen.Tok_Tree_Begin: // = 407 // An begin token like {% block <name> %} <name>==Value, ID="block"
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Found item %s to begin-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Found item %s to begin-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(1, pt, pt.Ctx, mtv)
 			}
 		case gen.Tok_Tree_End: // = 408 // An begin token like {% endblock <name> %} <name>==Value, ID="block"
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Found item %s to end-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Found item %s to end-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(2, pt, pt.Ctx, mtv)
 			}
 		}
@@ -560,16 +561,16 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 	walkTreePass2 = func(mtv **mt.MtType, pos, depth int) {
 		switch (*mtv).NodeType {
 		case gen.Tok_Tree_If: //           = 410
-			fmt.Fprintf(Dbf, "Found IF, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Found IF, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				// fmt.Fprintf(Dbf,"Run item %s if-block, %s\n", x.FxName, com.LF())
+				// fmt.Fprintf(Dbf,"Run item %s if-block, %s\n", x.FxName, dbgo.LF())
 				pt.pos = pos
 				pt.depth = depth + 1
 				x.Fx(11, pt, pt.Ctx, mtv) // pass pt, walkTreePass2, pos, depth
 			}
 
 		case gen.Tok_Tree_For:
-			fmt.Fprintf(Dbf, "Found FOR, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Found FOR, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
 				pt.pos = pos
 				pt.depth = depth + 1
@@ -577,44 +578,44 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 			}
 
 		//case gen.Tok_Tree_Comment:
-		//	fmt.Fprintf(Dbf, "Found Comment, %s\n", com.LF())
+		//	fmt.Fprintf(Dbf, "Found Comment, %s\n", dbgo.LF())
 		case gen.Tok_Tree_Item: // = 406 // An item like {% csrf_token %}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			for ii, _ := range (*mtv).List {
 				walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to execute, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to execute, %s\n", x.FxName, dbgo.LF())
 				x.Fx(10, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		case gen.Tok_Tree_Begin: // = 407 // An begin token like {% block <name> %} <name>==Value, ID="block"
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			for ii, _ := range (*mtv).List {
 				walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "********************************************** Run item %s to begin-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "********************************************** Run item %s to begin-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(11, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		case gen.Tok_Tree_End: // = 408 // An begin token like {% endblock <name> %} <name>==Value, ID="block"
 			//for ii, vv := range mt.List {
 			//	walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			//}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to end-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to end-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(12, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		default:
 			for ii, _ := range (*mtv).List {
 				walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "Run default, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Run default, %s\n", dbgo.LF())
 			(*mtv).HTML_Output = com.EscapeStr(fmt.Sprintf("%s", (*mtv).XValue), (*mtv).EscapeIt)
 		}
 	}
@@ -622,16 +623,16 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 	walkTreePass3 = func(mtv **mt.MtType, pos, depth int) {
 		switch (*mtv).NodeType {
 		case gen.Tok_Tree_If: //           = 410
-			fmt.Fprintf(Dbf, "Found IF, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Found IF, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				// fmt.Fprintf(Dbf,"Run item %s if-block, %s\n", x.FxName, com.LF())
+				// fmt.Fprintf(Dbf,"Run item %s if-block, %s\n", x.FxName, dbgo.LF())
 				pt.pos = pos
 				pt.depth = depth + 1
 				x.Fx(21, pt, pt.Ctx, mtv) // pass pt, walkTreePass2, pos, depth
 			}
 
 		case gen.Tok_Tree_For:
-			fmt.Fprintf(Dbf, "Found FOR, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Found FOR, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
 				pt.pos = pos
 				pt.depth = depth + 1
@@ -639,44 +640,44 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 			}
 
 		case gen.Tok_Tree_Comment:
-			fmt.Fprintf(Dbf, "Found Comment, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Found Comment, %s\n", dbgo.LF())
 		case gen.Tok_Tree_Item: // = 406 // An item like {% csrf_token %}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			for ii, _ := range (*mtv).List {
 				walkTreePass3(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to execute, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to execute, %s\n", x.FxName, dbgo.LF())
 				x.Fx(20, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		case gen.Tok_Tree_Begin: // = 407 // An begin token like {% block <name> %} <name>==Value, ID="block"
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			for ii, _ := range (*mtv).List {
 				walkTreePass3(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to begin-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to begin-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(21, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		case gen.Tok_Tree_End: // = 408 // An begin token like {% endblock <name> %} <name>==Value, ID="block"
 			//for ii, vv := range mt.List {
 			//	walkTreePass2(mtv.List[ii], ii, depth+1)
 			//}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to end-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to end-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(22, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		default:
 			for ii, _ := range (*mtv).List {
 				walkTreePass3(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "Run default, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Run default, %s\n", dbgo.LF())
 			(*mtv).HTML_Output = com.EscapeStr(fmt.Sprintf("%s", (*mtv).XValue), (*mtv).EscapeIt)
 		}
 	}
@@ -690,18 +691,18 @@ func (pt *Parse2Type) ExecuteFunctions(depth int) {
 	}
 
 	fmt.Fprintf(Dbf, "\n\n-----------------------------------------------------------------------------------------------------------------------------\n")
-	fmt.Fprintf(Dbf, "Before Pass 0 At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "Before Pass 0 At: %s\n", dbgo.LF())
 	walkTreeInit(&pt.TheTree, 0, 0)
 	fmt.Fprintf(Dbf, "\n\n-----------------------------------------------------------------------------------------------------------------------------\n")
-	fmt.Fprintf(Dbf, "Before Pass 1 At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "Before Pass 1 At: %s\n", dbgo.LF())
 	walkTreePass1(&pt.TheTree, 0, 0)
 	fmt.Fprintf(Dbf, "\n\n-----------------------------------------------------------------------------------------------------------------------------\n")
-	fmt.Fprintf(Dbf, "Before Pass 2 At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "Before Pass 2 At: %s\n", dbgo.LF())
 	walkTreePass2(&pt.TheTree, 0, 0)
 	fmt.Fprintf(Dbf, "\n\n-----------------------------------------------------------------------------------------------------------------------------\n")
-	fmt.Fprintf(Dbf, "Before Pass 3 At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "Before Pass 3 At: %s\n", dbgo.LF())
 	walkTreePass3(&pt.TheTree, 0, 0)
-	fmt.Fprintf(Dbf, "All Done At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "All Done At: %s\n", dbgo.LF())
 }
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -769,7 +770,9 @@ func (pt *Parse2Type) CollectTree(mtv *mt.MtType, depth int) (rv string) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//                             Fx Funcitons
+//
+//	Fx Funcitons
+//
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -937,7 +940,7 @@ func FxAutoescape(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_If Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_If Called, %d\n", callNo)
 	fmt.Fprintf(Dbf, "---------------------------------------------------------------------------- if tree -------------------------------------------------------------------------\n")
 	(*curTree).DumpMtType(os.Stdout, 0, 0)
 
@@ -956,7 +959,7 @@ func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.Mt
 	}
 
 	if callNo == 11 {
-		fmt.Fprintf(Dbf, "n options = %d, opts = %v AT: %s\n", len((*curTree).SVal), (*curTree).SVal, com.LF())
+		fmt.Fprintf(Dbf, "n options = %d, opts = %v AT: %s\n", len((*curTree).SVal), (*curTree).SVal, dbgo.LF())
 		if !(*curTree).MoreThan(0) {
 		} else {
 			ifp := mt.FindTags((*curTree).List[0], gen.Tok_Tree_ElsIf, gen.Tok_Tree_Else, gen.Tok_Tree_Endif) // find parts of if/else
@@ -969,24 +972,24 @@ func FxIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.Mt
 					return
 				}
 			}
-			fmt.Fprintf(Dbf, "At AT: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At AT: %s\n", dbgo.LF())
 			for i := 0; i < len(ifp)-1; i++ {
 				ct := (*curTree).List[0].List[ifp[i]]
-				fmt.Fprintf(Dbf, "At AT: %s\n", com.LF())
+				fmt.Fprintf(Dbf, "At AT: %s\n", dbgo.LF())
 				if ct.NodeType == gen.Tok_Tree_ElsIf {
-					fmt.Fprintf(Dbf, "At AT, it is (((ElsIf))): %s\n", com.LF()) //
-					if ct.EvalExpr(Context, 0, 0) {                              // expression is correct
-						fmt.Fprintf(Dbf, "At AT: %s, ct=%+v\n", com.LF(), ct) //
+					fmt.Fprintf(Dbf, "At AT, it is (((ElsIf))): %s\n", dbgo.LF()) //
+					if ct.EvalExpr(Context, 0, 0) {                               // expression is correct
+						fmt.Fprintf(Dbf, "At AT: %s, ct=%+v\n", dbgo.LF(), ct) //
 						// -- xyzzy - use native .(type) and a switch
 						if ct.DataType == eval.CtxType_Bool && ct.XValue.(bool) { // If true value for expression
 							x := tmpMt((*curTree).List[0].List[ifp[i]+1 : ifp[i+1]])
-							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", com.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
+							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
 							pt.x_walk(&x, pt.pos, pt.depth) // xyzzy
 							return
 						}
 					}
 				} else if ct.NodeType == gen.Tok_Tree_Else {
-					fmt.Fprintf(Dbf, "At AT, it is (((Else))): %s\n", com.LF())
+					fmt.Fprintf(Dbf, "At AT, it is (((Else))): %s\n", dbgo.LF())
 					x := tmpMt((*curTree).List[0].List[ifp[i]+1 : ifp[i+1]])
 					pt.x_walk(&x, pt.pos, pt.depth) // xyzzy
 					return
@@ -1011,12 +1014,12 @@ type AMatchSet struct {
 func MatchAtBeg(curTree *mt.MtType, pat []AMatchSet) (found bool, match int) {
 	match = 0
 	p := len(curTree.SVal) - 1
-	fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 	for jj, ww := range pat {
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		for ii, vv := range ww.Tm {
 			if ii <= p {
-				fmt.Fprintf(Dbf, "At: %s, p=%d ii=%d, vv.AToken=%d, vv.AStr=>>>%s<<<\n", com.LF(), p, ii, vv.AToken, vv.AStr)
+				fmt.Fprintf(Dbf, "At: %s, p=%d ii=%d, vv.AToken=%d, vv.AStr=>>>%s<<<\n", dbgo.LF(), p, ii, vv.AToken, vv.AStr)
 			}
 			if ii <= p &&
 				((vv.AToken == gen.Tok_ID_or_Str && curTree.SVal[ii] == vv.AStr) ||
@@ -1024,60 +1027,60 @@ func MatchAtBeg(curTree *mt.MtType, pat []AMatchSet) (found bool, match int) {
 					(vv.AToken == gen.Tok_Match_Str && curTree.SVal[ii] == vv.AStr) ||
 					(vv.AToken == gen.Tok_Expr) ||
 					(curTree.TVal[ii] == vv.AToken)) {
-				fmt.Fprintf(Dbf, "At: %s - matched, loop on\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s - matched, loop on\n", dbgo.LF())
 			} else {
-				fmt.Fprintf(Dbf, "At: %s - next\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s - next\n", dbgo.LF())
 				goto next
 			}
 		}
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		found = true
 		match = jj
 		return
 	next:
 	}
-	fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 	return
 }
 
 func MatchAtEnd(curTree *mt.MtType, pat []AMatchSet) (found bool, match int) {
 	match = 0
 	p := len(curTree.SVal) - 1
-	fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 	for jj, ww := range pat {
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		lm := p - (len(ww.Tm) - 1)
 		for ii, vv := range ww.Tm {
-			fmt.Fprintf(Dbf, "At: %s, p=%d ii=%d, (lm+ii)=%d len(ww.Tm)=%d vv.AToken=%d, vv.AStr=>>>%s<<<\n", com.LF(), p, ii, lm+ii, len(ww.Tm), vv.AToken, vv.AStr)
+			fmt.Fprintf(Dbf, "At: %s, p=%d ii=%d, (lm+ii)=%d len(ww.Tm)=%d vv.AToken=%d, vv.AStr=>>>%s<<<\n", dbgo.LF(), p, ii, lm+ii, len(ww.Tm), vv.AToken, vv.AStr)
 			if lm+ii <= p && lm+ii >= 0 {
 				fmt.Fprintf(Dbf, "... curTree.SVal[%d]->>>%s<<<\n", lm-ii, curTree.SVal[lm-ii])
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if lm+ii <= p && lm+ii >= 0 && // (vv.AToken == gen.Tok_ID_or_Str && curTree.SVal[lm+ii] == vv.AStr) || (vv.AToken == gen.Tok_Expr) || (curTree.TVal[lm+ii] == vv.AToken) {
 				((vv.AToken == gen.Tok_ID_or_Str && curTree.SVal[lm+ii] == vv.AStr) ||
 					(vv.AToken == gen.Tok_ID_or_Str && curTree.TVal[lm+ii] == gen.Tok_ID) ||
 					(vv.AToken == gen.Tok_Match_Str && curTree.SVal[lm+ii] == vv.AStr) ||
 					(vv.AToken == gen.Tok_Expr) ||
 					(curTree.TVal[ii] == vv.AToken)) {
-				fmt.Fprintf(Dbf, "At: %s - matched, loop on\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s - matched, loop on\n", dbgo.LF())
 			} else {
-				fmt.Fprintf(Dbf, "At: %s - next\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s - next\n", dbgo.LF())
 				goto next
 			}
 		}
-		fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+		fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		found = true
 		match = jj
 		return
 	next:
 	}
-	fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+	fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 	return
 }
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxMtest(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_For Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_For Called, %d\n", callNo)
 
 	if callNo == 10 {
 		f, m := MatchAtBeg((*curTree), []AMatchSet{
@@ -1183,7 +1186,7 @@ func FxMtest(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxFor(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_For Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_For Called, %d\n", callNo)
 	// fmt.Fprintf(Dbf, "---------------------------------------------------------------------------- for tree -------------------------------------------------------------------------\n")
 	// if false {
 	// 	fmt.Fprintf(Dbf, "%s\n\n", com.SVarI((*curTree)))
@@ -1217,16 +1220,16 @@ func FxFor(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.M
 	walkTreePass2 = func(mtv **mt.MtType, pos, depth int) {
 		switch (*mtv).NodeType {
 		case gen.Tok_Tree_If: //           = 410
-			fmt.Fprintf(Dbf, "Found IF, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Found IF, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				// fmt.Fprintf(Dbf,"Run item %s if-block, %s\n", x.FxName, com.LF())
+				// fmt.Fprintf(Dbf,"Run item %s if-block, %s\n", x.FxName, dbgo.LF())
 				pt.pos = pos
 				pt.depth = depth + 1
 				x.Fx(11, pt, pt.Ctx, mtv) // pass pt, walkTreePass2, pos, depth
 			}
 
 		case gen.Tok_Tree_For:
-			fmt.Fprintf(Dbf, "Found FOR, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Found FOR, %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
 				pt.pos = pos
 				pt.depth = depth + 1
@@ -1234,44 +1237,44 @@ func FxFor(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.M
 			}
 
 		//case gen.Tok_Tree_Comment:
-		//	fmt.Fprintf(Dbf, "Found Comment, %s\n", com.LF())
+		//	fmt.Fprintf(Dbf, "Found Comment, %s\n", dbgo.LF())
 		case gen.Tok_Tree_Item: // = 406 // An item like {% csrf_token %}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			for ii, _ := range (*mtv).List {
 				walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to execute, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to execute, %s\n", x.FxName, dbgo.LF())
 				x.Fx(10, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		case gen.Tok_Tree_Begin: // = 407 // An begin token like {% block <name> %} <name>==Value, ID="block"
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			for ii, _ := range (*mtv).List {
 				walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to begin-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to begin-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(11, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		case gen.Tok_Tree_End: // = 408 // An begin token like {% endblock <name> %} <name>==Value, ID="block"
 			//for ii, vv := range mt.List {
 			//	walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			//}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			if x, ok := pt.FxLookup[(*mtv).FxId]; ok {
-				fmt.Fprintf(Dbf, "Run item %s to end-block, %s\n", x.FxName, com.LF())
+				fmt.Fprintf(Dbf, "Run item %s to end-block, %s\n", x.FxName, dbgo.LF())
 				x.Fx(12, pt, pt.Ctx, mtv)
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 		default:
 			for ii, _ := range (*mtv).List {
 				walkTreePass2(&((*mtv).List[ii]), ii, depth+1)
 			}
-			fmt.Fprintf(Dbf, "Run default, %s\n", com.LF())
+			fmt.Fprintf(Dbf, "Run default, %s\n", dbgo.LF())
 			(*mtv).HTML_Output = com.EscapeStr(fmt.Sprintf("%s", (*mtv).XValue), (*mtv).EscapeIt)
 		}
 	}
@@ -1379,7 +1382,7 @@ func FxFor(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.M
 					(*curTree).HTML_Output = tt
 					// fmt.Printf("HTML_Output after loop = ---->>>>%s<<<<----\n", (*curTree).HTML_Output)
 				} else if mx > 1 {
-					// fmt.Printf("mx=%d At:%s\n", mx, com.LF())
+					// fmt.Printf("mx=%d At:%s\n", mx, dbgo.LF())
 					for kk := 0; kk < mx; kk++ {
 						if kk+1 < mx && (*curTree).List[0].List[ifp[kk]].NodeType == gen.Tok_Tree_Empty && (*curTree).List[0].List[ifp[kk+1]].NodeType == gen.Tok_Tree_EndFor && ifp[kk]+1 <= ifp[kk+1]-1 {
 							// fmt.Printf("Inside NO loop, i=%d\n", kk)
@@ -1399,13 +1402,13 @@ func FxFor(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.M
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxEmpty(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_Empty Called, %d - error\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_Empty Called, %d - error\n", callNo)
 	return
 }
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxReadJson(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_ReadJson Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_ReadJson Called, %d\n", callNo)
 	// {% read_json ID "file_name.json" %} (config allows url:// not just file"
 
 	if callNo == 0 {
@@ -1421,7 +1424,7 @@ func FxReadJson(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 			var file []byte
 			file, err = ioutil.ReadFile(path)
 			if err != nil {
-				fmt.Fprintf(Dbf, "Error(10014): %v, %s, Config File:%s\n", err, com.LF(), path)
+				fmt.Fprintf(Dbf, "Error(10014): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 				return
 			}
 			file = []byte(strings.Replace(string(file), "\t", " ", -1)) // file = []byte(ReplaceString(string(file), "^[ \t][ \t]*//.*$", ""))
@@ -1433,7 +1436,7 @@ func FxReadJson(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 
 				err = json.Unmarshal(file, &jsonData)
 				if err != nil {
-					fmt.Fprintf(Dbf, "Error(10012): %v, %s, Config File:%s\n", err, com.LF(), path)
+					fmt.Fprintf(Dbf, "Error(10012): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 					return
 				}
 
@@ -1445,7 +1448,7 @@ func FxReadJson(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 
 				err = json.Unmarshal(file, &jsonData)
 				if err != nil {
-					fmt.Fprintf(Dbf, "Error(10012): %v, %s, Config File:%s\n", err, com.LF(), path)
+					fmt.Fprintf(Dbf, "Error(10012): %v, %s, Config File:%s\n", err, dbgo.LF(), path)
 					return
 				}
 
@@ -1468,7 +1471,7 @@ type FxDataChangeType struct {
 
 // xyzzy-FxIfChanged (partially completed)			00
 func FxIfChanged(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_IfChanged Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_IfChanged Called, %d\n", callNo)
 
 	tmpMt := func(ss []*mt.MtType) (rv *mt.MtType) {
 		rv = &mt.MtType{
@@ -1516,24 +1519,24 @@ func FxIfChanged(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree 
 			}
 			dv.TheData = (*curTree).XValue
 			(*curTree).DataVal = dv
-			fmt.Fprintf(Dbf, "At AT: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At AT: %s\n", dbgo.LF())
 			for i := 0; i < len(ifp)-1; i++ {
 				ct := (*curTree).List[0].List[ifp[i]]
-				fmt.Fprintf(Dbf, "At AT: %s\n", com.LF())
+				fmt.Fprintf(Dbf, "At AT: %s\n", dbgo.LF())
 				if ct.NodeType == gen.Tok_Tree_ElsIf {
-					fmt.Fprintf(Dbf, "At AT, it is (((ElsIf))): %s\n", com.LF()) //
-					if ct.EvalExpr(Context, 0, 0) {                              // expression is correct
-						fmt.Fprintf(Dbf, "At AT: %s, ct=%+v\n", com.LF(), ct) //
+					fmt.Fprintf(Dbf, "At AT, it is (((ElsIf))): %s\n", dbgo.LF()) //
+					if ct.EvalExpr(Context, 0, 0) {                               // expression is correct
+						fmt.Fprintf(Dbf, "At AT: %s, ct=%+v\n", dbgo.LF(), ct) //
 						// -- xyzzy - use native .(type) and a switch
 						if ct.DataType == eval.CtxType_Bool && ct.XValue.(bool) { // If true value for expression
 							x := tmpMt((*curTree).List[0].List[ifp[i]+1 : ifp[i+1]])
-							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", com.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
+							fmt.Fprintf(Dbf, "At -- Need to collect results -- AT: %s -------- elsif sub-tree Range[%d,%d] is %s\n", dbgo.LF(), ifp[i]+1, ifp[i+1], com.SVarI(x))
 							pt.x_walk(&x, pt.pos, pt.depth) // xyzzy
 							return
 						}
 					}
 				} else if ct.NodeType == gen.Tok_Tree_Else {
-					fmt.Fprintf(Dbf, "At AT, it is (((Else))): %s\n", com.LF())
+					fmt.Fprintf(Dbf, "At AT, it is (((Else))): %s\n", dbgo.LF())
 					x := tmpMt((*curTree).List[0].List[ifp[i]+1 : ifp[i+1]])
 					pt.x_walk(&x, pt.pos, pt.depth) // xyzzy
 					return
@@ -1633,7 +1636,7 @@ func ValuesSame(x interface{}, y interface{}) bool {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxIfEqual(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_IfEqual Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_IfEqual Called, %d\n", callNo)
 
 	// xyzzy-FxIfEqual (partially completed)
 
@@ -1642,7 +1645,7 @@ func FxIfEqual(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxIfNotChanged(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_IfNotChanged Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_IfNotChanged Called, %d\n", callNo)
 
 	// xyzzy-FxIfNotChanged (partially completed)
 
@@ -1651,7 +1654,7 @@ func FxIfNotChanged(callNo int, pt *Parse2Type, Context *eval.ContextType, curTr
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxIfNotEqual(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "Fx_IfNotEqual Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "Fx_IfNotEqual Called, %d\n", callNo)
 
 	// xyzzy-FxIfNotEqual (partially completed)
 
@@ -1660,7 +1663,7 @@ func FxIfNotEqual(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxDebug(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxDebug Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxDebug Called, %d\n", callNo)
 
 	if callNo == 0 || callNo == 1 {
 		l := len((*curTree).SVal)
@@ -1679,7 +1682,7 @@ func FxDebug(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxInclude(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxInclude Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxInclude Called, %d\n", callNo)
 
 	// xyzzy-FxInclude
 
@@ -1688,7 +1691,7 @@ func FxInclude(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxLoad(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxLoad Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxLoad Called, %d\n", callNo)
 
 	// xyzzy-FxLoad
 
@@ -1697,7 +1700,7 @@ func FxLoad(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxLorem(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxLorem Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxLorem Called, %d\n", callNo)
 
 	mode_count := 1      // 1st Pram (expression)
 	method := "b"        // w, p, b - one of
@@ -1796,7 +1799,7 @@ func FxLorem(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxNow(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxNow Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxNow Called, %d\n", callNo)
 
 	// xyzzy-FxNow
 
@@ -1805,7 +1808,7 @@ func FxNow(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.M
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxRegroup(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxRegroup Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxRegroup Called, %d\n", callNo)
 
 	// xyzzy-FxRegroup
 
@@ -1814,7 +1817,7 @@ func FxRegroup(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxTemplateTag(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxTemplateTag Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxTemplateTag Called, %d\n", callNo)
 
 	// xyzzy-FxTemplateTag
 
@@ -1823,7 +1826,7 @@ func FxTemplateTag(callNo int, pt *Parse2Type, Context *eval.ContextType, curTre
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxUrl(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxUrl Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxUrl Called, %d\n", callNo)
 
 	// xyzzy-FxUrl
 
@@ -1832,7 +1835,7 @@ func FxUrl(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.M
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxWith(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxWith Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxWith Called, %d\n", callNo)
 
 	// xyzzy-FxWith
 
@@ -1841,7 +1844,7 @@ func FxWith(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxWithRatio(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxWithRatio Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxWithRatio Called, %d\n", callNo)
 
 	// xyzzy-FxWithRatio
 
@@ -1850,7 +1853,7 @@ func FxWithRatio(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree 
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxVerbatim(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxVerbatim Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxVerbatim Called, %d\n", callNo)
 
 	// xyzzy-FxVerbatim
 
@@ -1859,7 +1862,7 @@ func FxVerbatim(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxSpaceless(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxSpaceless Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxSpaceless Called, %d\n", callNo)
 	fmt.Printf("This One: !!!\n")
 
 	var walkTree func(mtv **mt.MtType, pos, depth int)
@@ -1884,7 +1887,7 @@ func FxSpaceless(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree 
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxFilter(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxFilter Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxFilter Called, %d\n", callNo)
 
 	// xyzzy-FxFilter
 
@@ -1893,7 +1896,7 @@ func FxFilter(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **m
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxComment(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxComment Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxComment Called, %d\n", callNo)
 
 	if callNo == 11 {
 		(*curTree).List = (*curTree).List[:0] // remove tree?
@@ -1904,7 +1907,7 @@ func FxComment(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxEndComment(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxEndComment Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxEndComment Called, %d\n", callNo)
 
 	// done
 
@@ -1913,7 +1916,7 @@ func FxEndComment(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxBlock(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxBlock Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxBlock Called, %d\n", callNo)
 
 	// done - Acts as a named marker in the template - no implementaiton
 
@@ -1922,7 +1925,7 @@ func FxBlock(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxExtend(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxExtend Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxExtend Called, %d\n", callNo)
 
 	e_block := make([]*mt.MtType, 0, 20)
 
@@ -1930,7 +1933,7 @@ func FxExtend(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **m
 	walkTree = func(mtv *mt.MtType, pos, depth int) {
 		for ii, vv := range mtv.List {
 			if vv.FxId == gen.Fx_block {
-				com.DbFprintf("trace-builtin", Dbf, "FxExtend [%d] found block with name >%s<-, %s\n", ii, vv.SVal[0], com.LF())
+				dbgo.DbFprintf("trace-builtin", Dbf, "FxExtend [%d] found block with name >%s<-, %s\n", ii, vv.SVal[0], dbgo.LF())
 				e_block = append(e_block, vv)
 			}
 			walkTree(mtv.List[ii], ii, depth+1)
@@ -1948,21 +1951,21 @@ func FxExtend(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **m
 		thisname := ""
 		output_template := false
 		if len((*curTree).SVal) > 2 && (*curTree).SVal[1] == "as" {
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			thisname = (*curTree).SVal[2]
 		} else {
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			thisname = (*curTree).FileName
 			if len(thisname) >= 2 && thisname[0:2] == "./" {
-				fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 				thisname = thisname[2:]
 			}
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			output_template = true
 		}
 		// xyzzy - hot patch to test extra quote removal ------------------------------------  Wed Jul 15 20:00:12 MDT 2015
 		if name[len(name)-1:] == `"` {
-			fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+			fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 			name = name[:len(name)-1]
 		}
 		fmt.Fprintf(Dbf, "E2 Extending Template >%s<- with new name of ->%s<-, about to do lookup of it, should output %v\n", name, thisname, output_template)
@@ -1978,16 +1981,16 @@ func FxExtend(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **m
 			newtree := mt.DuplicateTree(ss.AnyData.(*mt.MtType)) // Make copy of item -- - change with extention blocks - --
 			fmt.Fprintf(Dbf, "---- newtree ---\n%s\n\n--end--\n", com.SVarI(newtree))
 			for _, ww := range e_block {
-				fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 				mt.ReplaceBlocksWithNew(&newtree, ww)
 			}
 			fmt.Fprintf(Dbf, "---- block repalced  ---\n%s\n\n--end--\n", com.SVarI(newtree))
 			if !output_template {
-				fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 				pt.DefineTemplate(thisname, newtree)  // pt.DefineTemplate(name string, (*curTree) *mt.MtType)
 				(*curTree).List = (*curTree).List[:0] // remove tree?
 			} else {
-				fmt.Fprintf(Dbf, "At: %s\n", com.LF())
+				fmt.Fprintf(Dbf, "At: %s\n", dbgo.LF())
 				(*curTree) = newtree
 				// xyzzy - do I need to iterate over tree at this point? or at call point
 				// xyzzy - Should the definition of the Block/End or Item have a "walk-child" flag or a "child-handles-subtree" flag
@@ -2003,7 +2006,7 @@ func FxExtend(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **m
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // {% template <name> %} ... {% endtemplate %}
 func FxTemplate(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxTemplate Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxTemplate Called, %d\n", callNo)
 
 	if callNo == 11 {
 		newtree := mt.DuplicateTree((*curTree))        //
@@ -2017,13 +2020,13 @@ func FxTemplate(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func FxRender(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree **mt.MtType) (err error) {
-	com.DbFprintf("trace-builtin", Dbf, "FxRender Called, %d\n", callNo)
+	dbgo.DbFprintf("trace-builtin", Dbf, "FxRender Called, %d\n", callNo)
 
 	if callNo == 20 {
 
 		name := (*curTree).SVal[0]
 
-		com.DbFprintf("trace-builtin", Dbf, "FxRender E2 - pass is 20, name=%s\n", name)
+		dbgo.DbFprintf("trace-builtin", Dbf, "FxRender E2 - pass is 20, name=%s\n", name)
 
 		// Lookup the item
 		ss, err := pt.St.LookupSymbol(name)

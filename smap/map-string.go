@@ -21,7 +21,7 @@ import (
 	"sort"
 	"unicode"
 
-	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/re"
 )
 
@@ -49,7 +49,7 @@ func NewSMapType(sigma string, noMapCh rune) (rv *SMapType) {
 	//for _, rn := range sigma {
 	//	v.SigmaRN = append(v.SigmaRN, rn)
 	//}
-	com.DbPrintf("smap", "NewSMapType: %q %x\n", sigma, noMapCh)
+	dbgo.DbPrintf("smap", "NewSMapType: %q %x\n", sigma, noMapCh)
 	nCh, iCh, nnCh := 0, 0, 0
 	var mCh rune
 	ts := make([]rune, 0, len(sigma))
@@ -128,41 +128,41 @@ func (smap *SMapType) ReverseMapRune(x int) rune {
 // Map an input rune to one of the possible output subscripts
 func (smap *SMapType) MapRune(rn rune) int {
 	x := int(rn) - smap.MinV
-	// fmt.Printf("x=%d, rn=%04x ( %s ),  %s\n", x, rn, string(rn), com.LF())
+	// fmt.Printf("x=%d, rn=%04x ( %s ),  %s\n", x, rn, string(rn), dbgo.LF())
 	if x > smap.MaxV {
-		// fmt.Printf("At %s\n", com.LF())
+		// fmt.Printf("At %s\n", dbgo.LF())
 		if y, ok := smap.M1[rn]; ok {
-			// fmt.Printf("At %s\n", com.LF())
+			// fmt.Printf("At %s\n", dbgo.LF())
 			return y
 		}
-		// fmt.Printf("At %s\n", com.LF())
+		// fmt.Printf("At %s\n", dbgo.LF())
 		return smap.NoMapTo
 	} else if x >= 0 {
-		com.DbPrintf("smap", "********************************** this one **************************, %s\n", string(rn))
+		dbgo.DbPrintf("smap", "********************************** this one **************************, %s\n", string(rn))
 		v := smap.M0[x]
 		if v == smap.NoMapTo {
-			com.DbPrintf("smap", "********************************** No MAP - 28 case \n")
+			dbgo.DbPrintf("smap", "********************************** No MAP - 28 case \n")
 			if unicode.IsDigit(rn) {
 				if y, ok := smap.M1[re.R_NUMERIC]; ok {
-					com.DbPrintf("smap", "********************************** case - numeric \n")
+					dbgo.DbPrintf("smap", "********************************** case - numeric \n")
 					return y
 				}
 			} else if unicode.IsUpper(rn) {
 				if y, ok := smap.M1[re.R_UPPER]; ok {
-					com.DbPrintf("smap", "********************************** case - upper\n")
+					dbgo.DbPrintf("smap", "********************************** case - upper\n")
 					return y
 				}
 			} else if unicode.IsLower(rn) {
 				if y, ok := smap.M1[re.R_LOWER]; ok {
-					com.DbPrintf("smap", "********************************** case - lower\n")
+					dbgo.DbPrintf("smap", "********************************** case - lower\n")
 					return y
 				}
 			}
 		}
-		// fmt.Printf("At %s\n", com.LF())
+		// fmt.Printf("At %s\n", dbgo.LF())
 		return v
 	} else {
-		// fmt.Printf("At %s\n", com.LF())
+		// fmt.Printf("At %s\n", dbgo.LF())
 		return smap.NoMapTo
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"testing"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 
 	. "gopkg.in/check.v1"
@@ -98,7 +99,7 @@ var _ = Suite(&LexieTestSuite{})
 func (s *LexieTestSuite) TestLexie(c *C) {
 
 	// return
-	fmt.Fprintf(os.Stderr, "Test Parsing of REs, Test genration of NFAs %s\n", com.LF())
+	fmt.Fprintf(os.Stderr, "Test Parsing of REs, Test genration of NFAs %s\n", dbgo.LF())
 
 	com.DbOnFlags["db_NFA"] = true
 	com.DbOnFlags["db_NFA_LnNo"] = true
@@ -128,7 +129,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			Pool.Sigma = Pool.GenerateSigma()
 
 			if false {
-				com.DbPrintf("test7", "Pool=%s\n", com.SVarI(Pool))
+				dbgo.DbPrintf("test7", "Pool=%s\n", com.SVarI(Pool))
 			}
 			Pool.DumpPool(false)
 			Pool.DumpPoolJSON(os.Stdout, vv.Re, vv.Rv)
@@ -167,21 +168,21 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 
 			out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
-				fmt.Printf("Error from dot, %s, %s\n", err, com.LF())
+				fmt.Printf("Error from dot, %s, %s\n", err, dbgo.LF())
 				fmt.Printf("Output: %s\n", out)
 			}
 		}
 	}
 	if n_skip > 0 {
 		fmt.Fprintf(os.Stderr, "%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
-		com.DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
 	}
 	if n_err > 0 {
 		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		com.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
 	} else {
 		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		com.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
 	}
 }
 
@@ -194,7 +195,7 @@ var _ = Suite(&LambdaClosureTestSuite{})
 func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	// return
-	fmt.Fprintf(os.Stderr, "Test NFA generation from REs, %s\n", com.LF())
+	fmt.Fprintf(os.Stderr, "Test NFA generation from REs, %s\n", dbgo.LF())
 
 	n_err := 0
 
@@ -258,10 +259,10 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	if n_err > 0 {
 		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		com.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
 	} else {
 		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		com.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
 	}
 }
 
@@ -310,7 +311,7 @@ var _ = Suite(&NFA_Multi_Part_TestSuite{})
 func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 
 	// return
-	fmt.Fprintf(os.Stderr, "Test NFA Multi-Part RE - NFA test %s\n", com.LF())
+	fmt.Fprintf(os.Stderr, "Test NFA Multi-Part RE - NFA test %s\n", dbgo.LF())
 	n_err := 0
 	n_skip := 0
 
@@ -381,14 +382,14 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 
 	if n_skip > 0 {
 		fmt.Fprintf(os.Stderr, "%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
-		com.DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", com.Yellow, n_skip, com.Reset)
 	}
 	if n_err > 0 {
 		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
-		com.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", com.Red, n_err, com.Reset)
 	} else {
 		fmt.Fprintf(os.Stderr, "%sPASS%s\n", com.Green, com.Reset)
-		com.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
+		dbgo.DbPrintf("debug", "\n\n%sPASS%s\n", com.Green, com.Reset)
 	}
 
 	_ = n_skip

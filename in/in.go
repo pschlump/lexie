@@ -31,6 +31,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 )
 
@@ -188,7 +189,7 @@ func EscapeNormalString(in string) (rv string) {
 func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) {
 	var ii int
 	// cls := ClasifyLine(ln)
-	//fmt.Printf("cls = %s, %s\n", cls, com.LF())
+	//fmt.Printf("cls = %s, %s\n", cls, dbgo.LF())
 	switch cls {
 	case "str0":
 		pat = ""
@@ -234,9 +235,9 @@ func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) 
 		if ii+1 < len(ln) {
 			rest = ln[ii+1:]
 		}
-		//fmt.Printf("ii = %d ln[]= ->%s<-, %s\n", ii, ln[1:ii], com.LF())
-		//fmt.Printf("pat ->%s<-, %s\n", pat, com.LF())
-		//fmt.Printf("rest ->%s<-, %s\n", rest, com.LF())
+		//fmt.Printf("ii = %d ln[]= ->%s<-, %s\n", ii, ln[1:ii], dbgo.LF())
+		//fmt.Printf("pat ->%s<-, %s\n", pat, dbgo.LF())
+		//fmt.Printf("rest ->%s<-, %s\n", rest, dbgo.LF())
 	case "str2":
 		pat = ""
 		for ii = 1; ii < len(ln); ii++ {
@@ -253,9 +254,9 @@ func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) 
 			rest = ln[ii+1:]
 		}
 		pat = EscapeLiteralString(pat)
-		//fmt.Printf("ii = %d, %s\n", ii, com.LF())
-		//fmt.Printf("pat ->%s<-, %s\n", pat, com.LF())
-		//fmt.Printf("rest ->%s<-, %s\n", rest, com.LF())
+		//fmt.Printf("ii = %d, %s\n", ii, dbgo.LF())
+		//fmt.Printf("pat ->%s<-, %s\n", pat, dbgo.LF())
+		//fmt.Printf("rest ->%s<-, %s\n", rest, dbgo.LF())
 	case "pattern":
 		for ii = 0; ii < len(ln); ii++ {
 			if ln[ii] == ' ' || ln[ii] == '\t' {
@@ -263,11 +264,11 @@ func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) 
 			}
 		}
 		pat = ln[0:ii]
-		// fmt.Printf("pat ->%s<-, %s\n", pat, com.LF())
+		// fmt.Printf("pat ->%s<-, %s\n", pat, dbgo.LF())
 		if ii+1 < len(ln) {
 			rest = ln[ii:]
 		}
-		// fmt.Printf("rest ->%s<-, %s\n", rest, com.LF())
+		// fmt.Printf("rest ->%s<-, %s\n", rest, dbgo.LF())
 	}
 	return
 }
@@ -325,7 +326,7 @@ func ParseAction(ln string) [][]string {
 func ParsePattern(cls string, ln string) (pat string, flag string, opt []string) {
 	flag = ""
 	pat, rest := PickOffPatternAtBeginning(cls, ln)
-	// fmt.Printf("pat >%s< rest >%s<, %s\n", pat, rest, com.LF())
+	// fmt.Printf("pat >%s< rest >%s<, %s\n", pat, rest, dbgo.LF())
 	re := ParseAction(rest)
 	// fmt.Printf("ln ->%s<- re %s\n", ln, com.SVarI(re))
 
@@ -341,7 +342,7 @@ func ParsePattern(cls string, ln string) (pat string, flag string, opt []string)
 func ParseNameValue(nv string) (name string, value string) {
 	name, value = "", ""
 	t1 := pnv_re.FindAllStringSubmatch(nv, -1)
-	com.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
+	dbgo.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
 	if t1 != nil && len(t1[0]) > 0 {
 		name = t1[0][1]
 		if len(t1[0]) > 3 {
@@ -366,7 +367,7 @@ func ParseActionItem(act string) (aa string, pp string) {
 	aa, pp = "", ""
 	t1 := fx_re.FindAllStringSubmatch(act, -1)
 	if t1 != nil {
-		com.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
+		dbgo.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
 		aa = t1[0][1]
 		if len(t1[0]) > 1 {
 			pp = t1[0][2]
@@ -380,7 +381,7 @@ func ParseActionItem(act string) (aa string, pp string) {
 func ParsePlist(pl string) (aa []string) {
 	t1 := pl_re.FindAllStringSubmatch(pl, -1)
 	if t1 != nil {
-		com.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
+		dbgo.DbPrintf("in", "t1=%s\n", com.SVarI(t1))
 		for _, vv := range t1 {
 			if len(vv) > 3 && vv[2] != "" {
 				aa = append(aa, vv[2])
@@ -442,7 +443,7 @@ func (Im *ImType) SaveDef(DefType string, Defs []string, line_no int, file_name 
 			if n == "" && v == "" { // xyzzy100
 				return
 			}
-			com.DbPrintf("in", "Input: ->%s<- n >%s< v >%s<\n", nm, n, v)
+			dbgo.DbPrintf("in", "Input: ->%s<- n >%s< v >%s<\n", nm, n, v)
 			if v != "" {
 				dd.NameValue[n] = -2 //							//
 				if vv, ok1 := dd.NameValueStr[n]; !ok1 {
@@ -588,31 +589,31 @@ func (Im *ImType) SaveMachine(opt []string) int {
 }
 
 /*
-type ImSeenAtType struct {
-	LineNo   []int    //
-	FileName []string //
-}
+	type ImSeenAtType struct {
+		LineNo   []int    //
+		FileName []string //
+	}
 
-type ImDefinedValueType struct {
-	Seq       int                     //
-	WhoAmI    string                  //
-	NameValue map[string]int          //
-	Reverse   map[int]string          //
-	SeenAt    map[string]ImSeenAtType //
-}
+	type ImDefinedValueType struct {
+		Seq       int                     //
+		WhoAmI    string                  //
+		NameValue map[string]int          //
+		Reverse   map[int]string          //
+		SeenAt    map[string]ImSeenAtType //
+	}
 
-type ImDefsType struct {
-	DefsAre map[string]ImDefinedValueType //
-}
+	type ImDefsType struct {
+		DefsAre map[string]ImDefinedValueType //
+	}
 
-type ImDefinedValueType struct {
-	Seq          int                     //
-	WhoAmI       string                  //
-	NameValueStr map[string]string       //
-	NameValue    map[string]int          //
-	Reverse      map[int]string          //
-	SeenAt       map[string]ImSeenAtType //
-}
+	type ImDefinedValueType struct {
+		Seq          int                     //
+		WhoAmI       string                  //
+		NameValueStr map[string]string       //
+		NameValue    map[string]int          //
+		Reverse      map[int]string          //
+		SeenAt       map[string]ImSeenAtType //
+	}
 */
 func (Im *ImType) FindValueFor(t string) int {
 	//for s, dd := range Im.Def.DefsAre {
@@ -642,16 +643,17 @@ func (Im *ImType) Lookup(DefType string, t string) int {
 
 // -----------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------
-//type ImRuleType struct {
-//	PatternType  int    // Pattern, Str0,1,2, $eof etc.  // Pattern Stuff --------------------------------------------------------------------------------
-//	Pattern      string //
+//
+//	type ImRuleType struct {
+//		PatternType  int    // Pattern, Str0,1,2, $eof etc.  // Pattern Stuff --------------------------------------------------------------------------------
+//		Pattern      string //
 func (Im *ImType) LocatePattern(ff *ImRuleType, in []*ImRuleType) (rv int) {
 	rv = -1
 	// fmt.Printf("LocatePattern for %s %d\n", ff.Pattern, ff.PatternType)
 	for kk, tt := range in {
 		// fmt.Printf("    Compare to %s %d\n", tt.Pattern, tt.PatternType)
 		if tt.PatternType == ff.PatternType && tt.Pattern == ff.Pattern {
-			com.DbPrintf("in", "    Found\n")
+			dbgo.DbPrintf("in", "    Found\n")
 			return kk
 		}
 	}
@@ -811,7 +813,7 @@ func (Im *ImType) OutputDef() {
 	}
 }
 
-//		min, max := com.RangeOfIntKeys(dd.Reverse)
+// min, max := com.RangeOfIntKeys(dd.Reverse)
 func RangeOfIntKeys(x map[int]string) (min int, max int) {
 	init := true
 	for ii := range x {
@@ -861,7 +863,7 @@ func (Im *ImType) OutputDefAsGoCode(fo io.Writer) {
 func (Im *ImType) OutputImType() {
 
 	dpt := []string{"???", "Pat", "EOF", "???"}
-	if com.DbOn("in-echo-machine") {
+	if dbgo.IsDbOn("in-echo-machine") {
 
 		Im.OutputDef()
 		Im.OutputDefAsGoCode(os.Stdout)

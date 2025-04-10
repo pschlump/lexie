@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/eval"
 	"github.com/pschlump/lexie/gen"
@@ -63,8 +64,8 @@ func (mt *MtType) DumpMtType(fo io.Writer, pos, depth int) {
 func (mt *MtType) NOptions(n int) bool {
 	if len(mt.SVal) != n {
 		mt.Error = true
-		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of  options supplied - should have %d options, found %d, %s", n, len(mt.SVal), com.LF(2))
-		// fmt.Printf("Error: incorrect number of  options supplied - should have %d options, found %d (%v), %s", n, len(mt.SVal), mt.SVal, com.LF(2))
+		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of  options supplied - should have %d options, found %d, %s", n, len(mt.SVal), dbgo.LF(2))
+		// fmt.Printf("Error: incorrect number of  options supplied - should have %d options, found %d (%v), %s", n, len(mt.SVal), mt.SVal, dbgo.LF(2))
 		return false
 	}
 	return true
@@ -74,7 +75,7 @@ func (mt *MtType) NOptions(n int) bool {
 func (mt *MtType) MoreThan(n int) bool {
 	if len(mt.SVal) <= n {
 		mt.Error = true
-		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of options supplied - should have more than %d options, %s", n, com.LF(2))
+		mt.ErrorMsg = fmt.Sprintf("Error: incorrect number of options supplied - should have more than %d options, %s", n, dbgo.LF(2))
 		return false
 	}
 	return true
@@ -122,7 +123,7 @@ func (mt *MtType) EvalExpr(Context *eval.ContextType, n, m int) bool {
 	fmt.Printf("BOTTOM: %s ----------------------------------------------------- \n", com.SVarI(tr))
 	//s := sv[0]
 	//v, t, _ := Context.GetFromContext(s)
-	//fmt.Printf("At: %s - in EvalExpr, v=%v t=%v for >%s<-\n", com.LF(), v, t, s)
+	//fmt.Printf("At: %s - in EvalExpr, v=%v t=%v for >%s<-\n", dbgo.LF(), v, t, s)
 	mt.DataType = tr.DataType
 	mt.XValue = tr.CurValue
 	fmt.Printf("At bottom of EvalExpr - Type = %d == %T, value = %v\n", tr.DataType, tr.CurValue, tr.CurValue)
@@ -209,15 +210,15 @@ func ReplaceBlocksWithNew(search_in_tree **MtType, new_block *MtType) {
 	walkTree = func(mt **MtType, pos, depth int) {
 		for ii := range (*mt).List {
 			//if vv.FxId == gen.Fx_block && block_name == vv.SVal[0] {
-			//	fmt.Printf("FxExtend Replace: [%d] found block with name >%s<-, %s\n", ii, vv.SVal[0], com.LF())
+			//	fmt.Printf("FxExtend Replace: [%d] found block with name >%s<-, %s\n", ii, vv.SVal[0], dbgo.LF())
 			//	*mt = new_block
 			//}
 			walkTree(&((*mt).List[ii]), ii, depth+1)
 		}
 		if len((*mt).SVal) > 0 {
-			fmt.Printf("FxExtend Before FxId = %d, looking for %d (*mt).SVal[0] = >%s< looking for %s, %s\n", (*mt).FxId, gen.Fx_block, (*mt).SVal[0], block_name, com.LF())
+			fmt.Printf("FxExtend Before FxId = %d, looking for %d (*mt).SVal[0] = >%s< looking for %s, %s\n", (*mt).FxId, gen.Fx_block, (*mt).SVal[0], block_name, dbgo.LF())
 			if (*mt).FxId == gen.Fx_block && block_name == (*mt).SVal[0] {
-				fmt.Printf("FxExtend Replace: found block with name >%s<-, %s\n", (*mt).SVal[0], com.LF())
+				fmt.Printf("FxExtend Replace: found block with name >%s<-, %s\n", (*mt).SVal[0], dbgo.LF())
 				*mt = new_block
 			}
 		}

@@ -19,6 +19,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/flags"
@@ -56,7 +57,7 @@ func main() {
 		com.DbOnFlags["in-echo-machine"] = true // Output machine
 	}
 
-	fmt.Fprintf(os.Stderr, "Test Matcher test from %s file, %s\n", opts.LexPat, com.LF())
+	fmt.Fprintf(os.Stderr, "Test Matcher test from %s file, %s\n", opts.LexPat, dbgo.LF())
 
 	// ------------------------------------------------------ setup Lexie --------------------------------------------------------------
 	pt := NewParse2Type()

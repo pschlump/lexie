@@ -86,6 +86,7 @@ import (
 
 	"github.com/russross/blackfriday"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/bluemonday"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
@@ -148,7 +149,7 @@ func main() {
 		}
 	}
 
-	fmt.Fprintf(test01.Dbf, "Test Matcher test from %s file, %s\n", opts.LexPat, com.LF())
+	fmt.Fprintf(test01.Dbf, "Test Matcher test from %s file, %s\n", opts.LexPat, dbgo.LF())
 
 	// ------------------------------------------------------ Options --------------------------------------------------------------
 	// should be read in from a .json file!

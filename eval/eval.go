@@ -143,6 +143,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/gen"
 	"github.com/pschlump/lexie/tok"
@@ -184,7 +185,7 @@ func (eval *EvalType) SetErrorInfo(rv *tok.Token, format string, args ...interfa
 	}
 	rv.CurValue = 0 // Add in a magic 0 or something for doing ops off of end of tokens
 	rv.DataType = CtxType_Int
-	rv.CoceLocation = com.LF(2)
+	rv.CoceLocation = dbgo.LF(2)
 	rv.LValue = false
 	rv.Error = true
 	rv.ErrorMsg = fmt.Sprintf(format, args...)
@@ -199,13 +200,13 @@ func (eval *EvalType) ParsePlist() (rv []tok.Token) {
 	opTk := eval.Mm[eval.Pos].TokNo
 	if opTk == gen.Tok_OP {
 		eval.Pos++
-		// fmt.Printf("IN ParsePlist -00-: %s\n", com.LF())
+		// fmt.Printf("IN ParsePlist -00-: %s\n", dbgo.LF())
 	}
 	for eval.Pos < len(eval.Mm) {
-		// fmt.Printf("IN ParsePlist -loop top-: %s\n", com.LF())
+		// fmt.Printf("IN ParsePlist -loop top-: %s\n", dbgo.LF())
 		opTk := eval.Mm[eval.Pos].TokNo
 		if opTk != gen.Tok_CL && opTk != gen.Tok_COMMA { // not ) not ,
-			// fmt.Printf("IN ParsePlist -return-: %s\n", com.LF())
+			// fmt.Printf("IN ParsePlist -return-: %s\n", dbgo.LF())
 			Tk := eval.PresG()
 			rv = append(rv, Tk)
 			if Tk.Error {
@@ -214,12 +215,12 @@ func (eval *EvalType) ParsePlist() (rv []tok.Token) {
 			if eval.Pos < len(eval.Mm) {
 				opTk = eval.Mm[eval.Pos].TokNo
 				if opTk == gen.Tok_COMMA {
-					// fmt.Printf("IN ParsePlist -BB-: %s\n", com.LF())
+					// fmt.Printf("IN ParsePlist -BB-: %s\n", dbgo.LF())
 					eval.Pos++
 					opTk = eval.Mm[eval.Pos].TokNo
 				} else if opTk == gen.Tok_CL {
 					eval.Pos++
-					// fmt.Printf("IN ParsePlist -CC-: %s\n", com.LF())
+					// fmt.Printf("IN ParsePlist -CC-: %s\n", dbgo.LF())
 					return
 				}
 			} // else {
@@ -230,7 +231,7 @@ func (eval *EvalType) ParsePlist() (rv []tok.Token) {
 			rv = append(rv, Tk)
 			return
 		}
-		// fmt.Printf("IN ParsePlist -A-: %s\n", com.LF())
+		// fmt.Printf("IN ParsePlist -A-: %s\n", dbgo.LF())
 	}
 	return
 }
@@ -254,7 +255,7 @@ func BoundArrayIndex(i, min, max int) int {
 func (eval *EvalType) CallFunction(match string, plist []tok.Token) (rv tok.Token) {
 
 	// fmt.Printf("=============================================================================================================\n")
-	// fmt.Printf("IN CallFunction: %s\n", com.LF())
+	// fmt.Printf("IN CallFunction: %s\n", dbgo.LF())
 	// fmt.Printf("IN CallFunction: Call >>>%s<<< with %s\n", match, com.SVarI(plist))
 	// fmt.Printf("=============================================================================================================\n")
 
@@ -265,7 +266,7 @@ func (eval *EvalType) CallFunction(match string, plist []tok.Token) (rv tok.Toke
 		rv.ColNo = eval.Mm[t].ColNo
 		rv.FileName = eval.Mm[t].FileName
 	}
-	rv.CoceLocation = com.LF(2)
+	rv.CoceLocation = dbgo.LF(2)
 	rv.LValue = false
 	rv.Error = false
 	rv.ErrorMsg = ""
@@ -299,7 +300,7 @@ func (eval *EvalType) CallFunction(match string, plist []tok.Token) (rv tok.Toke
 			}
 		}
 		if err_pos >= 0 && err != nil {
-			// fmt.Printf("Found Error Not Nil - At: %s\n", com.LF())
+			// fmt.Printf("Found Error Not Nil - At: %s\n", dbgo.LF())
 			rv.DataType = CtxType_Int
 			rv.CurValue = 0
 			rv.CoceLocation = "Call to funciton " + match
@@ -329,7 +330,7 @@ func (eval *EvalType) CallFunction(match string, plist []tok.Token) (rv tok.Toke
 						// fmt.Printf("Error (Eval00002): Can't handle type: %s as a return type from a function.", val.Type().String())
 						rv.DataType = CtxType_Int
 						rv.CurValue = 0
-						rv.CoceLocation = com.LF(1)
+						rv.CoceLocation = dbgo.LF(1)
 						rv.LValue = false
 						rv.Error = true
 						rv.ErrorMsg = fmt.Sprintf("Error (Eval00003): Can't handle type: %s as a return type from a function.", val.Type().String())
@@ -401,13 +402,13 @@ func MapIsEmpty(t map[string]tok.Token) bool {
 //	rv.CurValue = mapLength(x.CurValue.(map[string]tok.Token))
 func MapLength(t map[string]tok.Token) (l int) {
 	l = 0
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	// fmt.Printf("t=%s\n", com.SVarI(t))
 	for _, _ = range t {
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		l++
 	}
-	// fmt.Printf("Returing %d At: %s\n", l, com.LF())
+	// fmt.Printf("Returing %d At: %s\n", l, dbgo.LF())
 	return
 }
 
@@ -421,13 +422,13 @@ func x_len_e(x interface{}) (rv int) {
 	// fmt.Printf("len type=%T\n", x)
 	switch x.(type) {
 	case []tok.Token:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		rv = len(x.([]tok.Token))
 	case map[string]tok.Token:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		rv = MapLength(x.(map[string]tok.Token))
 	default:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		rv = 0
 	}
 	return
@@ -437,13 +438,13 @@ func x_len(x interface{}) (rv int, e error) {
 	// fmt.Printf("len type=%T\n", x)
 	switch x.(type) {
 	case []tok.Token:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		rv = len(x.([]tok.Token))
 	case map[string]tok.Token:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		rv = MapLength(x.(map[string]tok.Token))
 	default:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		e = errors.New(fmt.Sprintf("Error (Eval00004): Invalid type. len() works on arrays and maps.  Type supplied %T\n", x))
 		rv = 0
 	}
@@ -478,38 +479,38 @@ func x_float_type_cast(x interface{}) (rv float64, e error) {
 }
 
 func x_bool_type_cast(x interface{}) (rv bool, e error) {
-	// fmt.Printf("BOOL: x=%v, %T %s\n", x, x, com.LF())
+	// fmt.Printf("BOOL: x=%v, %T %s\n", x, x, dbgo.LF())
 	rv = false
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	switch x.(type) {
 	case int:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		if x.(int) == 0 {
 			rv = false
 		}
 	case bool:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		rv = x.(bool)
 	case string:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		if len(x.(string)) != 0 {
 			rv = true
 		}
 	case []tok.Token:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		if len(x.([]tok.Token)) != 0 {
 			rv = true
 		}
 	case map[string]tok.Token:
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		if !MapIsEmpty(x.(map[string]tok.Token)) {
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			rv = true
 		}
 	default:
 		e = errors.New(fmt.Sprintf("Error (Eval00006): Invalid type conversion, attempt to convert from %T to bool\n", x))
 	}
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	return
 }
 
@@ -531,12 +532,12 @@ func x_int_type_cast(x interface{}) (rv int, e error) {
 }
 
 func x_StrToUpper(s string) string {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	return strings.ToUpper(s)
 }
 
 func x_test_str1(s string, t string) string {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	return strings.ToUpper(s) + t
 }
 
@@ -566,18 +567,18 @@ func (eval *EvalType) InitFunctions() {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 func (eval *EvalType) Pres0() (rv tok.Token) {
-	// fmt.Printf("Pos:%d At: %s\n", eval.Pos, com.LF())
+	// fmt.Printf("Pos:%d At: %s\n", eval.Pos, dbgo.LF())
 	if eval.Pos < len(eval.Mm) {
 		switch eval.Mm[eval.Pos].TokNo {
 		case gen.Tok_ID:
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			// fmt.Printf("Doing a lookup of >>>%s<<<\n", eval.Mm[eval.Pos].Match)
 			match := eval.Mm[eval.Pos].Match
 			if val0, t, f := eval.Ctx.GetFromContext(eval.Mm[eval.Pos].Match); f {
-				// fmt.Printf("   Found, Type=%d/%s, %s\n", t, eval.Ctx.NameOfType(t), com.LF())
+				// fmt.Printf("   Found, Type=%d/%s, %s\n", t, eval.Ctx.NameOfType(t), dbgo.LF())
 				switch t {
 				case CtxType_Func:
-					// fmt.Printf("At: %s\n", com.LF())
+					// fmt.Printf("At: %s\n", dbgo.LF())
 					eval.Pos++
 					if eval.Pos < len(eval.Mm) && eval.Mm[eval.Pos].TokNo == gen.Tok_OP {
 						Plist := eval.ParsePlist()
@@ -591,7 +592,7 @@ func (eval *EvalType) Pres0() (rv tok.Token) {
 						return
 					}
 				case CtxType_Int, CtxType_Str, CtxType_Bool, CtxType_Float, CtxType_ArrayOf, CtxType_MapOf, CtxType_SMapOf, CtxType_KMapOf:
-					// fmt.Printf("At: %s\n", com.LF())
+					// fmt.Printf("At: %s\n", dbgo.LF())
 					rv.Match = eval.Mm[eval.Pos].Match
 					rv.CurValue = val0
 					rv.DataType = t
@@ -612,7 +613,7 @@ func (eval *EvalType) Pres0() (rv tok.Token) {
 				return
 			}
 		case gen.Tok_OP:
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			eval.Pos++ // Step past the '('
 			rv = eval.PresG()
 			if rv.Error {
@@ -626,14 +627,14 @@ func (eval *EvalType) Pres0() (rv tok.Token) {
 				return
 			}
 		case gen.Tok_OP_SQ:
-			// fmt.Printf("JSON data found (array) : At: %s\n", com.LF())
+			// fmt.Printf("JSON data found (array) : At: %s\n", dbgo.LF())
 			rv = eval.ParseJSON()
 			// fmt.Printf("TestCase=%s, eval.Pos=%d\n", eval.TestCase, eval.Pos)
 			if rv.Error {
 				return
 			}
 		case gen.Tok_OP_BRACE:
-			// fmt.Printf("JSON data found (hash) : At: %s\n", com.LF())
+			// fmt.Printf("JSON data found (hash) : At: %s\n", dbgo.LF())
 			rv = eval.ParseJSON()
 			if rv.Error {
 				return
@@ -644,16 +645,16 @@ func (eval *EvalType) Pres0() (rv tok.Token) {
 			rv.LValue = false
 		case gen.Tok_NUM:
 			rv.CurValue = eval.Mm[eval.Pos].CurValue
-			// fmt.Printf("Num = %d, %s\n", rv.CurValue.(int), com.LF())
+			// fmt.Printf("Num = %d, %s\n", rv.CurValue.(int), dbgo.LF())
 			rv.DataType = eval.Mm[eval.Pos].DataType
 			rv.LValue = false
 		case gen.Tok_Float:
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			rv.CurValue = eval.Mm[eval.Pos].CurValue
 			rv.DataType = eval.Mm[eval.Pos].DataType
 			rv.LValue = false
 		case gen.Tok_true, gen.Tok_false, gen.Tok_Tree_Bool:
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			rv.DataType = CtxType_Bool
 			rv.CurValue = eval.Mm[eval.Pos].CurValue
 			rv.LValue = false
@@ -693,22 +694,22 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 		rv.CurValue = r0
 
 		Adv()
-		// fmt.Printf("IN ParseJSON-[] -00-: %s\n", com.LF())
+		// fmt.Printf("IN ParseJSON-[] -00-: %s\n", dbgo.LF())
 
 		for eval.Pos < len(eval.Mm) {
-			// fmt.Printf("IN ParseJSON-%s -loop top-: %s\n", opCLTK_s, com.LF())
+			// fmt.Printf("IN ParseJSON-%s -loop top-: %s\n", opCLTK_s, dbgo.LF())
 			opTk = eval.Mm[eval.Pos].TokNo
 			if opTk == gen.Tok_COMMA { //                                                   	Walk over ,
-				// fmt.Printf("IN ParseJSON-%s -BB-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -BB-: %s\n", opCLTK_s, dbgo.LF())
 				Adv()
 			}
 			if opTk == gen.Tok_CL_SQ { //                                                   	Walk over ], then return
 				Adv()
-				// fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, dbgo.LF())
 				return
 			}
 			if opTk == gen.Tok_OP_SQ || opTk == gen.Tok_OP_BRACE { //  Found [ or {
-				// fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, dbgo.LF())
 				Tk := eval.ParseJSON()
 				Set()
 				r0 = append(r0, Tk)
@@ -718,7 +719,7 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 					rv.ErrorMsg = Tk.ErrorMsg
 				}
 			} else {
-				// fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, dbgo.LF())
 				Tk := eval.PresG()
 				Set()
 				r0 = append(r0, Tk)
@@ -736,7 +737,7 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 				eval.SetErrorInfo(&rv, "Error (Eval00012):  invalid JSON data.\n")
 				return
 			}
-			// fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, com.LF())
+			// fmt.Printf("IN ParseJSON-%s -A-: %s\n", opCLTK_s, dbgo.LF())
 		}
 
 	case gen.Tok_OP_BRACE:
@@ -747,26 +748,26 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 
 		name := ""
 		Adv()
-		// fmt.Printf("IN ParseJSON-{} -00-: %s\n", com.LF())
+		// fmt.Printf("IN ParseJSON-{} -00-: %s\n", dbgo.LF())
 
 		for eval.Pos < len(eval.Mm) {
-			// fmt.Printf("IN ParseJSON-%s -loop top-: %s\n", opCLTK_s, com.LF())
+			// fmt.Printf("IN ParseJSON-%s -loop top-: %s\n", opCLTK_s, dbgo.LF())
 			haveOne := true
 
-			// fmt.Printf("IN ParseJSON-%s -value-: %s\n", opCLTK_s, com.LF())
+			// fmt.Printf("IN ParseJSON-%s -value-: %s\n", opCLTK_s, dbgo.LF())
 			opTk = eval.Mm[eval.Pos].TokNo
 
 			if opTk == gen.Tok_ID { // xyzzy - ID : -- handle this also -> Name
-				// fmt.Printf("IN ParseJSON-%s -ID-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -ID-: %s\n", opCLTK_s, dbgo.LF())
 				name = eval.Mm[eval.Pos].Match
 				Adv()
 			} else if opTk == gen.Tok_Str0 { // xyzzy - "name" :  -- Handle this
-				// fmt.Printf("IN ParseJSON-%s -STR-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -STR-: %s\n", opCLTK_s, dbgo.LF())
 				name = eval.Mm[eval.Pos].Match
 				Adv()
 			} else if opTk == gen.Tok_CL_BRACE { //                                                   	Walk over ], then return
 				Adv()
-				// fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, dbgo.LF())
 				return
 			} else {
 				name = ""
@@ -778,12 +779,12 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 
 			// fmt.Printf("************* name=>%s<- *************\n", name)
 			if opTk == gen.Tok_COLON {
-				// fmt.Printf("IN ParseJSON-%s -colon-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -colon-: %s\n", opCLTK_s, dbgo.LF())
 				Adv()
 			}
 
 			if opTk == gen.Tok_OP_SQ || opTk == gen.Tok_OP_BRACE { // [ or { found
-				// fmt.Printf("IN ParseJSON-%s -Sub-JSON-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -Sub-JSON-: %s\n", opCLTK_s, dbgo.LF())
 				Tk := eval.ParseJSON()
 				Set()
 				if haveOne {
@@ -795,14 +796,14 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 					rv.ErrorMsg = Tk.ErrorMsg
 				}
 			} else {
-				// fmt.Printf("IN ParseJSON-%s -expression-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -expression-: %s\n", opCLTK_s, dbgo.LF())
 				Tk := eval.PresG()
 				Set()
 				if haveOne {
 					r1[name] = Tk
 					rv.CurValue = r1
 				}
-				// fmt.Printf("TestCase=%s, eval.Pos=%d, %s\n", eval.TestCase, eval.Pos, com.LF())
+				// fmt.Printf("TestCase=%s, eval.Pos=%d, %s\n", eval.TestCase, eval.Pos, dbgo.LF())
 				if Tk.Error {
 					rv.Error = true
 					rv.ErrorMsg = Tk.ErrorMsg
@@ -811,24 +812,24 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 
 			Set()
 			if opTk == gen.Tok_COMMA { //                                                   	Walk over ,
-				// fmt.Printf("IN ParseJSON-%s -BB-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -BB-: %s\n", opCLTK_s, dbgo.LF())
 				Adv()
 			} else if opTk == gen.Tok_CL_BRACE { //                                                   	Walk over }, then return
 				Adv()
-				// fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, com.LF())
+				// fmt.Printf("IN ParseJSON-%s -CC-: %s\n", opCLTK_s, dbgo.LF())
 				return
 			} else {
-				// fmt.Printf("IN ParseJSON-%s -EvalThis 555 555 5555 -: %s, Pos=%d\n", opCLTK_s, com.LF(), eval.Pos)
+				// fmt.Printf("IN ParseJSON-%s -EvalThis 555 555 5555 -: %s, Pos=%d\n", opCLTK_s, dbgo.LF(), eval.Pos)
 				if eval.Pos < len(eval.Mm) {
-					// fmt.Printf("IN At:%s\n", com.LF())
+					// fmt.Printf("IN At:%s\n", dbgo.LF())
 					Tk := eval.PresG()
 					Set()
 					if haveOne {
-						// fmt.Printf("IN At:%s\n", com.LF())
+						// fmt.Printf("IN At:%s\n", dbgo.LF())
 						r1[name] = Tk
 						rv.CurValue = r1
 					}
-					// fmt.Printf("TestCase=%s, eval.Pos=%d, %s\n", eval.TestCase, eval.Pos, com.LF())
+					// fmt.Printf("TestCase=%s, eval.Pos=%d, %s\n", eval.TestCase, eval.Pos, dbgo.LF())
 					if Tk.Error {
 						rv.Error = true
 						rv.ErrorMsg = Tk.ErrorMsg
@@ -837,7 +838,7 @@ func (eval *EvalType) ParseJSON() (rv tok.Token) {
 					return
 				}
 			}
-			// fmt.Printf("IN At:%s\n", com.LF())
+			// fmt.Printf("IN At:%s\n", dbgo.LF())
 		}
 
 	}
@@ -897,10 +898,10 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 		opTk = eval.Mm[eval.Pos].TokNo
 	}
 
-	// fmt.Printf("Before Loop TkL = %s, %s\n", com.SVarI(TkL), com.LF())
+	// fmt.Printf("Before Loop TkL = %s, %s\n", com.SVarI(TkL), dbgo.LF())
 	for eval.Pos < len(eval.Mm) {
 
-		// fmt.Printf("At loop top eval.Pos=%d, %s\n", eval.Pos, com.LF())
+		// fmt.Printf("At loop top eval.Pos=%d, %s\n", eval.Pos, dbgo.LF())
 		if TkL.DataType != CtxType_ArrayOf && TkL.DataType != CtxType_MapOf {
 			return
 		}
@@ -917,7 +918,7 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 			// fetch data from expression for Array // output to verify
 			// get array or hash from symboltable or expression and put into token
 
-			// fmt.Printf("At 1st Adv(), after eval.Pos=%d, TokNo=%d %s\n", eval.Pos, opTk, com.LF())
+			// fmt.Printf("At 1st Adv(), after eval.Pos=%d, TokNo=%d %s\n", eval.Pos, opTk, dbgo.LF())
 			// Array [ a : b ]
 			// Array [ : b ]
 			// Array [ : ]
@@ -942,7 +943,7 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 				// Array [ : b ]
 				// Array [ : ]
 				//           ^----------------------------------- Pos
-				// fmt.Printf("At Step Over Colon Adv(), after eval.Pos=%d, TokNo=%d %s\n", eval.Pos, opTk, com.LF())
+				// fmt.Printf("At Step Over Colon Adv(), after eval.Pos=%d, TokNo=%d %s\n", eval.Pos, opTk, dbgo.LF())
 				Tk0.TokNo = gen.Tok_NUM
 				Tk0.CurValue = 0
 			} else {
@@ -1072,13 +1073,13 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 			//       ^----------------------------------- Pos
 
 			if opTk == gen.Tok_ID { // xyzzy - ID : -- handle this also -> Name
-				// fmt.Printf("IN MapRef -ID-: %s\n", com.LF())
+				// fmt.Printf("IN MapRef -ID-: %s\n", dbgo.LF())
 				name = eval.Mm[eval.Pos].Match
 				Adv()
 				// Map . ID/Name
 				//               ^----------------------------------- Pos
 			} else if opTk == gen.Tok_Str0 { // xyzzy - "name" :  -- Handle this
-				// fmt.Printf("IN MapRef -STR-: %s\n", com.LF())
+				// fmt.Printf("IN MapRef -STR-: %s\n", dbgo.LF())
 				name = eval.Mm[eval.Pos].Match
 				Adv()
 				// Map . ID/Name
@@ -1108,7 +1109,7 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Unary !
 func (eval *EvalType) Pres2() (TkL tok.Token) {
-	// fmt.Printf("Pos:%d At: %s\n", eval.Pos, com.LF())
+	// fmt.Printf("Pos:%d At: %s\n", eval.Pos, dbgo.LF())
 	neg := false
 	found := false
 	if eval.Pos < len(eval.Mm) {
@@ -1156,7 +1157,7 @@ func (eval *EvalType) Pres2() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Unary +, -
 func (eval *EvalType) Pres3() (TkL tok.Token) {
-	// fmt.Printf("Unary-+: Pos:%d At: %s\n", eval.Pos, com.LF())
+	// fmt.Printf("Unary-+: Pos:%d At: %s\n", eval.Pos, dbgo.LF())
 	found := false
 	neg := false
 	if eval.Pos < len(eval.Mm) {
@@ -1170,7 +1171,7 @@ func (eval *EvalType) Pres3() (TkL tok.Token) {
 		}
 		TkL = eval.Pres2()
 		if found {
-			// fmt.Printf("Unary-+: Found is true - :%d At: %s\n", eval.Pos, com.LF())
+			// fmt.Printf("Unary-+: Found is true - :%d At: %s\n", eval.Pos, dbgo.LF())
 			switch TkL.DataType {
 			case CtxType_Int:
 				if neg {
@@ -1181,7 +1182,7 @@ func (eval *EvalType) Pres3() (TkL tok.Token) {
 					TkL.CurValue = -TkL.CurValue.(float64)
 				}
 			default:
-				// fmt.Printf("Unary-+: error type - :%d At: %s\n", eval.Pos, com.LF())
+				// fmt.Printf("Unary-+: error type - :%d At: %s\n", eval.Pos, dbgo.LF())
 				//TkL.CurValue = 0
 				//TkL.DataType = CtxType_Int
 				eval.SetErrorInfo(&TkL, "Error (Eval00020):  Attempted to use '+', '-' operator on invalid type\n")
@@ -1195,7 +1196,7 @@ func (eval *EvalType) Pres3() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Parse multiplication and division, *, /, %
 func (eval *EvalType) Pres4() (TkL tok.Token) {
-	// fmt.Printf("Pos:%d At: %s\n", eval.Pos, com.LF())
+	// fmt.Printf("Pos:%d At: %s\n", eval.Pos, dbgo.LF())
 	TkL = eval.Pres3()
 	if TkL.Error {
 		return
@@ -1260,7 +1261,7 @@ func (eval *EvalType) Pres4() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Parse addition and subtraction, -, + (binary)
 func (eval *EvalType) Pres5() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.Pres4()
 	if TkL.Error {
 		return
@@ -1333,7 +1334,7 @@ func (eval *EvalType) Pres5() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Parse addition and subtraction, <<, >> (binary)
 func (eval *EvalType) Pres5a() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.Pres5()
 	if TkL.Error {
 		return
@@ -1394,7 +1395,7 @@ func (eval *EvalType) TypeConvertToNumber(TkL tok.Token) (rv tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Parse Compare OPS, <, <=, >, >=
 func (eval *EvalType) Pres6() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.Pres5a()
 	if TkL.Error {
 		return
@@ -1475,7 +1476,7 @@ func (eval *EvalType) Pres6() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // !=, ==, <>
 func (eval *EvalType) Pres7() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.Pres6()
 	if TkL.Error {
 		return
@@ -1503,29 +1504,29 @@ func (eval *EvalType) Pres7() (TkL tok.Token) {
 			}
 			TkL.DataType = CtxType_Bool
 		} else if (TkL.DataType == CtxType_Float && TkR.DataType == CtxType_Int) || (TkL.DataType == CtxType_Int && TkR.DataType == CtxType_Float) || (TkL.DataType == CtxType_Float && TkR.DataType == CtxType_Float) {
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 
 			if TkL.DataType == CtxType_Int {
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				TkL.DataType = CtxType_Float
 				TkL.CurValue = float64(TkL.CurValue.(int))
 			}
 
 			if TkR.DataType == CtxType_Int {
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				TkR.DataType = CtxType_Float
 				TkR.CurValue = float64(TkR.CurValue.(int))
 			}
 
 			switch opTk {
 			case gen.Tok_NE:
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				TkL.CurValue = TkL.CurValue.(float64) != TkR.CurValue.(float64)
 			case gen.Tok_L_EQ:
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				TkL.CurValue = TkL.CurValue.(float64) == TkR.CurValue.(float64)
 			}
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			TkL.DataType = CtxType_Bool
 		} else if TkL.DataType == CtxType_Bool && TkR.DataType == CtxType_Bool {
 			switch opTk {
@@ -1555,7 +1556,7 @@ func (eval *EvalType) Pres7() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // &
 func (eval *EvalType) Pres8() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.Pres7()
 	if TkL.Error {
 		return
@@ -1589,7 +1590,7 @@ func (eval *EvalType) Pres8() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // |		-- Change to "bor" token/ID
 func (eval *EvalType) Pres9() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.Pres8()
 	for eval.Pos < len(eval.Mm) {
 		opPos := eval.Pos
@@ -1620,7 +1621,7 @@ func (eval *EvalType) Pres9() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // ^
 func (eval *EvalType) PresA() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.Pres9()
 	if TkL.Error {
 		return
@@ -1654,7 +1655,7 @@ func (eval *EvalType) PresA() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // &&
 func (eval *EvalType) PresB() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.PresA()
 	for eval.Pos < len(eval.Mm) {
 		opPos := eval.Pos
@@ -1685,7 +1686,7 @@ func (eval *EvalType) PresB() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // ||
 func (eval *EvalType) PresC() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.PresB()
 	if TkL.Error {
 		return
@@ -1728,7 +1729,7 @@ func (eval *EvalType) PresD() (TkL tok.Token) {
 // Right To Left - how, Recursion?? array and append??
 // xyzzy R->L not implemented - just one assignemtn at the moment
 func (eval *EvalType) PresE() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 
 	if eval.Mm[eval.Pos].TokNo == gen.Tok_ID {
 		eval.Mm[eval.Pos].CreateId = (eval.Pos+1 < len(eval.Mm) && eval.Mm[eval.Pos+1].TokNo == gen.Tok_DCL_VAR)
@@ -1739,7 +1740,7 @@ func (eval *EvalType) PresE() (TkL tok.Token) {
 		return
 	}
 	if TkL.LValue {
-		// fmt.Printf("IS Lvalue TkL=%+v At: %s\n", TkL, com.LF())
+		// fmt.Printf("IS Lvalue TkL=%+v At: %s\n", TkL, dbgo.LF())
 		if eval.Pos < len(eval.Mm) {
 			opPos := eval.Pos
 			opTk := eval.Mm[opPos].TokNo
@@ -1835,43 +1836,43 @@ func (eval *EvalType) PresE() (TkL tok.Token) {
 			if isAssign {
 				switch opTk {
 				case gen.Tok_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkR.CurValue
 				case gen.Tok_DCL_VAR:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkR.CurValue
 				}
 			} else if isInt {
 				switch opTk {
 				case gen.Tok_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkR.CurValue
 				case gen.Tok_DCL_VAR:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkR.CurValue
 				case gen.Tok_PLUS_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) + TkR.CurValue.(int)
 				case gen.Tok_MINUS_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) - TkR.CurValue.(int)
 				case gen.Tok_STAR_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) * TkR.CurValue.(int)
 				case gen.Tok_DIV_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) / TkR.CurValue.(int)
 				case gen.Tok_MOD_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) % TkR.CurValue.(int)
 				case gen.Tok_CAROT_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) ^ TkR.CurValue.(int)
 				case gen.Tok_B_OR_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) | TkR.CurValue.(int)
 				case gen.Tok_B_AND_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) & TkR.CurValue.(int)
 				case gen.Tok_TILDE_EQ:
 					//TkL.CurValue = 0
@@ -1879,59 +1880,59 @@ func (eval *EvalType) PresE() (TkL tok.Token) {
 					eval.SetErrorInfo(&TkL, "Error (Eval00038):  ~= operator not implemented yet.\n")
 					return
 				case gen.Tok_S_L_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) << uint(TkR.CurValue.(int))
 				case gen.Tok_S_R_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(int) >> uint(TkR.CurValue.(int))
 				}
 			} else {
 				TkR.DataType = CtxType_Float
 				switch opTk {
 				case gen.Tok_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkR.CurValue
 				case gen.Tok_DCL_VAR:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkR.CurValue
 				case gen.Tok_PLUS_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(float64) + TkR.CurValue.(float64)
 				case gen.Tok_MINUS_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(float64) - TkR.CurValue.(float64)
 				case gen.Tok_STAR_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(float64) * TkR.CurValue.(float64)
 				case gen.Tok_DIV_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					TkL.CurValue = TkL.CurValue.(float64) / TkR.CurValue.(float64)
 				case gen.Tok_MOD_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					//TkL.CurValue = 0
 					//TkL.DataType = CtxType_Int
 					eval.SetErrorInfo(&TkL, "Error (Eval00039):  %= operator not defined for floating point data.\n")
 					return
 				case gen.Tok_CAROT_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					//TkL.CurValue = 0
 					//TkL.DataType = CtxType_Int
 					eval.SetErrorInfo(&TkL, "Error (Eval00040):  ^= operator not defined for floating point data.\n")
 					return
 				case gen.Tok_B_OR_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					//TkL.CurValue = 0
 					//TkL.DataType = CtxType_Int
 					eval.SetErrorInfo(&TkL, "Error (Eval00041):  |= operator not defined for floating point data.\n")
 					return
 				case gen.Tok_B_AND_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					//TkL.CurValue = 0
 					//TkL.DataType = CtxType_Int
 					eval.SetErrorInfo(&TkL, "Error (Eval00042):  &= operator not defined for floating point data.\n")
 					return
 				case gen.Tok_TILDE_EQ:
-					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, com.LF())
+					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					//TkL.DataType = TkR.DataType
 					//TkL.CurValue = TkL.CurValue.(float64) ~ TkR.CurValue.(float64)
 					//eval.Ctx.SetInContext(TkL.Match, TkL.DataType, TkL.CurValue)
@@ -1962,7 +1963,7 @@ func (eval *EvalType) PresE() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Computational IF ?:
 func (eval *EvalType) PresF() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.PresE()
 	if TkL.Error {
 		return
@@ -1992,19 +1993,19 @@ func (eval *EvalType) PresF() (TkL tok.Token) {
 		}
 	}
 
-	// fmt.Printf("Before Loop At: %s\n", com.LF())
+	// fmt.Printf("Before Loop At: %s\n", dbgo.LF())
 	for eval.Pos < len(eval.Mm) {
-		// fmt.Printf("Loop Top At: %s\n", com.LF())
+		// fmt.Printf("Loop Top At: %s\n", dbgo.LF())
 		Set()
 
 		if opTk != gen.Tok_QUEST {
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			return
 		} else {
 			Adv() // Move over '?'
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			if TkL.DataType == CtxType_Bool && TkL.CurValue.(bool) { // Eval True Part
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				TkL = eval.PresE()
 				if TkL.Error {
 					return
@@ -2015,26 +2016,26 @@ func (eval *EvalType) PresF() (TkL tok.Token) {
 					_ = eval.PresE() // xyzzy - error - if error then what? -- Must take no action! No Side Effects
 					Set()
 				} else {
-					// fmt.Printf("At: %s\n", com.LF())
+					// fmt.Printf("At: %s\n", dbgo.LF())
 					//TkL.CurValue = 0
 					//TkL.DataType = CtxType_Int
 					eval.SetErrorInfo(&TkL, "Error (Eval00046):  Missing ':' in conditional if.\n")
 					return
 				}
 			} else {
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				_ = eval.PresE() // xyzzy - error - if error then what? -- Must take no action! No Side Effects
 				Set()
 				if opTk == gen.Tok_COLON {
 					Adv()
-					// fmt.Printf("At: %s\n", com.LF())
+					// fmt.Printf("At: %s\n", dbgo.LF())
 					TkL = eval.PresE()
 					if TkL.Error {
 						return
 					}
 					Set()
 				} else {
-					// fmt.Printf("At: %s\n", com.LF())
+					// fmt.Printf("At: %s\n", dbgo.LF())
 					//TkL.CurValue = 0
 					//TkL.DataType = CtxType_Int
 					eval.SetErrorInfo(&TkL, "Error (Eval00047):  Missing ':' in conditional if.\n")
@@ -2049,7 +2050,7 @@ func (eval *EvalType) PresF() (TkL tok.Token) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // This is called form PresG (pipe) during error conditions.
 func (eval *EvalType) ListTokens() string {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	s := "Tokens are ("
 	com := ""
 	for j := eval.Pos; j < len(eval.Mm); j++ {
@@ -2072,7 +2073,7 @@ func (eval *EvalType) ListTokens() string {
 //
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 func (eval *EvalType) PresG() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	TkL = eval.PresF() // Eval 1st expression in possible pipe
 	if TkL.Error {
 		return
@@ -2103,25 +2104,25 @@ func (eval *EvalType) PresG() (TkL tok.Token) {
 	}
 
 	if eval.Pos < len(eval.Mm) {
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		if eval.Mm[eval.Pos].TokNo == gen.Tok_PIPE {
 			Tk0 := TkL
-			// fmt.Printf("At: %s\n", com.LF())
+			// fmt.Printf("At: %s\n", dbgo.LF())
 			Set()
 			for eval.Pos < len(eval.Mm) && eval.Mm[eval.Pos].TokNo == gen.Tok_PIPE {
 				Adv()
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				if eval.Pos < len(eval.Mm) {
 					match := eval.Mm[eval.Pos].Match
-					// fmt.Printf("At: %s\n", com.LF())
+					// fmt.Printf("At: %s\n", dbgo.LF())
 					if eval.Mm[eval.Pos].TokNo == gen.Tok_ID {
-						// fmt.Printf("At: %s\n", com.LF())
+						// fmt.Printf("At: %s\n", dbgo.LF())
 						if /*val0*/ _, t, f := eval.Ctx.GetFromContext(eval.Mm[eval.Pos].Match); f {
-							// fmt.Printf("At: %s\n", com.LF())
-							// fmt.Printf("   Found, Type=%d/%s, %s\n", t, eval.Ctx.NameOfType(t), com.LF())
+							// fmt.Printf("At: %s\n", dbgo.LF())
+							// fmt.Printf("   Found, Type=%d/%s, %s\n", t, eval.Ctx.NameOfType(t), dbgo.LF())
 							switch t {
 							case CtxType_Func:
-								// fmt.Printf("At: %s\n", com.LF())
+								// fmt.Printf("At: %s\n", dbgo.LF())
 								Adv()
 								if eval.Pos < len(eval.Mm) && eval.Mm[eval.Pos].TokNo == gen.Tok_OP {
 									Plist := eval.ParsePlist()
@@ -2132,38 +2133,38 @@ func (eval *EvalType) PresG() (TkL tok.Token) {
 									Tk0 = eval.CallFunction(match, P2)
 									Set()
 								} else {
-									// fmt.Printf("At: %s\n", com.LF())
+									// fmt.Printf("At: %s\n", dbgo.LF())
 									Tk0 = eval.CallFunction(match, []tok.Token{Tk0})
 									Set()
 								}
 							default:
-								// fmt.Printf("At: %s\n", com.LF())
+								// fmt.Printf("At: %s\n", dbgo.LF())
 								//TkL.CurValue = 0
 								//TkL.DataType = CtxType_Int
 								eval.SetErrorInfo(&TkL, "Error (Eval00048): Function refrenced %s is not a function -- can not call it\n", match)
 								return
 							}
 						} else {
-							// fmt.Printf("At: %s\n", com.LF())
+							// fmt.Printf("At: %s\n", dbgo.LF())
 							//TkL.CurValue = 0
 							//TkL.DataType = CtxType_Int
 							eval.SetErrorInfo(&TkL, "Error (Eval00049): Function refrenced %s missing () to make call\n", match)
 							return
 						}
 					} else {
-						// fmt.Printf("At: %s\n", com.LF())
+						// fmt.Printf("At: %s\n", dbgo.LF())
 						//TkL.CurValue = 0
 						//TkL.DataType = CtxType_Int
 						eval.SetErrorInfo(&TkL, "Error (Eval00050): Token found after pipe is not an ID, found %s\n", match)
 						return
 					}
 				}
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 				TkL = Tk0
 				if TkL.Error {
 					return
 				}
-				// fmt.Printf("At: %s\n", com.LF())
+				// fmt.Printf("At: %s\n", dbgo.LF())
 			}
 		}
 	}
@@ -2172,7 +2173,7 @@ func (eval *EvalType) PresG() (TkL tok.Token) {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 func (eval *EvalType) PresTop() (TkL tok.Token) {
-	// fmt.Printf("At: %s\n", com.LF())
+	// fmt.Printf("At: %s\n", dbgo.LF())
 	if false {
 		fmt.Printf("PresTop INPUT %s\n", com.SVarI(eval))
 	} else {
@@ -2181,7 +2182,7 @@ func (eval *EvalType) PresTop() (TkL tok.Token) {
 	TkL = eval.PresG()
 	fmt.Printf("PresTop AFTER eval.Pos=%d len(eval.Mm)=%d\n", eval.Pos, len(eval.Mm))
 	if eval.Pos < len(eval.Mm) {
-		// fmt.Printf("At: %s\n", com.LF())
+		// fmt.Printf("At: %s\n", dbgo.LF())
 		//TkL.CurValue = 0
 		//TkL.DataType = CtxType_Int
 		eval.SetErrorInfo(&TkL, "Error (Eval00051): Extra tokens found at end of expressions, %s\n", eval.ListTokens())

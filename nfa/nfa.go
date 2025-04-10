@@ -18,6 +18,7 @@ import (
 	"sort"
 	"unicode/utf8"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/re"
 )
@@ -98,14 +99,14 @@ func NewNFA_Pool() *NFA_PoolType {
 
 // Allocate an NFA tree node
 func (nn *NFA_PoolType) GetNFA() int {
-	//fmt.Printf("at %s\n", com.LF())
+	//fmt.Printf("at %s\n", dbgo.LF())
 	tmp := 0
 	if nn.Cur < nn.Top && !nn.Pool[nn.Cur].IsUsed {
-		//fmt.Printf("at %s\n", com.LF())
+		//fmt.Printf("at %s\n", dbgo.LF())
 		tmp = nn.Cur
 		nn.Cur++
 	} else if nn.Cur >= nn.Top || nn.NextFree == -1 {
-		//fmt.Printf("at %s, nn.Cur=%d nn.Top=%d nn.NextFree=%d\n", com.LF(), nn.Cur, nn.Top, nn.NextFree)
+		//fmt.Printf("at %s, nn.Cur=%d nn.Top=%d nn.NextFree=%d\n", dbgo.LF(), nn.Cur, nn.Top, nn.NextFree)
 		nn.Top = 2 * nn.Top
 		newPool := make([]NFA_Type, nn.Top, nn.Top) // extend array
 		copy(newPool, nn.Pool)
@@ -113,7 +114,7 @@ func (nn *NFA_PoolType) GetNFA() int {
 		tmp = nn.Cur
 		nn.Cur++
 	} else {
-		//fmt.Printf("at %s\n", com.LF())
+		//fmt.Printf("at %s\n", dbgo.LF())
 		tmp = nn.NextFree
 		nn.NextFree = nn.Pool[tmp].NextFree
 	}
@@ -185,8 +186,8 @@ func DumpInfo(info InfoType) string {
 
 func (nn *NFA_PoolType) AddLambda(fr, to int) {
 	if fr == to {
-		com.DbPrintf("nfa4", "!!! Rejecting lambda(\u03bb) loop %d to %d, called from %s\n", fr, to, com.LF(2))
-		// fmt.Printf("!!! Rejecting lambda(L) loop %d to %d, called from %s\n", fr, to, com.LF(2))
+		dbgo.DbPrintf("nfa4", "!!! Rejecting lambda(\u03bb) loop %d to %d, called from %s\n", fr, to, dbgo.LF(2))
+		// fmt.Printf("!!! Rejecting lambda(L) loop %d to %d, called from %s\n", fr, to, dbgo.LF(2))
 		return
 	}
 	if !nn.EdgeExists(fr, to, "", true) {
@@ -196,8 +197,8 @@ func (nn *NFA_PoolType) AddLambda(fr, to int) {
 
 func (nn *NFA_PoolType) AddLambdaSpecial(fr, to int) {
 	if fr == to {
-		com.DbPrintf("nfa4", "!!! Rejecting Tau(\u03c4) loop %d to %d, called from %s -- This could be a serious error if at the end of a match, dropping a terminal state\n", fr, to, com.LF(2))
-		// fmt.Printf("!!! Rejecting lambda(L) loop %d to %d, called from %s\n", fr, to, com.LF(2))
+		dbgo.DbPrintf("nfa4", "!!! Rejecting Tau(\u03c4) loop %d to %d, called from %s -- This could be a serious error if at the end of a match, dropping a terminal state\n", fr, to, dbgo.LF(2))
+		// fmt.Printf("!!! Rejecting lambda(L) loop %d to %d, called from %s\n", fr, to, dbgo.LF(2))
 		return
 	}
 	if !nn.EdgeExists(fr, to, "", true) {
@@ -245,15 +246,15 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 
 	Cur := CurIn
 	if CurIn == -1 {
-		com.DbPrintf("nfa2", " Initialize with CurIn of -1\n")
+		dbgo.DbPrintf("nfa2", " Initialize with CurIn of -1\n")
 		Cur = nn.GetNFA()
 		CurIn = Cur
 	}
-	com.DbPrintf("db_NFA", "CurIn: %d TOP, depth=%d\n", Cur, depth)
+	dbgo.DbPrintf("db_NFA", "CurIn: %d TOP, depth=%d\n", Cur, depth)
 
 	for _, vv := range Children {
 
-		com.DbPrintf("db_NFA", "CurIn: %d Loop TOP, vv=%s, %s\n", Cur, com.SVarI(vv), com.LF())
+		dbgo.DbPrintf("db_NFA", "CurIn: %d Loop TOP, vv=%s, %s\n", Cur, com.SVarI(vv), dbgo.LF())
 
 		switch vv.LR_Tok {
 
@@ -271,7 +272,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 		case re.LR_MINUS: // -
 			fallthrough
 		case re.LR_Text: //			-- Add a node to list, move right
-			com.DbPrintf("nfa2", "Text Add Item ->%s<-\n", vv.Item)
+			dbgo.DbPrintf("nfa2", "Text Add Item ->%s<-\n", vv.Item)
 			for _, ss := range vv.Item {
 				x := nn.GetNFA()
 				nn.AddEdge(Cur, x, string(ss))
@@ -309,7 +310,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 		// ------------------------------------------------------------------------------------------------------
 		case re.LR_STAR: // *			-- Error if 1st char, else take prev item from list, star and replace it.
 			childStart, childEnd := nn.ConvParsedReToNFA(depth+1, lr, Cur, vv.Children[0:1])
-			com.DbPrintf("db_NFA", "Return from STAR call, %d, %d, %s\n", childStart, childEnd, com.LF())
+			dbgo.DbPrintf("db_NFA", "Return from STAR call, %d, %d, %s\n", childStart, childEnd, dbgo.LF())
 			nn.Mark(Cur, re.LR_STAR)
 			nn.AddLambda(Cur, childEnd)
 			nn.AddLambda(childEnd, Cur)
@@ -318,7 +319,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 			Cur = tail
 		case re.LR_PLUS: // +			-- Like *
 			childStart, childEnd := nn.ConvParsedReToNFA(depth+1, lr, Cur, vv.Children[0:1])
-			com.DbPrintf("db_NFA", "Return from PLUS call, %d, %d, %s\n", childStart, childEnd, com.LF())
+			dbgo.DbPrintf("db_NFA", "Return from PLUS call, %d, %d, %s\n", childStart, childEnd, dbgo.LF())
 			nn.Mark(Cur, re.LR_PLUS)
 			// nn.AddLambda(Cur, childStart)
 			nn.AddLambda(childEnd, childStart)
@@ -327,7 +328,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 			Cur = tail
 		case re.LR_QUEST: // ?			-- Like *
 			childStart, childEnd := nn.ConvParsedReToNFA(depth+1, lr, Cur, vv.Children[0:1])
-			com.DbPrintf("db_NFA", "Return from QUESTION call, %d, %d, %s\n", childStart, childEnd, com.LF())
+			dbgo.DbPrintf("db_NFA", "Return from QUESTION call, %d, %d, %s\n", childStart, childEnd, dbgo.LF())
 			nn.Mark(Cur, re.LR_QUEST)
 			nn.AddLambda(childStart, childEnd)
 			// xyzzy Is0ChMatch -- will need to add an additional state to make this work!
@@ -367,16 +368,16 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 				dest := nn.GetNFA()
 				beg := Cur
 				nn.Mark(Cur, re.LR_OR)
-				com.DbPrintf("db_NFA", "*************************** OR dest = %d, Tree is (vv)=%s, %s\n", dest, com.SVarI(vv), com.LF())
-				com.DbPrintf("db_NFA", "*************************** This would be the point to add (N) terms to graph\n")
+				dbgo.DbPrintf("db_NFA", "*************************** OR dest = %d, Tree is (vv)=%s, %s\n", dest, com.SVarI(vv), dbgo.LF())
+				dbgo.DbPrintf("db_NFA", "*************************** This would be the point to add (N) terms to graph\n")
 				for jj := range vv.Children {
-					// com.DbPrintf("db_NFA", "OR Before recursive call\n")
+					// dbgo.DbPrintf("db_NFA", "OR Before recursive call\n")
 					childStart, childEnd := nn.ConvParsedReToNFA(depth+1, lr, beg, vv.Children[jj:jj+1])
-					com.DbPrintf("db_NFA", "OR After recursive call, %d -> %d, beg=%d dest=%d\n", childStart, childEnd, beg, dest)
+					dbgo.DbPrintf("db_NFA", "OR After recursive call, %d -> %d, beg=%d dest=%d\n", childStart, childEnd, beg, dest)
 					//nn.AddLambda(beg, childStart)
 					nn.AddLambda(childEnd, dest)
 				}
-				com.DbPrintf("db_NFA", "OR Final Dest  %d \n", dest)
+				dbgo.DbPrintf("db_NFA", "OR Final Dest  %d \n", dest)
 				Cur = dest // Note - inside loop, if no iterations then Cur stays unchanged.
 			}
 
@@ -384,7 +385,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 		// Grouping ()
 		// ------------------------------------------------------------------------------------------------------
 		case re.LR_null: //
-			com.DbPrintf("db_NFA", "LR_null\n")
+			dbgo.DbPrintf("db_NFA", "LR_null\n")
 			if false {
 				dest := nn.GetNFA()
 				// childStart, childEnd := nn.ConvParsedReToNFA(depth+1, lr, -1, vv.Children)
@@ -393,12 +394,12 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 				nn.AddLambda(childEnd, dest)
 				Cur = dest
 			} else {
-				com.DbPrintf("db_NFA", "Return (%d) LR_null  %d, %d, %s\n", depth, CurIn, Cur, com.LF())
+				dbgo.DbPrintf("db_NFA", "Return (%d) LR_null  %d, %d, %s\n", depth, CurIn, Cur, dbgo.LF())
 				return nn.ConvParsedReToNFA(depth+1, lr, Cur, vv.Children)
 			}
 
 		case re.LR_OP_PAR: // (		-- Start of Sub_Re
-			com.DbPrintf("db_NFA", "LR_OP_PAR\n")
+			dbgo.DbPrintf("db_NFA", "LR_OP_PAR\n")
 			// dest := nn.GetNFA()
 			_ /*childStart*/, childEnd := nn.ConvParsedReToNFA(depth+1, lr, Cur, vv.Children)
 			// nn.AddLambda(childEnd, dest)
@@ -411,12 +412,12 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 		case re.LR_EOF: //  Should case a return.
 			fallthrough
 		default: // Hm...
-			com.DbPrintf("db_NFA", "Return (%d) via default or EOF,  %d, %d, %s\n", depth, CurIn, Cur, com.LF())
+			dbgo.DbPrintf("db_NFA", "Return (%d) via default or EOF,  %d, %d, %s\n", depth, CurIn, Cur, dbgo.LF())
 			return CurIn, Cur
 		}
 	}
 
-	com.DbPrintf("db_NFA", "Return (%d) via bottom of code, loop ended,  %d, %d, %s\n", depth, CurIn, Cur, com.LF())
+	dbgo.DbPrintf("db_NFA", "Return (%d) via bottom of code, loop ended,  %d, %d, %s\n", depth, CurIn, Cur, dbgo.LF())
 	return CurIn, Cur
 
 }
@@ -432,8 +433,8 @@ func (nn *NFA_PoolType) AddReInfo(Re string, reFlags string, tRuleMatchId int, t
 	reLen, isHard := lr.CalcLength()
 	nn.ReSet[p].ParsedRe = lr
 
-	com.DbPrintf("DumpParseNodes2", "DumpParseNodes: Pass 1 in AddReInfo %s\n\n", com.SVarI(lr))
-	com.DbPrintf("DumpParseNodes2", "DumpParseNodes: As Passed %s\n\n", com.SVarI(lr.Tree.Children))
+	dbgo.DbPrintf("DumpParseNodes2", "DumpParseNodes: Pass 1 in AddReInfo %s\n\n", com.SVarI(lr))
+	dbgo.DbPrintf("DumpParseNodes2", "DumpParseNodes: As Passed %s\n\n", com.SVarI(lr.Tree.Children))
 
 	// ------------------------------------------------------------------------------------------------------------
 	// xyzzy - add HasDot, HasNCCL to this.
@@ -442,7 +443,7 @@ func (nn *NFA_PoolType) AddReInfo(Re string, reFlags string, tRuleMatchId int, t
 	CurIn := nn.Pos0Start() // Start new NFA at Init Pos
 	CurStart, Cur := nn.ConvParsedReToNFA(0, lr, CurIn, lr.Tree.Children)
 
-	com.DbPrintf("db_NFA", "CurStar: %d CurEnd: %d, reLen=%d\n", CurStart, Cur, reLen)
+	dbgo.DbPrintf("db_NFA", "CurStar: %d CurEnd: %d, reLen=%d\n", CurStart, Cur, reLen)
 
 	nn.Pool[Cur].Rv = tRv
 	nn.Pool[Cur].TRuleMatch = tRuleMatchId
@@ -521,11 +522,11 @@ func (nn *NFA_PoolType) UnDeleteRe(oldRe string) {
 
 func (nn *NFA_PoolType) DumpPool(all bool) {
 	if all {
-		com.DbPrintf("db_DumpPool", "Cur: %d Top: %d NextFree %d\n", nn.Cur, nn.Top, nn.NextFree)
+		dbgo.DbPrintf("db_DumpPool", "Cur: %d Top: %d NextFree %d\n", nn.Cur, nn.Top, nn.NextFree)
 	}
-	com.DbPrintf("db_DumpPool", "\n-------------------------------------- Modified for New Rule Order -----------------------------------------\n")
-	com.DbPrintf("db_DumpPool", "\nNFA InitState: %d\n\n", nn.InitState)
-	pLnNo := com.DbOn("db_NFA_LnNo")
+	dbgo.DbPrintf("db_DumpPool", "\n-------------------------------------- Modified for New Rule Order -----------------------------------------\n")
+	dbgo.DbPrintf("db_DumpPool", "\nNFA InitState: %d\n\n", nn.InitState)
+	pLnNo := dbgo.IsDbOn("db_NFA_LnNo")
 	IfLnNo := func(s string) string {
 		if pLnNo {
 			t := fmt.Sprintf("[%3s]", s)
@@ -535,14 +536,14 @@ func (nn *NFA_PoolType) DumpPool(all bool) {
 	}
 	for ii, vv := range nn.Pool {
 		if all || vv.IsUsed {
-			com.DbPrintf("db_DumpPool", "%3d%s: ", ii, IfLnNo(vv.LineNo))
+			dbgo.DbPrintf("db_DumpPool", "%3d%s: ", ii, IfLnNo(vv.LineNo))
 			if vv.Rv > 0 {
-				com.DbPrintf("db_DumpPool", " T:%04d ", vv.Rv)
+				dbgo.DbPrintf("db_DumpPool", " T:%04d ", vv.Rv)
 			} else {
-				com.DbPrintf("db_DumpPool", "        ")
+				dbgo.DbPrintf("db_DumpPool", "        ")
 			}
-			// com.DbPrintf("db_DumpPool", ` Edges: %s`, com.SVar(vv.Next2))
-			if com.DbOn("db_DumpPool") {
+			// dbgo.DbPrintf("db_DumpPool", ` Edges: %s`, com.SVar(vv.Next2))
+			if dbgo.IsDbOn("db_DumpPool") {
 				fmt.Printf("\t E:")
 				for _, ww := range vv.Next2 {
 					if ww.IsLambda {
@@ -639,16 +640,16 @@ func (nn *NFA_PoolType) GenerateSigma() (s string) {
 		}
 	}
 
-	com.DbPrintf("nfa2", "NFA.GenerateSigma: uniq=%v, %s\n", uniq, com.LF())
+	dbgo.DbPrintf("nfa2", "NFA.GenerateSigma: uniq=%v, %s\n", uniq, dbgo.LF())
 
 	// To store the keys in slice in sorted order
 	var keys []string
 	for k := range uniq {
 		keys = append(keys, k)
 	}
-	com.DbPrintf("nfa2", "NFA.GenerateSigma: keys (unsorted)=%v\n", keys)
+	dbgo.DbPrintf("nfa2", "NFA.GenerateSigma: keys (unsorted)=%v\n", keys)
 	sort.Strings(keys)
-	com.DbPrintf("nfa2", "NFA.GenerateSigma: keys (sorted)=%v\n", keys)
+	dbgo.DbPrintf("nfa2", "NFA.GenerateSigma: keys (sorted)=%v\n", keys)
 
 	for _, k := range keys {
 		s += k
@@ -772,13 +773,13 @@ func (nn *NFA_PoolType) LambdaClosure(startState []int) (setLambda []int) {
 func (nn *NFA_PoolType) lambdaClosureR(startState []int) (setLambda []int) {
 	// setLambda = setLambda[:0]
 	for _, st := range startState {
-		// fmt.Printf("StartState[%d]=%s, %s\n", st, com.SVar(nn.Pool[st]), com.LF())
+		// fmt.Printf("StartState[%d]=%s, %s\n", st, com.SVar(nn.Pool[st]), dbgo.LF())
 		if !nn.Pool[st].Visited {
-			// fmt.Printf("    ! visited, doing it, %s\n", com.LF())
+			// fmt.Printf("    ! visited, doing it, %s\n", dbgo.LF())
 			nn.Pool[st].Visited = true
 			vv := nn.Pool[st]
 			if vv.IsUsed {
-				// fmt.Printf("    ! IsUsed - that's good, %s, Edges Are:%s\n", com.LF(), com.SVar(vv.Next2))
+				// fmt.Printf("    ! IsUsed - that's good, %s, Edges Are:%s\n", dbgo.LF(), com.SVar(vv.Next2))
 				for _, ee := range vv.Next2 {
 					if ee.IsLambda {
 						setLambda = append(setLambda, ee.To)
@@ -848,13 +849,13 @@ func (nn *NFA_PoolType) HasTauEdge(StateSet []int) (Is0Ch bool) {
 func (nn *NFA_PoolType) IsTerminalState(StateSet []int) (rv int, is bool, info InfoType, Is0Ch bool) {
 	Is0Ch = false
 	Is0Ch = nn.HasTauEdge(StateSet)
-	com.DbPrintf("nfa4", "IsTau-Term: StateSet[%v] = %v\n", StateSet, Is0Ch)
+	dbgo.DbPrintf("nfa4", "IsTau-Term: StateSet[%v] = %v\n", StateSet, Is0Ch)
 	// fmt.Printf("IsTermailal: Input %s\n", com.SVar(StateSet))
 	x := 0  // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	ns := 0 // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	set := make([]NNPairType, 0, len(StateSet))
 	max_len := 0
-	com.DbPrintf("nfa3", "\nSet: (IsTerminalState - top) StateSet = %v\n", StateSet)
+	dbgo.DbPrintf("nfa3", "\nSet: (IsTerminalState - top) StateSet = %v\n", StateSet)
 	for iii, v := range StateSet {
 		if nn.Pool[v].Rv > 0 && nn.Pool[v].IsUsed {
 			set = append(set, NNPairType{StateSetIdx: iii, TRuleMatchVal: nn.Pool[v].TRuleMatch, MatchLength: nn.Pool[v].Info.MatchLength})
@@ -863,7 +864,7 @@ func (nn *NFA_PoolType) IsTerminalState(StateSet []int) (rv int, is bool, info I
 			}
 		}
 	}
-	com.DbPrintf("nfa3", "\nSet: Set = %v, max_len = %d\n", set, max_len)
+	dbgo.DbPrintf("nfa3", "\nSet: Set = %v, max_len = %d\n", set, max_len)
 
 	// Find the Rv/Info with the lowest TRuleMatch Number (TRuleMatchVal)
 	min_StateSetIdx := 0
@@ -874,21 +875,21 @@ func (nn *NFA_PoolType) IsTerminalState(StateSet []int) (rv int, is bool, info I
 			min_StateSetIdx = i
 		}
 	}
-	com.DbPrintf("nfa3", "min TRuleMatchVal = %d, at subscript %d, StateSet: %+v, %s\n", min_TRuleMatchVal, min_StateSetIdx, StateSet, com.LF()) // Correct results at this point
+	dbgo.DbPrintf("nfa3", "min TRuleMatchVal = %d, at subscript %d, StateSet: %+v, %s\n", min_TRuleMatchVal, min_StateSetIdx, StateSet, dbgo.LF()) // Correct results at this point
 
 	// Search each of the StateSetIdx's for the 1st Rv > 0
 	for _, v := range StateSet {
 		if nn.Pool[v].TRuleMatch == min_TRuleMatchVal {
-			com.DbPrintf("nfa3", "min_TRuleMatchVal == v == %d, match found for state %d, %s\n", min_TRuleMatchVal, v, com.LF())
+			dbgo.DbPrintf("nfa3", "min_TRuleMatchVal == v == %d, match found for state %d, %s\n", min_TRuleMatchVal, v, dbgo.LF())
 			x |= nn.Pool[v].Info.Action
 			if nn.Pool[v].Info.NextState != 0 {
 				ns = nn.Pool[v].Info.NextState
 			}
-			com.DbPrintf("nfa3", "IsTermailal: Found at %d, value = %d\n", v, nn.Pool[v].Rv)
+			dbgo.DbPrintf("nfa3", "IsTermailal: Found at %d, value = %d\n", v, nn.Pool[v].Rv)
 			return nn.Pool[v].Rv, true, nn.Pool[v].Info, Is0Ch
 		}
 	}
-	com.DbPrintf("nfa3", "At %s\n", com.LF())
+	dbgo.DbPrintf("nfa3", "At %s\n", dbgo.LF())
 
 	return -1, false, InfoType{x, 0, ns, false, "", false}, Is0Ch
 }
@@ -897,13 +898,13 @@ func (nn *NFA_PoolType) IsTerminalState(StateSet []int) (rv int, is bool, info I
 func (nn *NFA_PoolType) IsNonTerminalPushPopState(StateSet []int) (rv int, is bool, info InfoType, Is0Ch bool) {
 	Is0Ch = false
 	Is0Ch = nn.HasTauEdge(StateSet)
-	com.DbPrintf("nfa4", "IsTau-NonTerm: StateSet[%v] = %v\n", StateSet, Is0Ch)
+	dbgo.DbPrintf("nfa4", "IsTau-NonTerm: StateSet[%v] = %v\n", StateSet, Is0Ch)
 	// fmt.Printf("IsTermailal: Input %s\n", com.SVar(StateSet))
 	x := 0  // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	ns := 0 // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	set := make([]NNPairType, 0, len(StateSet))
 	max_len := 0
-	com.DbPrintf("nfa4", "\nSet: (IsNonTerminalPushPopState - top) StateSet = %v\n", StateSet)
+	dbgo.DbPrintf("nfa4", "\nSet: (IsNonTerminalPushPopState - top) StateSet = %v\n", StateSet)
 	for iii, v := range StateSet {
 		if nn.Pool[v].Rv == 0 && nn.Pool[v].Info.Action != 0 {
 			set = append(set, NNPairType{StateSetIdx: iii, TRuleMatchVal: nn.Pool[v].TRuleMatch, MatchLength: nn.Pool[v].Info.MatchLength})
@@ -912,7 +913,7 @@ func (nn *NFA_PoolType) IsNonTerminalPushPopState(StateSet []int) (rv int, is bo
 			}
 		}
 	}
-	com.DbPrintf("nfa4", "\nSet: Set = %v, max_len = %d\n", set, max_len)
+	dbgo.DbPrintf("nfa4", "\nSet: Set = %v, max_len = %d\n", set, max_len)
 
 	// Find the Rv/Info with the lowest TRuleMatch Number (TRuleMatchVal)
 	min_StateSetIdx := 0
@@ -923,21 +924,21 @@ func (nn *NFA_PoolType) IsNonTerminalPushPopState(StateSet []int) (rv int, is bo
 			min_StateSetIdx = i
 		}
 	}
-	com.DbPrintf("nfa4", "min TRuleMatchVal = %d, at subscript %d, StateSet: %+v, %s\n", min_TRuleMatchVal, min_StateSetIdx, StateSet, com.LF()) // Correct results at this point
+	dbgo.DbPrintf("nfa4", "min TRuleMatchVal = %d, at subscript %d, StateSet: %+v, %s\n", min_TRuleMatchVal, min_StateSetIdx, StateSet, dbgo.LF()) // Correct results at this point
 
 	// Search each of the StateSetIdx's for the 1st Rv > 0
 	for _, v := range StateSet {
 		if nn.Pool[v].TRuleMatch == min_TRuleMatchVal {
-			com.DbPrintf("nfa4", "min_TRuleMatchVal == v == %d, match found for state %d, %s\n", min_TRuleMatchVal, v, com.LF())
+			dbgo.DbPrintf("nfa4", "min_TRuleMatchVal == v == %d, match found for state %d, %s\n", min_TRuleMatchVal, v, dbgo.LF())
 			x |= nn.Pool[v].Info.Action
 			if nn.Pool[v].Info.NextState != 0 {
 				ns = nn.Pool[v].Info.NextState
 			}
-			com.DbPrintf("nfa4", "IsNonTermailal: Found at %d, value = %d\n", v, nn.Pool[v].Rv)
+			dbgo.DbPrintf("nfa4", "IsNonTermailal: Found at %d, value = %d\n", v, nn.Pool[v].Rv)
 			return nn.Pool[v].Rv, true, nn.Pool[v].Info, Is0Ch
 		}
 	}
-	com.DbPrintf("nfa4", "At %s\n", com.LF())
+	dbgo.DbPrintf("nfa4", "At %s\n", dbgo.LF())
 
 	return -1, false, InfoType{x, 0, ns, false, "", false}, Is0Ch
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/lexie/pbread"
@@ -357,7 +358,7 @@ var _ = Suite(&Reader_TestSuite{})
 
 func (s *Reader_TestSuite) TestLexie(c *C) {
 
-	fmt.Fprintf(os.Stderr, "Test Matcher test from ../in/django3.lex file, %s\n", com.LF())
+	fmt.Fprintf(os.Stderr, "Test Matcher test from ../in/django3.lex file, %s\n", dbgo.LF())
 
 	com.DbOnFlags["db_DumpDFAPool"] = true
 	com.DbOnFlags["db_DumpPool"] = true
@@ -392,12 +393,12 @@ func (s *Reader_TestSuite) TestLexie(c *C) {
 			r.PbString(vv.Inp)
 			r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii)) // simulate  file = sf-
 
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 			lex.MatcherLexieTable(r, "S_Init")
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 
 			if len(vv.Result) > 0 {
-				fmt.Printf("At: %s\n", com.LF())
+				fmt.Printf("At: %s\n", dbgo.LF())
 				if len(lex.TokList.TokenData) != len(vv.Result) {
 					fmt.Printf("Lengths did not match, %s", com.SVarI(lex.TokList.TokenData))
 					c.Check(len(lex.TokList.TokenData), Equals, len(vv.Result))
@@ -422,7 +423,7 @@ func (s *Reader_TestSuite) TestLexie(c *C) {
 				}
 			}
 
-			fmt.Printf("At: %s\n", com.LF())
+			fmt.Printf("At: %s\n", dbgo.LF())
 			fmt.Printf("Test:%s ------------------------- End --------------------------\n\n", vv.Test)
 
 		}

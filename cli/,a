@@ -1,3 +1,0 @@
-	go get github.com/pschlump/uuid
-	go get github.com/russross/blackfriday
-	go get golang.org/x/net/html

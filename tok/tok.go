@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 )
 
@@ -85,9 +86,9 @@ func (tl *TokenList) ReplaceToken(l int, s string) {
 	if lv-l >= 1 {
 		tl.TL[ii].AToken.Val = tl.TL[ii].AToken.Val[0:lv-l] + s
 	} else {
-		com.DbPrintf("db_tok01", "Error: ReplaceToken has invalid data, %s\n", com.LF())
+		dbgo.DbPrintf("db_tok01", "Error: ReplaceToken has invalid data, %s\n", dbgo.LF())
 	}
-	com.DbPrintf("db_tok01", "ReplaceToken: Match: ->%s<- Val: ->%s<-\n", tl.TL[ii].AToken.Match, tl.TL[ii].AToken.Val)
+	dbgo.DbPrintf("db_tok01", "ReplaceToken: Match: ->%s<- Val: ->%s<-\n", tl.TL[ii].AToken.Match, tl.TL[ii].AToken.Val)
 }
 
 func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
@@ -103,19 +104,19 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 		return
 	}
 
-	if com.DbOn("db_FlushTokenBeforeBefore") {
+	if dbgo.IsDbOn("db_FlushTokenBeforeBefore") {
 		fmt.Printf("Before Flush, TokStart=%d, eof = %v\n", TokStart, atEof)
 		tl.DumpTokenBuffer()
 	}
 
 	keepTok := make([]int, 0, len(tl.TL)) // Set of tokens to keepTokerve
 
-	//com.DbPrintf("db_tok01","tl.EndIdx = %+v\n", tl.EndIdx)
+	//dbgo.DbPrintf("db_tok01","tl.EndIdx = %+v\n", tl.EndIdx)
 	// Walk Backwards Creating List
 	limit := 15
 	for ii := len(tl.TL) - 1; ii >= 0 && limit > 0; limit-- {
 		top_ii := ii
-		com.DbPrintf("db_tok01", "At top of loop, ii = %d, tl.TL[ii]=%+v\n", ii, tl.TL[ii])
+		dbgo.DbPrintf("db_tok01", "At top of loop, ii = %d, tl.TL[ii]=%+v\n", ii, tl.TL[ii])
 		keepTok = append(keepTok, ii)
 		if ii <= 0 {
 			break
@@ -125,10 +126,10 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 		if atEof {
 			ii--
 		}
-		com.DbPrintf("db_tok01", "CCC ii=%d ok=%v end=%d atEof=%v\n", ii, ok, end, atEof)
+		dbgo.DbPrintf("db_tok01", "CCC ii=%d ok=%v end=%d atEof=%v\n", ii, ok, end, atEof)
 		if !ok {
-			if com.DbOn("OutputErrors") {
-				fmt.Printf("Note: Failed to flush - invalid token set, ii=%v, end=%v, %s\n", ii, end, com.LF())
+			if dbgo.IsDbOn("OutputErrors") {
+				fmt.Printf("Note: Failed to flush - invalid token set, ii=%v, end=%v, %s\n", ii, end, dbgo.LF())
 			}
 			break
 		}
@@ -139,11 +140,11 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 
 		l := tl.TL[top_ii].End - tl.TL[top_ii].Start
 		d := len(tl.TL[top_ii].AToken.Match)
-		//com.DbPrintf("db_tok01","DDD top_ii=%d l=%d d=%d before ->%s<-\n", top_ii, l, d, tl.TL[top_ii].AToken.Match)
+		//dbgo.DbPrintf("db_tok01","DDD top_ii=%d l=%d d=%d before ->%s<-\n", top_ii, l, d, tl.TL[top_ii].AToken.Match)
 		if d-l >= 0 && d-l < d && top_ii >= 0 && top_ii < len(tl.TL) {
 			tl.TL[top_ii].AToken.Match = tl.TL[top_ii].AToken.Match[d-l:]
 		}
-		//com.DbPrintf("db_tok01","EEE top_ii=%d l=%d d=%d after  ->%s<-\n", top_ii, l, d, tl.TL[top_ii].AToken.Match)
+		//dbgo.DbPrintf("db_tok01","EEE top_ii=%d l=%d d=%d after  ->%s<-\n", top_ii, l, d, tl.TL[top_ii].AToken.Match)
 		if tl.TL[top_ii].AToken.IsRepl {
 			tl.TL[top_ii].AToken.Val = tl.TL[top_ii].AToken.ReplStr
 		} else {
@@ -152,7 +153,7 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 	}
 
 	last := len(tl.TokenData) - 1
-	com.DbPrintf("db_tok01", "keepTok = %s, last=%d\n", com.SVar(keepTok), last)
+	dbgo.DbPrintf("db_tok01", "keepTok = %s, last=%d\n", com.SVar(keepTok), last)
 	for ii := len(keepTok) - 1; ii >= 0; ii-- {
 		vv := keepTok[ii]
 		// xyzzy - if not an Ignore token then
@@ -169,7 +170,7 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 	tl.TL = tl.TL[:0]
 	tl.EndIdx = make(map[int]int)
 
-	if com.DbOn("db_FlushTokenBeforeAfter") {
+	if dbgo.IsDbOn("db_FlushTokenBeforeAfter") {
 		fmt.Printf("After Flush\n")
 		fmt.Printf("--------------------------------------------------------\n")
 		tl.DumpTokenBuffer()
@@ -178,22 +179,22 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 }
 
 /*
-TokenBuffer: {
-	"TokenData": [
-		{
-			"Filename": "",
-			"Typ": 1,
-			"Match": "abcd",
-			"Val": "abcd",
-			"TokNo": 12,
-			"Line": 0,
-			"Col": 0,
-			"State": 0,
-			"EndFilename": ""
-		},
+	TokenBuffer: {
+		"TokenData": [
+			{
+				"Filename": "",
+				"Typ": 1,
+				"Match": "abcd",
+				"Val": "abcd",
+				"TokNo": 12,
+				"Line": 0,
+				"Col": 0,
+				"State": 0,
+				"EndFilename": ""
+			},
 */
 func (tl *TokenList) DumpTokenBuffer() {
-	// com.DbPrintf("db_tok01","TokenList: %s \n", com.SVarI(tl.TL))
+	// dbgo.DbPrintf("db_tok01","TokenList: %s \n", com.SVarI(tl.TL))
 	fmt.Printf("TokenList:\n")
 	fmt.Printf("\t%3s %-5s %-5s %-4s %-5s %8s %-20s \n", "row", "Start", "End", "Hard", "TokNo", "sL/C", "Match")
 	for ii, jj := range tl.TL {

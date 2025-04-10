@@ -15,7 +15,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/dbgo"
+	"github.com/pschlump/filelib"
 )
 
 const (
@@ -296,23 +297,23 @@ func Test_PbBufer01(t *testing.T) {
 				switch ww.OpCode {
 				case CmdOpenFile: // Open a file , at the tail end of list of input
 					pb.OpenFile(ww.Fn)
-					com.DbPrintf("testCode", "Open file %s At: %s\n", ww.Fn, com.LF())
-					if com.DbOn("testDump") {
+					dbgo.DbPrintf("testCode", "Open file %s At: %s\n", ww.Fn, dbgo.LF())
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbString: // Push back a string
 					pb.PbString(ww.Data)
-					if com.DbOn("testDump") {
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbRune: // Push back a rune
 					pb.PbRune(ww.Rn)
-					if com.DbOn("testDump") {
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbRuneArray: // Push back a rune array
 					pb.PbRuneArray(ww.RnS)
-					if com.DbOn("testDump") {
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdNextNChar:
@@ -321,9 +322,9 @@ func Test_PbBufer01(t *testing.T) {
 						if !done {
 							ss = ss + string(rn)
 						}
-						com.DbPrintf("testCode", "Case 5: At: ->%s<- ll=%d ss >>>%s<<< %s\n", string(rn), ll, ss, com.LF())
+						dbgo.DbPrintf("testCode", "Case 5: At: ->%s<- ll=%d ss >>>%s<<< %s\n", string(rn), ll, ss, dbgo.LF())
 					}
-					if com.DbOn("testDump") {
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPeek:
@@ -332,23 +333,23 @@ func Test_PbBufer01(t *testing.T) {
 						t.Errorf("%04s: Peek at [pc=%d] in test [%s] did not work, got %s expected %s, done=%v\n", pc, ii, string(rn), string(ww.Rn), done)
 					}
 				case CmdOutputToEof:
-					com.DbPrintf("testCode", "All Done: ss >>>%s<<< before At: %s\n", ss, com.LF())
-					if com.DbOn("testDump") {
+					dbgo.DbPrintf("testCode", "All Done: ss >>>%s<<< before At: %s\n", ss, dbgo.LF())
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 					for rn, done := pb.NextRune(); !done; rn, done = pb.NextRune() {
 						ss = ss + string(rn)
 					}
-					com.DbPrintf("testCode", "All Done: ss >>>%s<<< after At: %s\n", ss, com.LF())
+					dbgo.DbPrintf("testCode", "All Done: ss >>>%s<<< after At: %s\n", ss, dbgo.LF())
 				case CmdPbByteArray: // Push back a byte array
 					pb.PbByteArray([]byte(ww.Data))
-					if com.DbOn("testDump") {
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbFile: // Open file and push contents back onto input at head of list. (Macro file, Include, Require)
 					pb.PbFile(ww.Fn)
-					com.DbPrintf("testCode", "Pb file %s At: %s\n", ww.Fn, com.LF())
-					if com.DbOn("testDump") {
+					dbgo.DbPrintf("testCode", "Pb file %s At: %s\n", ww.Fn, dbgo.LF())
+					if dbgo.DbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdFileSeen:
@@ -358,7 +359,7 @@ func Test_PbBufer01(t *testing.T) {
 					}
 				case CmdGetPos: // Check get file name
 					ln, cn, fn := pb.GetPos()
-					com.DbPrintf("testCode", "fn=%s ln=%d cn=%d\n", fn, ln, cn)
+					dbgo.DbPrintf("testCode", "fn=%s ln=%d cn=%d\n", fn, ln, cn)
 					if ln != ww.LineNo {
 						t.Errorf("%04s: %d: did not match line no Expected ->%d<-, Got ->%d<-\n", vv.Test, pc, ww.LineNo, ln)
 					}
@@ -386,7 +387,7 @@ func Test_PbBufer01(t *testing.T) {
 					if ww.Fn == "" {
 						pb.Dump01(os.Stdout)
 					} else {
-						fp, err := com.Fopen(ww.Fn, "w")
+						fp, err := filelib.Fopen(ww.Fn, "w")
 						if err == nil {
 							pb.Dump01(fp)
 							fp.Close()
@@ -405,7 +406,7 @@ func Test_PbBufer01(t *testing.T) {
 			if ss != vv.Results {
 				t.Errorf("%04s: did not match Expected ->%s<-, Got ->%s<-\n", vv.Test, vv.Results, ss)
 			} else {
-				com.DbPrintf("testCode", "%04s: Passed ------------------------------------------------------------------------------------------------\n\n", vv.Test)
+				dbgo.DbPrintf("testCode", "%04s: Passed ------------------------------------------------------------------------------------------------\n\n", vv.Test)
 			}
 		}
 	}

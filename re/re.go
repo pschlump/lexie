@@ -18,6 +18,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 )
 
@@ -47,7 +48,7 @@ type LexReMatcherType struct {
 
 func init() {
 	if false {
-		fmt.Printf("", com.SVarI(nil), com.LF())
+		fmt.Printf("", com.SVarI(nil), dbgo.LF())
 	}
 }
 
@@ -102,17 +103,17 @@ func (lr *LexReType) Next() (ss string, cl LR_TokType) {
 }
 
 func (lr *LexReType) Warn(s string) {
-	if com.DbOn("OutputErrors") {
+	if dbgo.IsDbOn("OutputErrors") {
 		fmt.Printf("Warning: %s\n", s)
 	}
-	lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Warning: %s, %s", s, com.LF(2))))
+	lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Warning: %s, %s", s, dbgo.LF(2))))
 }
 
 func (lr *LexReType) Err(s string) {
-	if com.DbOn("OutputErrors") {
+	if dbgo.IsDbOn("OutputErrors") {
 		fmt.Printf("Error: %s\n", s)
 	}
-	lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Error: %s, %s", s, com.LF(2))))
+	lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Error: %s, %s", s, dbgo.LF(2))))
 }
 
 func NewReTreeNodeType() *ReTreeNodeType {
@@ -124,13 +125,13 @@ func NewReTreeNodeType() *ReTreeNodeType {
 
 func (lr *LexReType) parseCCL(depth int, ww LR_TokType) (tree ReTreeNodeType) {
 	pos := 0
-	com.DbPrintf("db2", "parseCCL Top: depth=%d,  %d=%s\n", depth, ww, NameOfLR_TokType(ww))
+	dbgo.DbPrintf("db2", "parseCCL Top: depth=%d,  %d=%s\n", depth, ww, NameOfLR_TokType(ww))
 	s := ""
 	dx := 0
 	marked := false
 	c, w := lr.Next()
 	for w != LR_EOF {
-		com.DbPrintf("re2", "Top of parseCCL dx=%d ->%s<-\n", dx, c)
+		dbgo.DbPrintf("re2", "Top of parseCCL dx=%d ->%s<-\n", dx, c)
 		switch w {
 		case LR_MINUS: // -		-- Text if not in CCL and not 1st char in CCL
 			fallthrough
@@ -163,17 +164,17 @@ func (lr *LexReType) parseCCL(depth int, ww LR_TokType) (tree ReTreeNodeType) {
 
 		case LR_N_CCL: // [^...]	-- N_CCL Node
 			marked = true
-			com.DbPrintf("re2", "    incr to %d, %s\n", dx, com.LF())
+			dbgo.DbPrintf("re2", "    incr to %d, %s\n", dx, dbgo.LF())
 			s += c // Add To CCL
 
 		case LR_CCL: // [...]	-- CCL Node (Above)
 			marked = true
-			com.DbPrintf("re2", "    incr to %d, %s\n", dx, com.LF())
+			dbgo.DbPrintf("re2", "    incr to %d, %s\n", dx, dbgo.LF())
 			s += c // Add To CCL
 
 		case LR_E_CCL:
 			dx--
-			com.DbPrintf("re2", "    decr to %d, %s\n", dx, com.LF())
+			dbgo.DbPrintf("re2", "    decr to %d, %s\n", dx, dbgo.LF())
 			if dx < 0 {
 				tree.Item = expandCCL(s) // Do Something, Return
 				tree.LR_Tok = ww
@@ -183,7 +184,7 @@ func (lr *LexReType) parseCCL(depth int, ww LR_TokType) (tree ReTreeNodeType) {
 			}
 
 		default:
-			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseCCL = %d, %s", w, com.LF())))
+			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseCCL = %d, %s", w, dbgo.LF())))
 			tree.Item = expandCCL(s) // Do Something, Return
 			tree.LR_Tok = ww
 			return
@@ -270,7 +271,7 @@ func (lr *LexReType) parseIteratorString(s string) (mm int, nn int) {
 // mm, nn := lr.parseIterator ( depth+1 )
 func (lr *LexReType) parseIterator(depth int) (tree ReTreeNodeType) {
 	pos := 0
-	com.DbPrintf("db2", "parseIterator Top: depth=%d\n", depth)
+	dbgo.DbPrintf("db2", "parseIterator Top: depth=%d\n", depth)
 	s := ""
 	c, w := lr.Next()
 	for w != LR_EOF {
@@ -302,7 +303,7 @@ func (lr *LexReType) parseIterator(depth int) (tree ReTreeNodeType) {
 		case LR_E_CCL:
 			fallthrough
 		case LR_N_CCL: // [^...]	-- N_CCL Node
-			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("in parseIterator, Invalid {m,n} - invalid chars found, %s", com.LF())))
+			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("in parseIterator, Invalid {m,n} - invalid chars found, %s", dbgo.LF())))
 			tree.Mm, tree.Nn = 1, 1
 			tree.LR_Tok = LR_OP_BR
 			return
@@ -311,7 +312,7 @@ func (lr *LexReType) parseIterator(depth int) (tree ReTreeNodeType) {
 			if c[0] >= '0' && c[0] <= '9' || c[0] == ',' {
 				s += c // Add To Iterator
 			} else {
-				lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseIterator, %s", com.LF())))
+				lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseIterator, %s", dbgo.LF())))
 				tree.Mm, tree.Nn = lr.parseIteratorString(s) // Do Something, Return
 				tree.Item = "{"
 				tree.LR_Tok = LR_OP_BR
@@ -325,7 +326,7 @@ func (lr *LexReType) parseIterator(depth int) (tree ReTreeNodeType) {
 			tree.LR_Tok = LR_OP_BR
 			return
 		default:
-			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseIterator, %s", com.LF())))
+			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Unreacable Code, invalid token in parseIterator, %s", dbgo.LF())))
 			tree.Mm, tree.Nn = lr.parseIteratorString(s) // Do Something, Return
 			tree.Item = "{"
 			tree.LR_Tok = LR_OP_BR
@@ -351,7 +352,6 @@ func N4Blanks(n int) (rv string) {
 	return
 }
 
-//
 // What can I see at the top of a RE
 //
 //	LR_Text                     //
@@ -373,30 +373,29 @@ func N4Blanks(n int) (rv string) {
 //	LR_Tok   LR_TokType
 //	Children []*ReTreeNodeType
 //	Next     *ReTreeNodeType
-//
 func (lr *LexReType) DumpParseNodesChild(ch []ReTreeNodeType, d int) {
-	com.DbPrintf("DumpParseNodes", "\n%sDumpParseNodesChild: At %s\n", N4Blanks(d), com.LF())
+	dbgo.DbPrintf("DumpParseNodes", "\n%sDumpParseNodesChild: At %s\n", N4Blanks(d), dbgo.LF())
 	for ii, vv := range ch {
-		com.DbPrintf("DumpParseNodes", "%sat %s [step %d] ", N4Blanks(d), com.LF(), ii)
-		com.DbPrintf("DumpParseNodes", "Item: [%s] %d=%s, N-Children=%d\n", vv.Item, vv.LR_Tok, NameOfLR_TokType(vv.LR_Tok), len(vv.Children))
+		dbgo.DbPrintf("DumpParseNodes", "%sat %s [step %d] ", N4Blanks(d), dbgo.LF(), ii)
+		dbgo.DbPrintf("DumpParseNodes", "Item: [%s] %d=%s, N-Children=%d\n", vv.Item, vv.LR_Tok, NameOfLR_TokType(vv.LR_Tok), len(vv.Children))
 		if len(vv.Children) > 0 {
 			lr.DumpParseNodesChild(vv.Children, d+1)
 		}
 	}
-	com.DbPrintf("DumpParseNodes", "%sDumpParseNodesChild: Done %s\n\n", N4Blanks(d), com.LF())
+	dbgo.DbPrintf("DumpParseNodes", "%sDumpParseNodesChild: Done %s\n\n", N4Blanks(d), dbgo.LF())
 }
 
 func (lr *LexReType) DumpParseNodes() {
-	com.DbPrintf("DumpParseNodes", "\nDumpParseNodes: At %s\n", com.LF())
+	dbgo.DbPrintf("DumpParseNodes", "\nDumpParseNodes: At %s\n", dbgo.LF())
 	for ii, vv := range lr.Tree.Children {
-		com.DbPrintf("DumpParseNodes", "at %s [step %d] ", com.LF(), ii)
-		com.DbPrintf("DumpParseNodes", "Item: [%s] %d=%s, N-Children=%d\n", vv.Item, vv.LR_Tok, NameOfLR_TokType(vv.LR_Tok), len(vv.Children))
+		dbgo.DbPrintf("DumpParseNodes", "at %s [step %d] ", dbgo.LF(), ii)
+		dbgo.DbPrintf("DumpParseNodes", "Item: [%s] %d=%s, N-Children=%d\n", vv.Item, vv.LR_Tok, NameOfLR_TokType(vv.LR_Tok), len(vv.Children))
 		if len(vv.Children) > 0 {
 			lr.DumpParseNodesChild(vv.Children, 1)
 		}
 	}
-	com.DbPrintf("DumpParseNodes", "DumpParseNodes: Done %s\n\n", com.LF())
-	com.DbPrintf("DumpParseNodesX", "DumpParseNodes: %s\n\n", com.SVarI(lr.Tree))
+	dbgo.DbPrintf("DumpParseNodes", "DumpParseNodes: Done %s\n\n", dbgo.LF())
+	dbgo.DbPrintf("DumpParseNodesX", "DumpParseNodes: %s\n\n", com.SVarI(lr.Tree))
 }
 
 func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard bool) {
@@ -404,7 +403,7 @@ func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard b
 
 	hard = false
 	if d == 1 {
-		com.DbPrintf("CalcLength", "CalcLengthChild at top: %s\n\n", com.SVarI(tree))
+		dbgo.DbPrintf("CalcLength", "CalcLengthChild at top: %s\n\n", com.SVarI(tree))
 	}
 
 	switch tree.LR_Tok {
@@ -414,7 +413,7 @@ func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard b
 			x += t
 		}
 	case LR_Text: //
-		// com.DbPrintf("CalcLength", "Len of item(%s) = %d, %s\n", tree.Item, len(tree.Item), com.LF())
+		// dbgo.DbPrintf("CalcLength", "Len of item(%s) = %d, %s\n", tree.Item, len(tree.Item), dbgo.LF())
 		x += len(tree.Item)
 		hard = true
 	case LR_EOF: //
@@ -423,7 +422,7 @@ func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard b
 		x += 1
 	case LR_STAR: // *
 		x = 0
-		// com.DbPrintf("CalcLength", "After * x = %d, hard=%v\n", x, hard)
+		// dbgo.DbPrintf("CalcLength", "After * x = %d, hard=%v\n", x, hard)
 	case LR_PLUS: // +
 		// patch to fix the problem with [0-9]+ not working -- In reality the length is only if it is a "FIXED" length, 0 else
 		//		if len(tree.Children) > 0 {
@@ -441,7 +440,7 @@ func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard b
 			t, hard = lr.CalcLengthChild(&tree.Children[0], d+1)
 			x += t
 		}
-		// com.DbPrintf("CalcLength", "After ( x = %d, hard=%v\n", x, hard)
+		// dbgo.DbPrintf("CalcLength", "After ( x = %d, hard=%v\n", x, hard)
 	case LR_CL_PAR: // )
 		x = 0
 	case LR_CCL: // [...]
@@ -480,7 +479,7 @@ func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard b
 			}
 		}
 		x += y
-		// com.DbPrintf("CalcLength", "After | x = %d, hard = %v\n", x, hard)
+		// dbgo.DbPrintf("CalcLength", "After | x = %d, hard = %v\n", x, hard)
 	}
 
 	return
@@ -488,7 +487,7 @@ func (lr *LexReType) CalcLengthChild(tree *ReTreeNodeType, d int) (x int, hard b
 
 func (lr *LexReType) CalcLength() (int, bool) {
 	x, h := lr.CalcLengthChild(lr.Tree, 1)
-	com.DbPrintf("CalcLength", "CalcLength Final Value for Tree = %d, hard=%v\n", x, h)
+	dbgo.DbPrintf("CalcLength", "CalcLength Final Value for Tree = %d, hard=%v\n", x, h)
 	return x, h
 }
 
@@ -498,15 +497,15 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 	pre := strings.Repeat("    ", depth)
 	if depth == 0 {
 		xTree = lr.Tree
-		com.DbPrintf("parseExpression", "%sat %s !!!top!!!, depth=%d \n", pre, com.LF(), depth)
+		dbgo.DbPrintf("parseExpression", "%sat %s !!!top!!!, depth=%d \n", pre, dbgo.LF(), depth)
 	}
 	isFirst := true
 	inOr := false
-	com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+	dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 	c, w := lr.Next()
 	for w != LR_EOF {
-		com.DbPrintf("parseExpression", "%sat %s !!!top!!!, depth=%d c=->%s<- w=%d %s -- Loop Top -- xTree=%s\n\n",
-			pre, com.LF(), depth, c, w, NameOfLR_TokType(w), com.SVarI(xTree))
+		dbgo.DbPrintf("parseExpression", "%sat %s !!!top!!!, depth=%d c=->%s<- w=%d %s -- Loop Top -- xTree=%s\n\n",
+			pre, dbgo.LF(), depth, c, w, NameOfLR_TokType(w), com.SVarI(xTree))
 		switch w {
 		case LR_CL_BR: // }
 			fallthrough
@@ -547,19 +546,19 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 				if newTree.Mm == 0 && newTree.Nn == InfiniteIteration {
 					ll := len(xTree.Children) - 1
 					tmp := xTree.Children[ll]
-					com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
+					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
 					xTree.Children[ll] = ReTreeNodeType{Item: "*", LR_Tok: LR_STAR, Children: []ReTreeNodeType{tmp}}
 				} else {
 					if newTree.Mm > newTree.Nn {
-						lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid Range, Start is bigger than end, {%d,%d}, %s", newTree.Mm, newTree.Nn, com.LF())))
+						lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid Range, Start is bigger than end, {%d,%d}, %s", newTree.Mm, newTree.Nn, dbgo.LF())))
 					}
-					com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
+					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
 					// xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: LR_OP_BR, Children: []ReTreeNodeType{tmp}, Mm: newTree.Mm, Nn: newTree.Nn}
 					newTree.Children = []ReTreeNodeType{tmp}
 					xTree.Children[ll] = newTree
 					// CCL: xTree.Children = append(xTree.Children, lr.parseCCL(depth+1, w)) // xyzzy needs work ---------------------------------------------------
 				}
-				com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			}
 
 		case LR_STAR: // *		-- Error if 1st char, else take prev item from list, star and replace it.
@@ -573,13 +572,13 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 			} else {
 				ll := len(xTree.Children) - 1
 				tmp := xTree.Children[ll]
-				com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
+				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, com.SVarI(xTree), com.SVarI(tmp))
 				xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: w, Children: []ReTreeNodeType{tmp}}
-				com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			}
 
 		case LR_OR: // |		n-ary or operator
-			com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+			dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			inOr = true
 
 			// Left Machine is collected to be sub-machine == Beginnig-to-current
@@ -603,7 +602,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 				newTop.Children = append(newTop.Children, leftNode) // only if no "or" node, else ref to "or" node
 				xTree.Children = xTree.Children[:0]
 				xTree.Children = append(xTree.Children, newTop)
-				com.DbPrintf("parseExpression", "%sAT %s, w=%d %s, left=%s\n", pre, com.LF(), w, NameOfLR_TokType(w), com.SVarI(left))
+				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, left=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), com.SVarI(left))
 			} else {
 				if kk >= 0 {
 					if kk < len(xTree.Children) {
@@ -627,12 +626,12 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 			// Take results of recursion and put in as RIGHT machine under LR_OR (optimize for N-Tree OR at this point)
 			//xTree.Children = append(xTree.Children, newTop)
 			//if depth > d_depth {
-			//com.DbPrintf("parseExpression", "%sat %s, depth=%d d_detph=%d\n", pre, com.LF(), depth, d_depth)
+			//dbgo.DbPrintf("parseExpression", "%sat %s, depth=%d d_detph=%d\n", pre, dbgo.LF(), depth, d_depth)
 			//	return xTree.Children
 			//}
 
 		case LR_OP_PAR: // (		-- Start of Sub_Re
-			com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+			dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 
 			newNode := ReTreeNodeType{Item: c, LR_Tok: LR_OP_PAR, Children: make([]ReTreeNodeType, 1, 10)}
 
@@ -643,20 +642,20 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 
 			xTree.Children = append(xTree.Children, newNode.Children[0])
 
-			com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+			dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 
 		case LR_CL_PAR: // )
 			// If in "or" node set - then collect last section to "or" ------------------------ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-			com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+			dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			if depth == 0 {
-				com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 				lr.Warn(fmt.Sprintf("Invalid '%s' at not properly nested.   Assuming that this was to match a character.", c))
 				xTree.Children = append(xTree.Children, ReTreeNodeType{Item: c, LR_Tok: LR_Text})
-				com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			} else {
-				com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 				if inOr {
-					com.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), com.SVarI(xTree))
+					dbgo.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
 					kk := -1
 					for jj := len(xTree.Children) - 1; jj >= 0; jj-- {
 						if xTree.Children[jj].LR_Tok == LR_OR {
@@ -675,11 +674,11 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 							xTree.Children[kk].Children = append(xTree.Children[kk].Children, newNode)
 						}
 					}
-					com.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), com.SVarI(xTree))
+					dbgo.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
 				}
 				return xTree.Children
 			}
-			com.DbPrintf("parseExpression", "%sat %s\n", pre, com.LF())
+			dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			inOr = false
 
 		case LR_CCL: // [...]	-- CCL Node (Above)
@@ -688,16 +687,16 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 			xTree.Children = append(xTree.Children, lr.parseCCL(depth+1, w)) // xyzzy needs work ---------------------------------------------------
 
 		default:
-			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid LR Token Type, '%d', '%s', %s", w, NameOfLR_TokType(w), com.LF())))
+			lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid LR Token Type, '%d', '%s', %s", w, NameOfLR_TokType(w), dbgo.LF())))
 			return xTree.Children
 		}
 		isFirst = false
-		com.DbPrintf("parseExpression", "%sAT %s, BOTTOM xTree=%s\n", pre, com.LF(), com.SVarI(xTree))
+		dbgo.DbPrintf("parseExpression", "%sAT %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
 		c, w = lr.Next()
 	}
 	// If in "or" node set - then collect last section to "or" ------------------------ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	if inOr {
-		com.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), com.SVarI(xTree))
+		dbgo.DbPrintf("parseExpression", "%sAT Top of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
 		kk := -1
 		for jj := len(xTree.Children) - 1; jj >= 0; jj-- {
 			if xTree.Children[jj].LR_Tok == LR_OR {
@@ -716,22 +715,22 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 				xTree.Children[kk].Children = append(xTree.Children[kk].Children, newNode)
 			}
 		}
-		com.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, com.LF(), com.SVarI(xTree))
+		dbgo.DbPrintf("parseExpression", "%sAT Bo5 of new code %s, BOTTOM xTree=%s\n", pre, dbgo.LF(), com.SVarI(xTree))
 	}
 	return xTree.Children
 }
 
 func (lr *LexReType) ParseRe(ss string) {
-	com.DbPrintf("db2", "at %s\n", com.LF())
+	dbgo.DbPrintf("db2", "at %s\n", dbgo.LF())
 	lr.SetBuf(ss)
-	com.DbPrintf("db2", "at %s\n", com.LF())
+	dbgo.DbPrintf("db2", "at %s\n", dbgo.LF())
 	lr.parseExpression(0, 0, nil)
-	com.DbPrintf("db2", "at %s\n", com.LF())
+	dbgo.DbPrintf("db2", "at %s\n", dbgo.LF())
 }
 
 func expandCCL(s string) (ccl string) {
 	ccl = ""
-	com.DbPrintf("db2", "at %s\n", com.LF())
+	dbgo.DbPrintf("db2", "at %s\n", dbgo.LF())
 
 	pos := 0
 	if len(s) > 0 && s[0:1] == "-" { // Check for leading '-' include in CCL
@@ -740,60 +739,60 @@ func expandCCL(s string) (ccl string) {
 	}
 
 	for ii := pos; ii < len(s); ii++ {
-		com.DbPrintf("re2", "ii=%d remaining ->%s<-, %s\n", ii, s[ii:], com.LF())
+		dbgo.DbPrintf("re2", "ii=%d remaining ->%s<-, %s\n", ii, s[ii:], dbgo.LF())
 		if strings.HasPrefix(s[ii:], "[:alphnum:]") {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			// ccl += X_ALPHA
 			ccl += X_LOWER
 			ccl += X_UPPER
 			ccl += X_NUMERIC
 			ii += len("[:alphnum:]") - 1
 		} else if strings.HasPrefix(s[ii:], "[:alpha:]") {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			// ccl += X_ALPHA
 			ccl += X_LOWER
 			ccl += X_UPPER
 			ii += len("[:alpha:]") - 1
 		} else if strings.HasPrefix(s[ii:], "[:lower:]") {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			ccl += X_LOWER
 			ii += len("[:lower:]") - 1
 		} else if strings.HasPrefix(s[ii:], "[:upper:]") {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			ccl += X_UPPER
 			ii += len("[:upper:]") - 1
 		} else if strings.HasPrefix(s[ii:], "[:numeric:]") {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			ccl += X_NUMERIC
 			ii += len("[:numeric:]") - 1
 		} else if ii+9 <= len(s) && s[ii:ii+9] == "a-zA-Z0-9" {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			// ccl += X_ALPHA
 			ccl += X_LOWER
 			ccl += X_UPPER
 			ccl += X_NUMERIC
 			ii += 8
 		} else if ii+6 <= len(s) && s[ii:ii+6] == "a-zA-Z" {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			// ccl += X_ALPHA
 			ccl += X_LOWER
 			ccl += X_UPPER
 			ii += 5
 		} else if ii+3 <= len(s) && s[ii:ii+3] == "0-9" {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			// fmt.Printf("matched 0-9 pattern\n")
 			ccl += X_NUMERIC
 			ii += 2
 		} else if ii+3 <= len(s) && s[ii:ii+3] == "a-z" {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			ccl += X_LOWER
 			ii += 2
 		} else if ii+3 <= len(s) && s[ii:ii+3] == "A-Z" {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			ccl += X_UPPER
 			ii += 2
 		} else if ii+2 < len(s) && s[ii+1:ii+2] == "-" {
-			com.DbPrintf("re2", "   Matched: %s\n", com.LF())
+			dbgo.DbPrintf("re2", "   Matched: %s\n", dbgo.LF())
 			// xyzzyRune  TODO - this code is horribley non-utf8 compatable at this moment in time.
 			e := s[ii+2]
 			// fmt.Printf("matched a-b pattern, b=%s e=%s\n", string(s[ii]), string(e))
