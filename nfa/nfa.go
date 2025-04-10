@@ -542,7 +542,7 @@ func (nn *NFA_PoolType) DumpPool(all bool) {
 			} else {
 				dbgo.DbPrintf("db_DumpPool", "        ")
 			}
-			// dbgo.DbPrintf("db_DumpPool", ` Edges: %s`, com.SVar(vv.Next2))
+			// dbgo.DbPrintf("db_DumpPool", ` Edges: %s`, dbgo.SVar(vv.Next2))
 			if dbgo.IsDbOn("db_DumpPool") {
 				fmt.Printf("\t E:")
 				for _, ww := range vv.Next2 {
@@ -598,7 +598,7 @@ func (nn *NFA_PoolType) DumpPoolJSON(fo io.Writer, td string, tn int) {
 	fmt.Fprintf(fo, `{"Input":%q, "Rv":%d, "Start": %d, "Sigma":%q, "States":[%s`, td, tn, nn.InitState, nn.Sigma, "\n")
 	for ii, vv := range nn.Pool {
 		if vv.IsUsed {
-			fmt.Fprintf(fo, ` { "Sn":%d, "Info":%s, `, ii, com.SVar(vv.Info))
+			fmt.Fprintf(fo, ` { "Sn":%d, "Info":%s, `, ii, dbgo.SVar(vv.Info))
 			if vv.Rv > 0 {
 				fmt.Fprintf(fo, ` "Term":%d, `, vv.Rv)
 			}
@@ -773,13 +773,13 @@ func (nn *NFA_PoolType) LambdaClosure(startState []int) (setLambda []int) {
 func (nn *NFA_PoolType) lambdaClosureR(startState []int) (setLambda []int) {
 	// setLambda = setLambda[:0]
 	for _, st := range startState {
-		// fmt.Printf("StartState[%d]=%s, %s\n", st, com.SVar(nn.Pool[st]), dbgo.LF())
+		// fmt.Printf("StartState[%d]=%s, %s\n", st, dbgo.SVar(nn.Pool[st]), dbgo.LF())
 		if !nn.Pool[st].Visited {
 			// fmt.Printf("    ! visited, doing it, %s\n", dbgo.LF())
 			nn.Pool[st].Visited = true
 			vv := nn.Pool[st]
 			if vv.IsUsed {
-				// fmt.Printf("    ! IsUsed - that's good, %s, Edges Are:%s\n", dbgo.LF(), com.SVar(vv.Next2))
+				// fmt.Printf("    ! IsUsed - that's good, %s, Edges Are:%s\n", dbgo.LF(), dbgo.SVar(vv.Next2))
 				for _, ee := range vv.Next2 {
 					if ee.IsLambda {
 						setLambda = append(setLambda, ee.To)
@@ -850,7 +850,7 @@ func (nn *NFA_PoolType) IsTerminalState(StateSet []int) (rv int, is bool, info I
 	Is0Ch = false
 	Is0Ch = nn.HasTauEdge(StateSet)
 	dbgo.DbPrintf("nfa4", "IsTau-Term: StateSet[%v] = %v\n", StateSet, Is0Ch)
-	// fmt.Printf("IsTermailal: Input %s\n", com.SVar(StateSet))
+	// fmt.Printf("IsTermailal: Input %s\n", dbgo.SVar(StateSet))
 	x := 0  // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	ns := 0 // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	set := make([]NNPairType, 0, len(StateSet))
@@ -899,7 +899,7 @@ func (nn *NFA_PoolType) IsNonTerminalPushPopState(StateSet []int) (rv int, is bo
 	Is0Ch = false
 	Is0Ch = nn.HasTauEdge(StateSet)
 	dbgo.DbPrintf("nfa4", "IsTau-NonTerm: StateSet[%v] = %v\n", StateSet, Is0Ch)
-	// fmt.Printf("IsTermailal: Input %s\n", com.SVar(StateSet))
+	// fmt.Printf("IsTermailal: Input %s\n", dbgo.SVar(StateSet))
 	x := 0  // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	ns := 0 // xyzzy - I don't think that this is really correct.  But it seems to work for now
 	set := make([]NNPairType, 0, len(StateSet))

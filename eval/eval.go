@@ -1044,7 +1044,7 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 				}
 			} else {
 				m := Tk1.CurValue.(int)
-				// fmt.Printf("N=%d M=%d CurValue=%s\n", n, m, com.SVar(TkL.CurValue))
+				// fmt.Printf("N=%d M=%d CurValue=%s\n", n, m, dbgo.SVar(TkL.CurValue))
 				switch TkL.CurValue.(type) {
 				case []tok.Token:
 					x := TkL.CurValue.([]tok.Token)
@@ -1088,7 +1088,7 @@ func (eval *EvalType) Pres1() (TkL tok.Token) {
 				return
 			}
 
-			// fmt.Printf("name=%s CurValue=%s\n", name, com.SVar(TkL.CurValue))
+			// fmt.Printf("name=%s CurValue=%s\n", name, dbgo.SVar(TkL.CurValue))
 			switch TkL.CurValue.(type) {
 			case map[string]tok.Token:
 				x := TkL.CurValue.(map[string]tok.Token)

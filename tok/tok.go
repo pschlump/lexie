@@ -5,7 +5,6 @@ import (
 	"io"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/lexie/com"
 )
 
 // -----------------------------------------------------------------------------------------------------------------------------
@@ -153,7 +152,7 @@ func (tl *TokenList) FlushTokenBuffer(TokStart int, isHard bool, atEof bool) {
 	}
 
 	last := len(tl.TokenData) - 1
-	dbgo.DbPrintf("db_tok01", "keepTok = %s, last=%d\n", com.SVar(keepTok), last)
+	dbgo.DbPrintf("db_tok01", "keepTok = %s, last=%d\n", dbgo.SVar(keepTok), last)
 	for ii := len(keepTok) - 1; ii >= 0; ii-- {
 		vv := keepTok[ii]
 		// xyzzy - if not an Ignore token then

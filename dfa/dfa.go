@@ -212,7 +212,7 @@ func (dfa *DFA_PoolType) DumpPool(all bool) {
 	for ii, vv := range dfa.Pool {
 		if all || vv.IsUsed {
 			dbgo.DbPrintf("db_DumpDFAPool", "%3d%s: ", ii, IfLnNo(vv.LineNo))
-			dbgo.DbPrintf("db_DumpDFAPool", " %12s %12s %s :", vv.StateName, com.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
+			dbgo.DbPrintf("db_DumpDFAPool", " %12s %12s %s :", vv.StateName, dbgo.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
 			if vv.Rv > 0 {
 				if vv.Is0Ch {
 					dbgo.DbPrintf("db_DumpDFAPool", " \u03c4:Tau:%04d ", vv.Rv)
@@ -265,7 +265,7 @@ func (dfa *DFA_PoolType) DumpPool(all bool) {
 				}
 				fmt.Printf("\n")
 				if vv.Info.Action != 0 || vv.Info.MatchLength != 0 {
-					// fmt.Printf("\t\t\tInfo: %s\n", com.SVar(vv.Info))		// xyzzy - output Info
+					// fmt.Printf("\t\t\tInfo: %s\n", dbgo.SVar(vv.Info))		// xyzzy - output Info
 					// xyzzy - NextState info
 					fmt.Printf("\t\t\tDFA.Info: %s", nfa.DumpInfo(vv.Info))
 					// if ((vv.Info.Action&com.A_Pop) != 0 || (vv.Info.Action&com.A_Push) != 0 || (vv.Info.Action&com.A_Reset) != 0) && !vv.Info.HardMatch {		// xyzzy8
@@ -290,7 +290,7 @@ func (dfa *DFA_PoolType) DumpPoolOneState(ii int) string {
 	vv := dfa.Pool[ii]
 	s := ""
 	s += fmt.Sprintf("%3d%s: ", ii, IfLnNo(vv.LineNo))
-	s += fmt.Sprintf(" %12s %12s %s :", vv.StateName, com.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
+	s += fmt.Sprintf(" %12s %12s %s :", vv.StateName, dbgo.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
 	if vv.Rv > 0 {
 		s += fmt.Sprintf(" T:%04d ", vv.Rv)
 	} else {
@@ -314,9 +314,9 @@ func (dfa *DFA_PoolType) DumpPoolOneState(ii int) string {
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 func (dfa *DFA_PoolType) HaveStateAlready(inputSet []int) (loc int) {
-	// fmt.Printf("HaveStateAlready: >>>>>>>>>>>>>>>>>>>>>>> 0 inputSet: %s\n", com.SVar(inputSet))
+	// fmt.Printf("HaveStateAlready: >>>>>>>>>>>>>>>>>>>>>>> 0 inputSet: %s\n", dbgo.SVar(inputSet))
 	inputSet = com.USortIntSlice(inputSet) // Make set unique
-	// fmt.Printf("HaveStateAlready: >>>>>>>>>>>>>>>>>>>>>>> 1 inputSet: %s\n", com.SVar(inputSet))
+	// fmt.Printf("HaveStateAlready: >>>>>>>>>>>>>>>>>>>>>>> 1 inputSet: %s\n", dbgo.SVar(inputSet))
 	s := com.NameOf(inputSet)
 	// fmt.Printf("HaveStateAlready: >>>>>>>>>>>>>>>>>>>>>>> Name searcing for is: %s\n", s)
 	for ii, vv := range dfa.Pool {
@@ -404,7 +404,7 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) {
 	dfa_set := nn.LambdaClosure([]int{StartState}) // Find all the lambda closures from specified state
 	dfa_set = append(dfa_set, StartState)          // Add in initial state
 	dfa_set = com.USortIntSlice(dfa_set)           // Make set unique
-	dbgo.DbPrintf("db_DFAGen", "\nStart: %s, \u03a3 =->%s<-, %s\n", com.SVar(dfa_set), dfa.Sigma, dbgo.LF())
+	dbgo.DbPrintf("db_DFAGen", "\nStart: %s, \u03a3 =->%s<-, %s\n", dbgo.SVar(dfa_set), dfa.Sigma, dbgo.LF())
 	A := dfa.GetDFAName(dfa_set)
 	if r, is, info, Is0Ch := nn.IsTerminalState(dfa_set); is {
 		dfa.Pool[A].Rv = r
@@ -419,7 +419,7 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) {
 	// Look at all the locaitons we can get to from this "state"
 	for _, S := range dfa.Sigma {
 		StateSet := nn.LambdaClosureSet(dfa_set, string(S))
-		dbgo.DbPrintf("db_DFAGen", "FOR INITIAL state ->%s<- StateSet=%s, %s\n", string(S), com.SVar(StateSet), dbgo.LF())
+		dbgo.DbPrintf("db_DFAGen", "FOR INITIAL state ->%s<- StateSet=%s, %s\n", string(S), dbgo.SVar(StateSet), dbgo.LF())
 		if len(StateSet) > 0 {
 			dbgo.DbPrintf("db_DFAGen", "Have a non-empty result, %s\n", dbgo.LF())
 			dbgo.DbPrintf("db_DFAGen", "<><><> this is the point where we should check to see if 'S' is DOT or NCCL, %s\n", dbgo.LF())
@@ -427,7 +427,7 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) {
 			StateSetT := nn.LambdaClosure(StateSet) // need to lambda complete the state set
 			StateSet = append(StateSet, StateSetT...)
 			StateSet = com.USortIntSlice(StateSet) // Make set unique
-			dbgo.DbPrintf("db_DFAGen", "    Output Is %s, %s\n", com.SVar(StateSet), dbgo.LF())
+			dbgo.DbPrintf("db_DFAGen", "    Output Is %s, %s\n", dbgo.SVar(StateSet), dbgo.LF())
 			B := 0
 			if t := dfa.HaveStateAlready(StateSet); t != -1 { // Have Already
 				B = t
@@ -453,7 +453,7 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) {
 			}
 			dbgo.DbPrintf("db_DFAGen", "    *** After (top) %s\n", dbgo.LF())
 			if dbgo.IsDbOn("db_DFAGen") {
-				fmt.Printf("for %s StateSet=%s, A=%d, B=%s %s\n", string(S), com.SVar(StateSet), A, com.SVar(B), dbgo.LF())
+				fmt.Printf("for %s StateSet=%s, A=%d, B=%s %s\n", string(S), dbgo.SVar(StateSet), A, dbgo.SVar(B), dbgo.LF())
 				dfa.DumpPool(false)
 			}
 		}
@@ -471,14 +471,14 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) {
 			dfa_set = com.USortIntSlice(dfa_set)                       // Make set unique
 			for _, S := range dfa.Sigma {
 				StateSet := nn.LambdaClosureSet(dfa_set, string(S))
-				dbgo.DbPrintf("db_DFAGen", "    for initial state %s StateSet=%s, %s\n", string(S), com.SVar(StateSet), dbgo.LF())
+				dbgo.DbPrintf("db_DFAGen", "    for initial state %s StateSet=%s, %s\n", string(S), dbgo.SVar(StateSet), dbgo.LF())
 				dbgo.DbPrintf("db_DFAGen", "<><><> this is the point where we should check to see if 'S' is DOT or NCCL, %s\n", dbgo.LF())
 				if len(StateSet) > 0 {
-					dbgo.DbPrintf("db_DFAGen", "    >>> Have a non-empty result, Input Is %s, %s\n", com.SVar(StateSet), dbgo.LF())
+					dbgo.DbPrintf("db_DFAGen", "    >>> Have a non-empty result, Input Is %s, %s\n", dbgo.SVar(StateSet), dbgo.LF())
 					StateSetT := nn.LambdaClosure(StateSet) // need to lambda complete the state set
 					StateSet = append(StateSet, StateSetT...)
 					StateSet = com.USortIntSlice(StateSet) // Make set unique
-					dbgo.DbPrintf("db_DFAGen", "    >>> Output Is %s, %s\n", com.SVar(StateSet), dbgo.LF())
+					dbgo.DbPrintf("db_DFAGen", "    >>> Output Is %s, %s\n", dbgo.SVar(StateSet), dbgo.LF())
 					B := 0
 					if t := dfa.HaveStateAlready(StateSet); t != -1 { // Have Already
 						B = t
@@ -504,7 +504,7 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) {
 					dbgo.DbPrintf("db_DFAGen", "    *** After %s\n", dbgo.LF())
 					if dbgo.IsDbOn("db_DFAGen") {
 						fmt.Printf("    Add New Edge on %s fr %d to %d, %s\n", string(S), stateToDo, B, dbgo.LF())
-						fmt.Printf("    for %s StateSet=%s, A(stateToDo)=%d, %s\n", string(S), com.SVar(StateSet), stateToDo, dbgo.LF())
+						fmt.Printf("    for %s StateSet=%s, A(stateToDo)=%d, %s\n", string(S), dbgo.SVar(StateSet), stateToDo, dbgo.LF())
 						dfa.DumpPool(false)
 					}
 				}

@@ -22,8 +22,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/pschlump/json" //	"encoding/json"
-
+	"github.com/pschlump/filelib"
+	//	"encoding/json"
 	// "../../../go-lib/flags"  //		"github.com/jessevdk/go-flags"
 	// "../../../go-lib/sizlib" //
 )
@@ -273,6 +273,7 @@ func DirExists(name string) bool {
 	return false
 }
 
+/*
 // -------------------------------------------------------------------------------------------------
 // Exists reports whether the named file or directory exists.
 // -------------------------------------------------------------------------------------------------
@@ -284,6 +285,7 @@ func Exists(name string) bool {
 	}
 	return true
 }
+*/
 
 // -------------------------------------------------------------------------------------------------
 // Get a list of filenames and directorys.
@@ -328,7 +330,7 @@ func CompareFiles(cmpFile string, refFile string) bool {
 		return false
 	}
 
-	if Exists(refFile) {
+	if filelib.Exists(refFile) {
 		ref, err := ioutil.ReadFile(refFile)
 		if err != nil {
 			fmt.Printf("Unable to read %s\n", refFile)
@@ -519,6 +521,7 @@ func ParseBool(s string) (b bool) {
 	return
 }
 
+/*
 // -------------------------------------------------------------------------------------------------
 func SVar(v interface{}) string {
 	s, err := json.Marshal(v)
@@ -540,6 +543,7 @@ func SVarI(v interface{}) string {
 		return string(s)
 	}
 }
+*/
 
 // -------------------------------------------------------------------------------------------------
 // Exists returns true if the named file or directory exists.

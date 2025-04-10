@@ -19,7 +19,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/pschlump/dbgo"
-	"github.com/pschlump/lexie/com"
 )
 
 type ReTreeNodeType struct {
@@ -546,13 +545,13 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 				if newTree.Mm == 0 && newTree.Nn == InfiniteIteration {
 					ll := len(xTree.Children) - 1
 					tmp := xTree.Children[ll]
-					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), com.SVarI(tmp))
+					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), dbgo.SVarI(tmp))
 					xTree.Children[ll] = ReTreeNodeType{Item: "*", LR_Tok: LR_STAR, Children: []ReTreeNodeType{tmp}}
 				} else {
 					if newTree.Mm > newTree.Nn {
 						lr.Error = append(lr.Error, errors.New(fmt.Sprintf("Invalid Range, Start is bigger than end, {%d,%d}, %s", newTree.Mm, newTree.Nn, dbgo.LF())))
 					}
-					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), com.SVarI(tmp))
+					dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), dbgo.SVarI(tmp))
 					// xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: LR_OP_BR, Children: []ReTreeNodeType{tmp}, Mm: newTree.Mm, Nn: newTree.Nn}
 					newTree.Children = []ReTreeNodeType{tmp}
 					xTree.Children[ll] = newTree
@@ -572,7 +571,7 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 			} else {
 				ll := len(xTree.Children) - 1
 				tmp := xTree.Children[ll]
-				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), com.SVarI(tmp))
+				dbgo.DbPrintf("parseExpression", "%sAT %s, w=%d %s, ll=%d, xTree=%s tmp=%s\n", pre, dbgo.LF(), w, NameOfLR_TokType(w), ll, dbgo.SVarI(xTree), dbgo.SVarI(tmp))
 				xTree.Children[ll] = ReTreeNodeType{Item: c, LR_Tok: w, Children: []ReTreeNodeType{tmp}}
 				dbgo.DbPrintf("parseExpression", "%sat %s\n", pre, dbgo.LF())
 			}
