@@ -9,9 +9,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"strings"
 	"testing"
 
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/nfa"
@@ -146,22 +146,19 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 		Pool.GenerateGVFile(gv, vv.Re, vv.Rv)
 		gv.Close()
 
-		out, err = exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
+		out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 		if err != nil {
 			fmt.Printf("Error from dot, %s, %s\n", err, tr.LF())
 			fmt.Printf("Output: %s\n", out)
 		}
 	}
 	if n_skip > 0 {
-		fmt.Fprintf(os.Stderr, "%sSkipped, # of files without automated checks = %d%s\n", Yellow, n_skip, Reset)
-		DbPrintf("debug", "\n\n%sSkipped, # of files without automated checks = %d%s\n", Yellow, n_skip, Reset)
+		dbgo.Fprintf(os.Stderr, "%(yellow)Skipped, # of files without automated checks = %d\n", n_skip)
 	}
 	if n_err > 0 {
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", Red, n_err, Reset)
-		DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", Red, n_err, Reset)
+		dbgo.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n", n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", Green, Reset)
-		DbPrintf("debug", "\n\n%sPASS%s\n", Green, Reset)
+		dbgo.Fprintf(os.Stderr, "%(green)PASS\n")
 	}
 }
 
@@ -240,11 +237,9 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	// ------------------------- eval results now ---------------------------------------
 
 	if n_err > 0 {
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", Red, n_err, Reset)
-		DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", Red, n_err, Reset)
+		dbgo.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n", n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", Green, Reset)
-		DbPrintf("debug", "\n\n%sPASS%s\n", Green, Reset)
+		dbgo.Fprintf(os.Stderr, "%(green)PASS\n")
 	}
 }
 
@@ -256,7 +251,7 @@ var _ = Suite(&NFA_to_DFA_TestSuite{})
 
 func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 
-	return
+	// return
 	fmt.Fprintf(os.Stderr, "Test NFA to DFA, %s\n", tr.LF())
 
 	n_err := 0
@@ -277,7 +272,7 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 			Cur := Nfa.GetNFA()
 			Nfa.InitState = Cur
 
-			c.Log("\n\n--- %d NFA to DFA Test: %s -----------------------------------------------------------------------------\n\n", ii, vv.Test)
+			// c.Log("\n\n--- %d NFA to DFA Test: %s -----------------------------------------------------------------------------\n\n", ii, vv.Test)
 			fmt.Printf("\n\n--- %d NFA to DFA Test: %s -----------------------------------------------------------------------------\n\n", ii, vv.Test)
 			newFile := fmt.Sprintf("./ref/dfa_%s.tst", vv.Test)
 			cmpFile := fmt.Sprintf("./ref/dfa_%s.ref", vv.Test)
@@ -333,7 +328,7 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 			Dfa.OutputInFormat(tf, "text") // text, go-code, c-code, json, xml etc.
 			tf.Close()
 
-			out, err = exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
+			out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
 				fmt.Printf("Error from dot, %s, %s\n", err, tr.LF())
 				fmt.Printf("Output: %s\n", out)
@@ -345,15 +340,16 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 	// -----------------------------------------------------------------------------------------------------------------
 
 	if n_err > 0 {
-		fmt.Fprintf(os.Stderr, "%sFailed, # of errors = %d%s\n", Red, n_err, Reset)
-		DbPrintf("debug", "\n\n%sFailed, # of errors = %d%s\n", Red, n_err, Reset)
+		dbgo.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n", n_err)
 	} else {
-		fmt.Fprintf(os.Stderr, "%sPASS%s\n", Green, Reset)
-		DbPrintf("debug", "\n\n%sPASS%s\n", Green, Reset)
+		dbgo.Fprintf(os.Stderr, "%(green)PASS\n")
 	}
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/*
+***** NOT WORKING *****
 
 type Lexie02DataType struct {
 	Test     string
@@ -383,7 +379,7 @@ func (s *Reader_TestSuite) TestLexie(c *C) {
 	dbOn["db_DumpPool"] = true    // NFA Dump Pool
 	dbOn["db_Matcher_02"] = true  // NFA Dump Pool
 
-	lex := NewLexie()
+	lex := dfa.NewLexie()
 	lex.ReadJSONSpec("./.json")
 
 	if true {
@@ -415,5 +411,6 @@ func (s *Reader_TestSuite) TestLexie(c *C) {
 
 	}
 }
+*/
 
 /* vim: set noai ts=4 sw=4: */

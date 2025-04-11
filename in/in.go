@@ -98,8 +98,9 @@ type ImDefsType struct {
 }
 
 type ImType struct {
-	Def     ImDefsType      //
-	Machine []ImMachineType //
+	Def        ImDefsType      //
+	Machine    []ImMachineType //
+	InputLines []string
 }
 
 func ReadFileIntoLines(fn string) (rv []string) {
@@ -919,6 +920,7 @@ func (Im *ImType) LookupMachine(name string) int {
 func ImReadFile(fn string) (Im *ImType) {
 	Im = NewIm()
 	fd := ReadFileIntoLines(fn)
+	Im.InputLines = fd
 	if len(fd) > 0 {
 		Im.ParseFile(fd)
 	}

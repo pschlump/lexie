@@ -37,7 +37,7 @@ import (
 
 // TODO - Figure out path to 'dot' so can run it.
 // var dotPath = "/opt/homebrew/bin/dot"
-var dotPath = "/opt/local/bin/dot"
+var dotPath = "/usr/local/bin/dot"
 
 type Lexie01DataType struct {
 	Test         string
@@ -49,46 +49,46 @@ type Lexie01DataType struct {
 }
 
 var Lexie01Data = []Lexie01DataType{
-	{Test: "0000", Re: "(x|y)*abb", Rv: 1000, SkipTest: true, ELen: 3},                                                         // Len(3)
-	{Test: "0001", Re: "x*", Rv: 1001, SkipTest: true, ELen: 0},                                                                // Len(0)
-	{Test: "0002", Re: "(xx)*", Rv: 1002, SkipTest: true, ELen: 0},                                                             // Len(0)
-	{Test: "0003", Re: "(xx)+", Rv: 1003, SkipTest: true, ELen: 2},                                                             // Len(2)
-	{Test: "0004", Re: "(xx)?", Rv: 1004, SkipTest: true, ELen: 0},                                                             // Len(0)
-	{Test: "0005", Re: "(a|b)", Rv: 1005, SkipTest: true, ELen: 1},                                                             // Len(Min(len(1),Len(1)) = Len(1)
-	{Test: "0006", Re: "(aa|bb)", Rv: 1006, SkipTest: true, ELen: 2},                                                           // Len(2)
-	{Test: "0007", Re: "(a|b)*abb", Rv: 1007, SkipTest: true, ELen: 3},                                                         // Len(3) Examle from Dragon Compiler Book and .pdf files
-	{Test: "0008", Re: "(aa|bb|ccc)*abb", Rv: 1008, SkipTest: true, ELen: 3},                                                   // Len(3)
-	{Test: "0009", Re: "^abb$", Rv: 1009, SkipTest: true, ELen: 3},                                                             // Len(3)+Hard
-	{Test: "0010", Re: "^abb", Rv: 1010, SkipTest: true, ELen: 3},                                                              // Len(3)+Hard
-	{Test: "0011", Re: `a(bcd)*(ghi)+(jkl)*X`, Rv: 1011, SkipTest: true, ELen: 5},                                              // Len(1+3+1)
-	{Test: "0012", Re: `a[.]d`, Rv: 1012, SkipTest: true, ELen: 3},                                                             // Len(3)
-	{Test: "0013", Re: `a[^]d`, Rv: 1013, SkipTest: true, ELen: 0},                                                             // Len(?) TODO: -- Sigma should have an X_N_CCL char in it - missing
-	{Test: "0014", Re: `a(def)*(klm(mno)+)?b`, Rv: 1014, SkipTest: true, ELen: 2},                                              // Len(2)
-	{Test: "0015", Re: `a[a-zA-Z_][a-zA-Z_0-9]*d`, Rv: 1015, SkipTest: true, ELen: 3},                                          // Len(3)
-	{Test: "0016", Re: `a.d`, Rv: 1016, SkipTest: true, ELen: 3},                                                               // Len(3)
-	{Test: "0017", Re: "(aa|bb|ccc)abb", Rv: 1017, SkipTest: true, ELen: 5},                                                    // Len(2+3=5)
-	{Test: "0018", Re: "(||)", Rv: 1018, SkipTest: true, ELen: 0},                                                              // Len(0)
-	{Test: "0019", Re: "||", Rv: 1019, SkipTest: true, ELen: 0},                                                                // Len(0)
-	{Test: "0020", Re: "(||||||||||||||)", Rv: 1020, SkipTest: true, ELen: 0},                                                  // Len(0)
-	{Test: "0021", Re: "(||||||||a||||||)", Rv: 1021, SkipTest: true, ELen: 0},                                                 // Len(0)
-	{Test: "0022", Re: "(||||||||a|aa|||||)", Rv: 1022, SkipTest: true, ELen: 0},                                               // Len(0)
-	{Test: "0023", Re: "(a|aa|aaa)", Rv: 1023, SkipTest: true, ELen: 1},                                                        // Len(1)
-	{Test: "0024", Re: "(ab|aab|aaab)", Rv: 1024, SkipTest: true, ELen: 2},                                                     // Len(2)
-	{Test: "0025", Re: "(ab|aab|aaab)c", Rv: 1025, SkipTest: true, ELen: 3},                                                    // Len(3)
-	{Test: "0026", Re: "(a*|aab|aaab)", Rv: 1026, SkipTest: true, ELen: 0},                                                     // Len(0)
-	{Test: "0027", Re: "(-=-|-=#|.*)", Rv: 1027, SkipTest: true, ELen: 0},                                                      // Len(0)		<<<<< CRITICAL TEST >>>>>
-	{Test: "0028", Re: "(a\u03bbb|a\u0428b|aaab)", Rv: 1028, SkipTest: true, ELen: 2},                                          // Len(2)
-	{Test: "0029", Re: "[0-1]*", Rv: 1003, SkipTest: false, ELen: 2},                                                           // Len(2)
-	{Test: "0030", Re: "[0-1]+", Rv: 1003, SkipTest: false, ELen: 2},                                                           // Len(2)
-	{Test: "0031", Re: "[0-1]?", Rv: 1003, SkipTest: false, ELen: 2},                                                           // Len(2)
-	{Test: "0032", Re: "([0-9]*\\.[0-9]+([eE][0-9]+(\\.[0-9]*)?)?)|([a-zA-Z][a-zA-Z0-9]*)", Rv: 1003, SkipTest: true, ELen: 2}, // Len(2)
-	{Test: "0033", Re: "aab{2,3}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                        // Len(2)
-	{Test: "0034", Re: "aab{,3}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                         // Len(2)
-	{Test: "0035", Re: "aab{2,}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                         // Len(2)
-	{Test: "0036", Re: "aab{0,3}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                        // Len(2)
-	{Test: "0037", Re: "aab{3,0}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                        // Len(2)
-	{Test: "0038", Re: "aab{3,3}cc", Rv: 1003, SkipTest: true, ELen: 2},                                                        // Len(2)
-	{Test: "0039", Re: "[0-9]*\\.[0-9]+([eE][-+]?[0-9]+(\\.[0-9]*)?)?", Rv: 1003, SkipTest: true, ELen: 2},                     // Len(2)
+	{Test: "0000", Re: "(x|y)*abb", Rv: 1000, SkipTest: false, ELen: 3},                                                         // Len(3)
+	{Test: "0001", Re: "x*", Rv: 1001, SkipTest: false, ELen: 0},                                                                // Len(0)
+	{Test: "0002", Re: "(xx)*", Rv: 1002, SkipTest: false, ELen: 0},                                                             // Len(0)
+	{Test: "0003", Re: "(xx)+", Rv: 1003, SkipTest: false, ELen: 2},                                                             // Len(2)
+	{Test: "0004", Re: "(xx)?", Rv: 1004, SkipTest: false, ELen: 0},                                                             // Len(0)
+	{Test: "0005", Re: "(a|b)", Rv: 1005, SkipTest: false, ELen: 1},                                                             // Len(Min(len(1),Len(1)) = Len(1)
+	{Test: "0006", Re: "(aa|bb)", Rv: 1006, SkipTest: false, ELen: 2},                                                           // Len(2)
+	{Test: "0007", Re: "(a|b)*abb", Rv: 1007, SkipTest: false, ELen: 3},                                                         // Len(3) Examle from Dragon Compiler Book and .pdf files
+	{Test: "0008", Re: "(aa|bb|ccc)*abb", Rv: 1008, SkipTest: false, ELen: 3},                                                   // Len(3)
+	{Test: "0009", Re: "^abb$", Rv: 1009, SkipTest: false, ELen: 3},                                                             // Len(3)+Hard
+	{Test: "0010", Re: "^abb", Rv: 1010, SkipTest: false, ELen: 3},                                                              // Len(3)+Hard
+	{Test: "0011", Re: `a(bcd)*(ghi)+(jkl)*X`, Rv: 1011, SkipTest: false, ELen: 5},                                              // Len(1+3+1)
+	{Test: "0012", Re: `a[.]d`, Rv: 1012, SkipTest: false, ELen: 3},                                                             // Len(3)
+	{Test: "0013", Re: `a[^]d`, Rv: 1013, SkipTest: false, ELen: 0},                                                             // Len(?) TODO: -- Sigma should have an X_N_CCL char in it - missing
+	{Test: "0014", Re: `a(def)*(klm(mno)+)?b`, Rv: 1014, SkipTest: false, ELen: 2},                                              // Len(2)
+	{Test: "0015", Re: `a[a-zA-Z_][a-zA-Z_0-9]*d`, Rv: 1015, SkipTest: false, ELen: 3},                                          // Len(3)
+	{Test: "0016", Re: `a.d`, Rv: 1016, SkipTest: false, ELen: 3},                                                               // Len(3)
+	{Test: "0017", Re: "(aa|bb|ccc)abb", Rv: 1017, SkipTest: false, ELen: 5},                                                    // Len(2+3=5)
+	{Test: "0018", Re: "(||)", Rv: 1018, SkipTest: false, ELen: 0},                                                              // Len(0)
+	{Test: "0019", Re: "||", Rv: 1019, SkipTest: false, ELen: 0},                                                                // Len(0)
+	{Test: "0020", Re: "(||||||||||||||)", Rv: 1020, SkipTest: false, ELen: 0},                                                  // Len(0)
+	{Test: "0021", Re: "(||||||||a||||||)", Rv: 1021, SkipTest: false, ELen: 0},                                                 // Len(0)
+	{Test: "0022", Re: "(||||||||a|aa|||||)", Rv: 1022, SkipTest: false, ELen: 0},                                               // Len(0)
+	{Test: "0023", Re: "(a|aa|aaa)", Rv: 1023, SkipTest: false, ELen: 1},                                                        // Len(1)
+	{Test: "0024", Re: "(ab|aab|aaab)", Rv: 1024, SkipTest: false, ELen: 2},                                                     // Len(2)
+	{Test: "0025", Re: "(ab|aab|aaab)c", Rv: 1025, SkipTest: false, ELen: 3},                                                    // Len(3)
+	{Test: "0026", Re: "(a*|aab|aaab)", Rv: 1026, SkipTest: false, ELen: 0},                                                     // Len(0)
+	{Test: "0027", Re: "(-=-|-=#|.*)", Rv: 1027, SkipTest: false, ELen: 0},                                                      // Len(0)		<<<<< CRITICAL TEST >>>>>
+	{Test: "0028", Re: "(a\u03bbb|a\u0428b|aaab)", Rv: 1028, SkipTest: false, ELen: 2},                                          // Len(2)
+	{Test: "0029", Re: "[0-1]*", Rv: 1003, SkipTest: false, ELen: 2},                                                            // Len(2)
+	{Test: "0030", Re: "[0-1]+", Rv: 1003, SkipTest: false, ELen: 2},                                                            // Len(2)
+	{Test: "0031", Re: "[0-1]?", Rv: 1003, SkipTest: false, ELen: 2},                                                            // Len(2)
+	{Test: "0032", Re: "([0-9]*\\.[0-9]+([eE][0-9]+(\\.[0-9]*)?)?)|([a-zA-Z][a-zA-Z0-9]*)", Rv: 1003, SkipTest: false, ELen: 2}, // Len(2)
+	{Test: "0033", Re: "aab{2,3}cc", Rv: 1003, SkipTest: false, ELen: 2},                                                        // Len(2)
+	{Test: "0034", Re: "aab{,3}cc", Rv: 1003, SkipTest: false, ELen: 2},                                                         // Len(2)
+	{Test: "0035", Re: "aab{2,}cc", Rv: 1003, SkipTest: false, ELen: 2},                                                         // Len(2)
+	{Test: "0036", Re: "aab{0,3}cc", Rv: 1003, SkipTest: false, ELen: 2},                                                        // Len(2)
+	{Test: "0037", Re: "aab{3,0}cc", Rv: 1003, SkipTest: false, ELen: 2},                                                        // Len(2)
+	{Test: "0038", Re: "aab{3,3}cc", Rv: 1003, SkipTest: false, ELen: 2},                                                        // Len(2)
+	{Test: "0039", Re: "[0-9]*\\.[0-9]+([eE][-+]?[0-9]+(\\.[0-9]*)?)?", Rv: 1003, SkipTest: false, ELen: 2},                     // Len(2)
 
 	// Test {m,n} stuff -- Must add more complex cases - and hand check!
 
@@ -192,8 +192,9 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			// out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 			out, err := exec.Command(dotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
-				fmt.Printf("Error from dot, %s, %s\n", err, dbgo.LF())
-				fmt.Printf("Output: %s\n", out)
+				dbgo.Printf("%(red)Error from dot, %s\n", err)
+				dbgo.Printf("Output: %s\n", out)
+				n_err++
 			}
 		}
 	}
@@ -218,7 +219,7 @@ var _ = Suite(&LambdaClosureTestSuite{})
 
 func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
-	return
+	// return
 	fmt.Fprintf(os.Stderr, "Test NFA generation from REs, %s\n", dbgo.LF())
 
 	n_err := 0
@@ -334,7 +335,7 @@ var _ = Suite(&NFA_Multi_Part_TestSuite{})
 
 func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 
-	return
+	// return
 	fmt.Fprintf(os.Stderr, "Test NFA Multi-Part RE - NFA test %s\n", dbgo.LF())
 	n_err := 0
 	n_skip := 0
@@ -395,9 +396,11 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 		gv.Close()
 
 		// _, err = exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
-		_, err = exec.Command(dotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
+		out, err := exec.Command(dotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
 		if err != nil {
-			fmt.Printf("Error from dot, %s\n", err)
+			dbgo.Printf("%(red)Error from dot, %s\n", err)
+			dbgo.Printf("Output: %s\n", out)
+			n_err++
 		}
 	}
 

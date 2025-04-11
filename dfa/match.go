@@ -63,6 +63,7 @@ package dfa
 import (
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"sort"
 	"strings"
@@ -248,7 +249,7 @@ func convRuleToActionFlag(ww *in.ImRuleType) int {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-func (lex *Lexie) NewReadFile(path string) {
+func (lex *Lexie) NewReadFile(path string) (err error) {
 	lex.Im = in.ImReadFile(path)
 
 	lex.NFA_Machine = make([]*nfa.NFA_PoolType, 0, 100)
@@ -317,17 +318,31 @@ func (lex *Lexie) NewReadFile(path string) {
 
 		if dbgo.IsDbOn("db_Matcher_02") {
 
+			// lex.Im.InputLines // has the entire input.
+
 			last := len(lex.DFA_Machine) - 1
 
 			newFile := fmt.Sprintf("../ref/mmm_%s_%d.tst", "machine", last)
 			gvFile := fmt.Sprintf("../ref/mmm_%s_%d.gv", "machine", last)
 			svgFile := fmt.Sprintf("../ref/mmm_%s_%d.svg", "machine", last)
 
-			fp, _ := filelib.Fopen(newFile, "w")
+			fp, err := filelib.Fopen(newFile, "w")
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error opening otput file %s, error: %s\n", newFile, err)
+				return err
+			}
+			fmt.Fprintf(fp, "Machine:\n")
+			for _, ss := range lex.Im.InputLines {
+				fmt.Fprintf(fp, "\t%s\n", ss)
+			}
 			lex.DFA_Machine[last].DumpPoolJSON(fp, fmt.Sprintf("Lex-Machine-%d", last), 1)
 			fp.Close()
 
-			gv, _ := filelib.Fopen(gvFile, "w")
+			gv, err := filelib.Fopen(gvFile, "w")
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error opening otput file %s, error: %s\n", gvFile, err)
+				return err
+			}
 			lex.DFA_Machine[last].GenerateGVFile(gv, fmt.Sprintf("Lex-Machine-%d", last), 1)
 			gv.Close()
 
@@ -338,6 +353,7 @@ func (lex *Lexie) NewReadFile(path string) {
 			}
 		}
 	}
+	return nil
 }
 
 /* vim: set noai ts=4 sw=4: */

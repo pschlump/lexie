@@ -4,8 +4,12 @@ digraph finite_state_machine {
 	node [shape = doublecircle]; s3;
 	node [shape = circle];
 	s0 -> s1 [ label = "a" ];
-	s1 -> s2 [ label = "a-zA-Z" ];
+	s1 -> s2 [ label = "_" ];
+	s1 -> s2 [ label = "a-z" ];
+	s1 -> s2 [ label = "A-Z" ];
+	s2 -> s2 [ label = "_" ];
 	s2 -> s3 [ label = "d" ];
 	s2 -> s2 [ label = "0-9" ];
-	s2 -> s2 [ label = "a-zA-Z" ];
+	s2 -> s2 [ label = "a-z" ];
+	s2 -> s2 [ label = "A-Z" ];
 }
