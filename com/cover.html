@@ -3,6 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>com: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -54,9 +55,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">_/../../../../../Users/corwin/Projects/pongo2/lexie/com/db.go (100.0%)</option>
+				<option value="file0">github.com/pschlump/lexie/com/stash_error.go (0.0%)</option>
 				
-				<option value="file1">_/../../../../../Users/corwin/Projects/pongo2/lexie/com/util.go (100.0%)</option>
+				<option value="file1">github.com/pschlump/lexie/com/utility_funcs.go (20.0%)</option>
 				
 				</select>
 			</div>
@@ -70,7 +71,7 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" >//
+		<pre class="file" id="file0" style="display: none">//
 // D B - Part of Lexie Lexical Generation System
 //
 // (C) Philip Schlump, 2014-2015.
@@ -83,6 +84,14 @@
 package com
 
 import (
+        "fmt"
+
+        "github.com/pschlump/dbgo"
+)
+
+/*
+
+import (
         "errors"
         "fmt"
         "io"
@@ -90,7 +99,7 @@ import (
         "runtime"
         "sync"
 
-        "github.com/mgutz/ansi"
+        "github.com/pschlump/ansi"
 )
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
@@ -99,25 +108,25 @@ import (
 var DbOnFlags map[string]bool
 var DbOnFlagsLock sync.Mutex
 
-func init() <span class="cov8" title="1">{
+func init() {
         DbOnFlags = make(map[string]bool)
         DbOnFlags["debug"] = true
-}</span>
-
-func DbPrintf(db string, format string, args ...interface{}) <span class="cov8" title="1">{
-        DbOnFlagsLock.Lock()
-        defer DbOnFlagsLock.Unlock()
-        if x, o := DbOnFlags[db]; o &amp;&amp; x </span><span class="cov8" title="1">{
-                fmt.Printf(format, args...)
-        }</span>
 }
 
-func DbFprintf(db string, w io.Writer, format string, args ...interface{}) <span class="cov8" title="1">{
+func DbPrintf(db string, format string, args ...interface{}) {
         DbOnFlagsLock.Lock()
         defer DbOnFlagsLock.Unlock()
-        if x, o := DbOnFlags[db]; o &amp;&amp; x </span><span class="cov8" title="1">{
+        if x, o := DbOnFlags[db]; o &amp;&amp; x {
+                fmt.Printf(format, args...)
+        }
+}
+
+func DbFprintf(db string, w io.Writer, format string, args ...interface{}) {
+        DbOnFlagsLock.Lock()
+        defer DbOnFlagsLock.Unlock()
+        if x, o := DbOnFlags[db]; o &amp;&amp; x {
                 fmt.Fprintf(w, format, args...)
-        }</span>
+        }
 }
 
 var (
@@ -127,29 +136,31 @@ var (
         Reset  = ansi.ColorCode("reset")
 )
 
-func DbOn(db string) (ok bool) <span class="cov8" title="1">{
+func DbOn(db string) (ok bool) {
         ok = false
         DbOnFlagsLock.Lock()
         defer DbOnFlagsLock.Unlock()
-        if x, o := DbOnFlags[db]; o </span><span class="cov8" title="1">{
+        if x, o := DbOnFlags[db]; o {
                 ok = x
-        }</span>
-        <span class="cov8" title="1">return</span>
+        }
+        return
 }
 
-func Fopen(fn string, mode string) (file *os.File, err error) <span class="cov8" title="1">{
+func Fopen(fn string, mode string) (file *os.File, err error) {
         file = nil
-        if mode == "r" </span><span class="cov8" title="1">{
+        if mode == "r" {
                 file, err = os.Open(fn) // For read access.
-        }</span><span class="cov8" title="1"> else if mode == "w" </span><span class="cov8" title="1">{
+        } else if mode == "w" {
                 file, err = os.OpenFile(fn, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-        }</span><span class="cov8" title="1"> else if mode == "a" </span><span class="cov8" title="1">{
+        } else if mode == "a" {
                 file, err = os.OpenFile(fn, os.O_RDWR|os.O_APPEND, 0660)
-        }</span><span class="cov8" title="1"> else {
+        } else {
                 err = errors.New("Invalid Mode")
-        }</span>
-        <span class="cov8" title="1">return</span>
+        }
+        return
 }
+
+*/
 
 type ErrorBufferType struct {
         Err []string
@@ -157,67 +168,70 @@ type ErrorBufferType struct {
 
 var ErrorBuffer ErrorBufferType
 
-func StashError(s string) <span class="cov8" title="1">{
-        if DbOn("OutputErrors") </span><span class="cov8" title="1">{
+func StashError(s string) <span class="cov0" title="0">{
+        if dbgo.IsDbOn("OutputErrors") </span><span class="cov0" title="0">{
                 fmt.Printf("%s\n", s)
         }</span>
-        <span class="cov8" title="1">ErrorBuffer.Err = append(ErrorBuffer.Err, s)</span>
+        <span class="cov0" title="0">ErrorBuffer.Err = append(ErrorBuffer.Err, s)</span>
 }
 
+/*
 // Return the File name and Line no as a string.
-func LF(d ...int) (rv string) <span class="cov8" title="1">{
+func LF(d ...int) (rv string) {
         depth := 1
         rv = "File: Unk LineNo:Unk"
-        if len(d) &gt; 0 </span><span class="cov8" title="1">{
+        if len(d) &gt; 0 {
                 depth = d[0]
-        }</span>
-        <span class="cov8" title="1">_, file, line, ok := runtime.Caller(depth)
-        if ok </span><span class="cov8" title="1">{
+        }
+        _, file, line, ok := runtime.Caller(depth)
+        if ok {
                 rv = fmt.Sprintf("File: %s LineNo:%d", file, line)
-        }</span>
-        <span class="cov8" title="1">return</span>
+        }
+        return
 }
 
 // ----------------------------------------------------------------------------------------------------------
 // Return the current line number as a string.
-func LINE(d ...int) (rv string) <span class="cov8" title="1">{
+func LINE(d ...int) (rv string) {
         rv = "LineNo:Unk"
         depth := 1
-        if len(d) &gt; 0 </span><span class="cov8" title="1">{
+        if len(d) &gt; 0 {
                 depth = d[0]
-        }</span>
-        <span class="cov8" title="1">_, _, line, ok := runtime.Caller(depth)
-        if ok </span><span class="cov8" title="1">{
+        }
+        _, _, line, ok := runtime.Caller(depth)
+        if ok {
                 rv = fmt.Sprintf("%d", line)
-        }</span>
-        <span class="cov8" title="1">return</span>
+        }
+        return
 }
 
 // Return the current file name.
-func FILE(d ...int) (rv string) <span class="cov8" title="1">{
+func FILE(d ...int) (rv string) {
         rv = "File:Unk"
         depth := 1
-        if len(d) &gt; 0 </span><span class="cov8" title="1">{
+        if len(d) &gt; 0 {
                 depth = d[0]
-        }</span>
-        <span class="cov8" title="1">_, file, _, ok := runtime.Caller(depth)
-        if ok </span><span class="cov8" title="1">{
+        }
+        _, file, _, ok := runtime.Caller(depth)
+        if ok {
                 rv = file
-        }</span>
-        <span class="cov8" title="1">return</span>
+        }
+        return
 }
 
-func LINEn(d ...int) (rv int) <span class="cov8" title="1">{
+func LINEn(d ...int) (rv int) {
         depth := 1
-        if len(d) &gt; 0 </span><span class="cov8" title="1">{
+        if len(d) &gt; 0 {
                 depth = d[0]
-        }</span>
-        <span class="cov8" title="1">_, _, line, ok := runtime.Caller(depth)
-        if ok </span><span class="cov8" title="1">{
+        }
+        _, _, line, ok := runtime.Caller(depth)
+        if ok {
                 rv = line
-        }</span>
-        <span class="cov8" title="1">return</span>
+        }
+        return
 }
+
+*/
 
 /* vim: set noai ts=4 sw=4: */
 </pre>
@@ -237,22 +251,31 @@ package com
 import (
         "fmt"
         "html"
+        "io"
         "io/ioutil"
         "os"
+        "path"
+        "path/filepath"
+        "regexp"
         "sort"
         "strings"
+
+        "github.com/pschlump/filelib"
+        //        "encoding/json"
+        // "../../../go-lib/flags"  //                "github.com/jessevdk/go-flags"
+        // "../../../go-lib/sizlib" //
 )
 
-func USortIntSlice(inputSet []int) (rv []int) <span class="cov8" title="1">{
+func USortIntSlice(inputSet []int) (rv []int) <span class="cov0" title="0">{
         // sort.Sort(sort.IntSlice(inputSet))
         uniq := make(map[int]bool)
-        for _, v := range inputSet </span><span class="cov8" title="1">{
+        for _, v := range inputSet </span><span class="cov0" title="0">{
                 uniq[v] = true
         }</span>
-        <span class="cov8" title="1">for i := range uniq </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">for i := range uniq </span><span class="cov0" title="0">{
                 rv = append(rv, i)
         }</span>
-        <span class="cov8" title="1">sort.Sort(sort.IntSlice(rv))
+        <span class="cov0" title="0">sort.Sort(sort.IntSlice(rv))
 
         //        for _, v := range inputSet {
         //                have := false
@@ -270,121 +293,133 @@ func USortIntSlice(inputSet []int) (rv []int) <span class="cov8" title="1">{
         return</span>
 }
 
-func SortMapStringString(str map[string]string) (rv []string) <span class="cov8" title="1">{
-        for ii := range str </span><span class="cov8" title="1">{
+func SortMapStringString(str map[string]string) (rv []string) <span class="cov0" title="0">{
+        for ii := range str </span><span class="cov0" title="0">{
                 rv = append(rv, ii)
         }</span>
-        <span class="cov8" title="1">rv = KeyStringSort(rv)
+        <span class="cov0" title="0">rv = KeyStringSort(rv)
         return</span>
 }
 
-func KeyStringSort(str []string) (rv []string) <span class="cov8" title="1">{
+func KeyStringSort(str []string) (rv []string) <span class="cov0" title="0">{
         rv = str
         sort.Sort(sort.StringSlice(rv))
         return
 }</span>
 
-func NameOf(inputSet []int) string <span class="cov8" title="1">{
+func NameOf(inputSet []int) string <span class="cov0" title="0">{
         // inputSet = USortIntSlice(inputSet)
         com := ""
         s := ""
-        for _, v := range inputSet </span><span class="cov8" title="1">{
+        for _, v := range inputSet </span><span class="cov0" title="0">{
                 s += com + fmt.Sprintf("%d", v)
                 com = "-"
         }</span>
-        <span class="cov8" title="1">return s</span>
+        <span class="cov0" title="0">return s</span>
 }
 
-func CompareSlices(X, Y []int) []int <span class="cov8" title="1">{
+func CompareSlices(X, Y []int) []int <span class="cov0" title="0">{
         m := make(map[int]int)
 
-        for _, y := range Y </span><span class="cov8" title="1">{
+        for _, y := range Y </span><span class="cov0" title="0">{
                 m[y]++
         }</span>
 
-        <span class="cov8" title="1">var ret []int
-        for _, x := range X </span><span class="cov8" title="1">{
-                if m[x] &gt; 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">var ret []int
+        for _, x := range X </span><span class="cov0" title="0">{
+                if m[x] &gt; 0 </span><span class="cov0" title="0">{
                         m[x]--
                         continue</span>
                 }
-                <span class="cov8" title="1">ret = append(ret, x)</span>
+                <span class="cov0" title="0">ret = append(ret, x)</span>
         }
 
-        <span class="cov8" title="1">return ret</span>
+        <span class="cov0" title="0">return ret</span>
+}
+
+func EqualStringSlices(X, Y []string) bool <span class="cov8" title="1">{
+        if len(X) != len(Y) </span><span class="cov0" title="0">{
+                return false
+        }</span>
+        <span class="cov8" title="1">for ii, vv := range X </span><span class="cov8" title="1">{
+                if Y[ii] != vv </span><span class="cov0" title="0">{
+                        return false
+                }</span>
+        }
+        <span class="cov8" title="1">return true</span>
 }
 
 // DbPrintf("db_DumpDFAPool", " %12s %12s \u2714              \tEdges", "StateName", "StateSet")
 
-func ChkOrX(v bool) string <span class="cov8" title="1">{
-        if v </span><span class="cov8" title="1">{
+func ChkOrX(v bool) string <span class="cov0" title="0">{
+        if v </span><span class="cov0" title="0">{
                 return "\u2714"
         }</span>
-        <span class="cov8" title="1">return "\u2716"</span>
+        <span class="cov0" title="0">return "\u2716"</span>
 }
-func ChkOrBlank(v bool) string <span class="cov8" title="1">{
-        if v </span><span class="cov8" title="1">{
+func ChkOrBlank(v bool) string <span class="cov0" title="0">{
+        if v </span><span class="cov0" title="0">{
                 return "\u2714"
         }</span>
-        <span class="cov8" title="1">return " "</span>
+        <span class="cov0" title="0">return " "</span>
 }
 
-func ConvertActionFlagToString(kk int) (rv string) <span class="cov8" title="1">{
+func ConvertActionFlagToString(kk int) (rv string) <span class="cov0" title="0">{
 
-        if kk == 0 </span><span class="cov8" title="1">{
+        if kk == 0 </span><span class="cov0" title="0">{
                 rv = "**No A Flag**"
                 return
         }</span>
 
-        <span class="cov8" title="1">rv = fmt.Sprintf("(%02x) ", kk)
+        <span class="cov0" title="0">rv = fmt.Sprintf("(%02x) ", kk)
 
         com := ""
-        if (kk &amp; A_Repl) != 0 </span><span class="cov8" title="1">{
+        if (kk &amp; A_Repl) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Repl"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_EOF) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_EOF) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_EOF"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Push) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Push) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Push"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Pop) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Pop) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Pop"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Observe) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Observe) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Observe"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Greedy) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Greedy) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Greedy"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Reset) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Reset) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Reset"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_NotGreedy) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_NotGreedy) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_NotGreedy"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Error) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Error) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Error"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Warning) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Warning) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Warning"
                 com = "|"
         }</span>
-        <span class="cov8" title="1">if (kk &amp; A_Alias) != 0 </span><span class="cov8" title="1">{
+        <span class="cov0" title="0">if (kk &amp; A_Alias) != 0 </span><span class="cov0" title="0">{
                 rv = rv + com + "A_Alias"
                 com = "|"
         }</span>
 
-        <span class="cov8" title="1">return</span>
+        <span class="cov0" title="0">return</span>
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------
@@ -440,68 +475,145 @@ func init() <span class="cov8" title="1">{
 // -----------------------------------------------------------------------------------------------------------------------------------
 // Generate an array with all the files in the path
 // -----------------------------------------------------------------------------------------------------------------------------------
-func AllFilesInPath(path string) (filenames []string) <span class="cov8" title="1">{
+func AllFilesInPath(path string) (filenames []string) <span class="cov0" title="0">{
         pa := strings.Split(path, ";")
         // fmt.Printf("pa=%+v\n", pa)
-        for _, dir := range pa </span><span class="cov8" title="1">{
+        for _, dir := range pa </span><span class="cov0" title="0">{
                 t, dirs := GetFilenames(dir)
                 // fmt.Printf("t=%+v dirs=%+v \n", t, dirs)
-                for _, fn := range t </span><span class="cov8" title="1">{
+                for _, fn := range t </span><span class="cov0" title="0">{
                         filenames = append(filenames, dir+"/"+fn)
                 }</span>
                 // fmt.Printf("After append, filenames = %+v\n", filenames)
-                <span class="cov8" title="1">for _, aDir := range dirs </span><span class="cov8" title="1">{
+                <span class="cov0" title="0">for _, aDir := range dirs </span><span class="cov0" title="0">{
                         t2 := AllFilesInPath(dir + "/" + aDir)
-                        for _, fn := range t2 </span><span class="cov8" title="1">{
+                        for _, fn := range t2 </span><span class="cov0" title="0">{
                                 filenames = append(filenames, fn)
                         }</span>
                 }
         }
-        <span class="cov8" title="1">return</span>
+        <span class="cov0" title="0">return</span>
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------
 // Exists reports whether the named file or directory exists.
 // -----------------------------------------------------------------------------------------------------------------------------------
-func DirExists(name string) bool <span class="cov8" title="1">{
-        if fstat, err := os.Stat(name); err != nil </span><span class="cov8" title="1">{
-                if os.IsNotExist(err) </span><span class="cov8" title="1">{
+func DirExists(name string) bool <span class="cov0" title="0">{
+        if fstat, err := os.Stat(name); err != nil </span><span class="cov0" title="0">{
+                if os.IsNotExist(err) </span><span class="cov0" title="0">{
                         return false
                 }</span>
-        }<span class="cov8" title="1"> else {
-                if fstat.IsDir() </span><span class="cov8" title="1">{
+        } else<span class="cov0" title="0"> {
+                if fstat.IsDir() </span><span class="cov0" title="0">{
                         return true
                 }</span>
         }
-        <span class="cov8" title="1">return false</span>
+        <span class="cov0" title="0">return false</span>
 }
 
+/*
 // -------------------------------------------------------------------------------------------------
 // Exists reports whether the named file or directory exists.
 // -------------------------------------------------------------------------------------------------
-func Exists(name string) bool <span class="cov8" title="1">{
-        if _, err := os.Stat(name); err != nil </span><span class="cov8" title="1">{
-                if os.IsNotExist(err) </span><span class="cov8" title="1">{
+func Exists(name string) bool {
+        if _, err := os.Stat(name); err != nil {
+                if os.IsNotExist(err) {
                         return false
-                }</span>
+                }
         }
-        <span class="cov8" title="1">return true</span>
+        return true
 }
+*/
 
 // -------------------------------------------------------------------------------------------------
 // Get a list of filenames and directorys.
 // -------------------------------------------------------------------------------------------------
-func GetFilenames(dir string) (filenames, dirs []string) <span class="cov8" title="1">{
+func GetFilenames(dir string) (filenames, dirs []string) <span class="cov0" title="0">{
         files, err := ioutil.ReadDir(dir)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
                 return nil, nil
         }</span>
+        <span class="cov0" title="0">for _, fstat := range files </span><span class="cov0" title="0">{
+                if !strings.HasPrefix(string(fstat.Name()), ".") </span><span class="cov0" title="0">{
+                        if fstat.IsDir() </span><span class="cov0" title="0">{
+                                dirs = append(dirs, fstat.Name())
+                        }</span> else<span class="cov0" title="0"> {
+                                filenames = append(filenames, fstat.Name())
+                        }</span>
+                }
+        }
+        <span class="cov0" title="0">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+func EscapeStr(v string, on bool) string <span class="cov0" title="0">{
+        if on </span><span class="cov0" title="0">{
+                return html.EscapeString(v)
+        }</span> else<span class="cov0" title="0"> {
+                return v
+        }</span>
+}
+
+// -------------------------------------------------------------------------------------------------
+// xyzzy - need "fast" version of "CompareFiles" with some limits on what it will use "fast"
+// compare for - .jpg,.gif,.png fiels - a fiel size before uses fast etc.   Compare Size?
+// Compare name?  What is the "fast" compare for rsync? -- Calculate Hashes for each and
+// keep them around?
+// -------------------------------------------------------------------------------------------------
+func CompareFiles(cmpFile string, refFile string) bool <span class="cov0" title="0">{
+        cmp, err := ioutil.ReadFile(cmpFile)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Printf("Unable to read %s\n", cmpFile)
+                return false
+        }</span>
+
+        <span class="cov0" title="0">if filelib.Exists(refFile) </span><span class="cov0" title="0">{
+                ref, err := ioutil.ReadFile(refFile)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Printf("Unable to read %s\n", refFile)
+                        return false
+                }</span>
+                <span class="cov0" title="0">if len(ref) != len(cmp) </span><span class="cov0" title="0">{ // xyzzy - Could be faster - just check lenths on disk - if diff then return false
+                        return false
+                }</span>
+                <span class="cov0" title="0">if string(ref) != string(cmp) </span><span class="cov0" title="0">{
+                        return false
+                }</span>
+        } else<span class="cov0" title="0"> {
+                return false
+        }</span>
+        <span class="cov0" title="0">return true</span>
+}
+
+// -------------------------------------------------------------------------------------------------
+// Get a list of filenames and directories.
+// -------------------------------------------------------------------------------------------------
+func GetFilenamesRecrusive(dir string) (filenames, dirs []string, err error) <span class="cov8" title="1">{
+        files, err := ioutil.ReadDir(dir)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, nil, err
+        }</span>
+        //for ii, fstat := range files {
+        //        fmt.Printf("Top files %d:[%s]\n", ii, fstat.Name())
+        //}
         <span class="cov8" title="1">for _, fstat := range files </span><span class="cov8" title="1">{
                 if !strings.HasPrefix(string(fstat.Name()), ".") </span><span class="cov8" title="1">{
                         if fstat.IsDir() </span><span class="cov8" title="1">{
-                                dirs = append(dirs, fstat.Name())
-                        }</span><span class="cov8" title="1"> else {
-                                filenames = append(filenames, fstat.Name())
+                                name := fstat.Name()
+                                dirs = append(dirs, dir+"/"+name)
+                                // fmt.Printf("Recursive dir [%s]\n", dir+"/"+name)
+                                tf, td, err := GetFilenamesRecrusive(dir + "/" + name)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        return nil, nil, err
+                                }</span>
+                                <span class="cov8" title="1">filenames = append(filenames, tf...)
+                                dirs = append(dirs, td...)</span>
+                        } else<span class="cov8" title="1"> {
+                                name := fstat.Name()
+                                name = dir + "/" + name
+                                // fmt.Printf("dir %s -&gt;%s&lt;-\n", dir, name)
+                                filenames = append(filenames, name)
                         }</span>
                 }
         }
@@ -510,12 +622,258 @@ func GetFilenames(dir string) (filenames, dirs []string) <span class="cov8" titl
 
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
-func EscapeStr(v string, on bool) string <span class="cov8" title="1">{
-        if on </span><span class="cov8" title="1">{
-                return html.EscapeString(v)
-        }</span><span class="cov8" title="1"> else {
-                return v
+func FilterArray(re string, inArr []string) (outArr []string) <span class="cov0" title="0">{
+        var validID = regexp.MustCompile(re)
+
+        outArr = make([]string, 0, len(inArr))
+        for k := range inArr </span><span class="cov0" title="0">{
+                if validID.MatchString(inArr[k]) </span><span class="cov0" title="0">{
+                        outArr = append(outArr, inArr[k])
+                }</span>
+        }
+        // fmt.Printf ( "output = %v\n", outArr )
+        <span class="cov0" title="0">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+func GetTemplateFiles(dir string) (fns []string, err error) <span class="cov0" title="0">{
+
+        fns, _, err = GetFilenamesRecrusive(dir)
+        if err != nil </span><span class="cov0" title="0">{
+                return
         }</span>
+        <span class="cov0" title="0">fns = FilterArray(".*\\.tpl$", fns)
+
+        return</span>
+}
+
+// -------------------------------------------------------------------------------------------------
+// 1.  For each dir - Create destination directies -o &lt;name&gt;/+/...                ReplaceEach ( []string, pat, repl )
+// -------------------------------------------------------------------------------------------------
+func ReplaceEach(data []string, pat, repl string) (outArr []string) <span class="cov8" title="1">{
+        for ii, vv := range data </span><span class="cov8" title="1">{
+                _ = ii
+                t := strings.Replace(vv, pat, repl, 1)
+                outArr = append(outArr, t)
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+// From: http://stackoverflow.com/questions/21060945/simple-way-to-copy-a-file-in-golang
+// Modified.
+
+// CopyFile copies a file from src to dst. If src and dst files exist, and are
+// the same, then return success. Otherise, if useHardLink is true, an attempt
+// to create a hard link between the two files.
+// If that fail, copy the file contents from src to dst.
+func CopyFile(src, dst string, useHardLink bool) (err error) <span class="cov0" title="0">{
+        sfi, err := os.Stat(src)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">if !sfi.Mode().IsRegular() </span><span class="cov0" title="0">{
+                // cannot copy non-regular files (e.g., directories, symlinks, devices, etc.)
+                return fmt.Errorf("Error: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
+        }</span>
+        <span class="cov0" title="0">dfi, err := os.Stat(dst)
+        if err != nil </span><span class="cov0" title="0">{
+                if !os.IsNotExist(err) </span><span class="cov0" title="0">{
+                        return
+                }</span>
+        } else<span class="cov0" title="0"> {
+                if !(dfi.Mode().IsRegular()) </span><span class="cov0" title="0">{
+                        return fmt.Errorf("Error: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
+                }</span>
+                <span class="cov0" title="0">if os.SameFile(sfi, dfi) </span><span class="cov0" title="0">{
+                        return
+                }</span>
+        }
+        <span class="cov0" title="0">if useHardLink </span><span class="cov0" title="0">{
+                if err = os.Link(src, dst); err == nil </span><span class="cov0" title="0">{
+                        return
+                }</span>
+        }
+        <span class="cov0" title="0">err = copyFileContents(src, dst)
+        return</span>
+}
+
+// copyFileContents copies the contents of the file named src to the file named
+// by dst. The file will be created if it does not already exist. If the
+// destination file exists, all it's contents will be replaced by the contents
+// of the source file.
+func copyFileContents(src, dst string) (err error) <span class="cov0" title="0">{
+        in, err := os.Open(src)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">defer in.Close()
+        out, err := os.Create(dst)
+        if err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">defer func() </span><span class="cov0" title="0">{
+                cerr := out.Close()
+                if err == nil </span><span class="cov0" title="0">{
+                        err = cerr
+                }</span>
+        }()
+        <span class="cov0" title="0">if _, err = io.Copy(out, in); err != nil </span><span class="cov0" title="0">{
+                return
+        }</span>
+        <span class="cov0" title="0">err = out.Sync()
+        return</span>
+}
+
+// -------------------------------------------------------------------------------------------------------
+//func main() {
+//         fmt.Printf("Copying %s to %s\n", os.Args[1], os.Args[2])
+//         err := CopyFile(os.Args[1], os.Args[2])
+//         if err != nil {
+//                  fmt.Printf("CopyFile failed %q\n", err)
+//         } else {
+//                  fmt.Printf("CopyFile succeeded\n")
+//         }
+//}
+
+var trueValues map[string]bool
+
+func init() <span class="cov8" title="1">{
+        trueValues = make(map[string]bool)
+        trueValues["t"] = true
+        trueValues["T"] = true
+        trueValues["yes"] = true
+        trueValues["Yes"] = true
+        trueValues["YES"] = true
+        trueValues["1"] = true
+        trueValues["true"] = true
+        trueValues["True"] = true
+        trueValues["TRUE"] = true
+        trueValues["on"] = true
+        trueValues["On"] = true
+        trueValues["ON"] = true
+}</span>
+
+func ParseBool(s string) (b bool) <span class="cov0" title="0">{
+        _, b = trueValues[s]
+        return
+}</span>
+
+/*
+// -------------------------------------------------------------------------------------------------
+func SVar(v interface{}) string {
+        s, err := json.Marshal(v)
+        // s, err := json.MarshalIndent ( v, "", "\t" )
+        if err != nil {
+                return fmt.Sprintf("Error:%s", err)
+        } else {
+                return string(s)
+        }
+}
+
+// -------------------------------------------------------------------------------------------------
+func SVarI(v interface{}) string {
+        // s, err := json.Marshal ( v )
+        s, err := json.MarshalIndent(v, "", "\t")
+        if err != nil {
+                return fmt.Sprintf("Error:%s", err)
+        } else {
+                return string(s)
+        }
+}
+*/
+
+// -------------------------------------------------------------------------------------------------
+// Exists returns true if the named file or directory exists.
+//func Exists(name string) bool {
+//        if _, err := os.Stat(name); err != nil {
+//                if os.IsNotExist(err) {
+//                        return false
+//                }
+//        }
+//        return true
+//}
+
+// -------------------------------------------------------------------------------------------------
+// xyzzy - str.
+// Return the basename from a file path.  This is the last component with the directory path
+// stripped off.  File extension removed.
+// -------------------------------------------------------------------------------------------------
+func Basename(fn string) (bn string) <span class="cov0" title="0">{
+        i, j := strings.LastIndex(fn, "/"), strings.LastIndex(fn, path.Ext(fn)) // xyzzy windoz
+        // fmt.Printf ( "i=%d j=%d\n", i, j )
+        if i &lt; 0 &amp;&amp; j &lt; 0 </span><span class="cov0" title="0">{
+                bn = fn
+        }</span> else<span class="cov0" title="0"> if i &lt; 0 </span><span class="cov0" title="0">{
+                bn = fn[0:j]
+        }</span> else<span class="cov0" title="0"> {
+                bn = fn[i+1 : j]
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+// -------------------------------------------------------------------------------------------------
+// xyzzy - str.
+// With file extension
+// -------------------------------------------------------------------------------------------------
+func BasenameExt(fn string) (bn string) <span class="cov0" title="0">{
+        i, j := strings.LastIndex(fn, "/"), len(fn) // xyzzy windoz
+        // fmt.Printf ( "i=%d j=%d\n", i, j )
+        if i &lt; 0 &amp;&amp; j &lt; 0 </span><span class="cov0" title="0">{
+                bn = fn
+        }</span> else<span class="cov0" title="0"> if i &lt; 0 </span><span class="cov0" title="0">{
+                bn = fn[0:j]
+        }</span> else<span class="cov0" title="0"> {
+                bn = fn[i+1 : j]
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+
+func InArray(lookFor string, inArr []string) bool <span class="cov0" title="0">{
+        for _, v := range inArr </span><span class="cov0" title="0">{
+                if lookFor == v </span><span class="cov0" title="0">{
+                        return true
+                }</span>
+        }
+        <span class="cov0" title="0">return false</span>
+}
+
+func RmExt(filename string) string <span class="cov0" title="0">{
+        var extension = filepath.Ext(filename)
+        var name = filename[0 : len(filename)-len(extension)]
+        return name
+}</span>
+
+var qtRegEx *regexp.Regexp
+
+func init() <span class="cov8" title="1">{
+        qtRegEx = regexp.MustCompile("%{([A-Za-z0-9_]*)%}")
+}</span>
+
+// QT: Quick template
+// %{name%} gets replace with substitution from map if it is in map, else ""
+func Qt(format string, data map[string]string) string <span class="cov0" title="0">{
+        // re := regexp.MustCompile("%{([A-Za-z0-9_]*)%}")
+        return string(qtRegEx.ReplaceAllFunc([]byte(format), func(s []byte) []byte </span><span class="cov0" title="0">{
+                return []byte(data[string(s[2:len(s)-2])])
+        }</span>))
+}
+
+func QtR(format string, data map[string]interface{}) string <span class="cov0" title="0">{
+        return string(qtRegEx.ReplaceAllFunc([]byte(format), func(s []byte) []byte </span><span class="cov0" title="0">{
+                t := string(s[2 : len(s)-2])
+                u, ok := data[t]
+                if !ok </span><span class="cov0" title="0">{
+                        return []byte("")
+                }</span>
+                <span class="cov0" title="0">switch u.(type) </span>{
+                case string:<span class="cov0" title="0">
+                        return []byte(u.(string))</span>
+                default:<span class="cov0" title="0">
+                        sb := fmt.Sprintf("%v", u)
+                        return []byte(sb)</span>
+                }
+        }))
 }
 
 /* vim: set noai ts=4 sw=4: */
@@ -526,13 +884,27 @@ func EscapeStr(v string, on bool) string <span class="cov8" title="1">{
 	<script>
 	(function() {
 		var files = document.getElementById('files');
-		var visible = document.getElementById('file0');
+		var visible;
 		files.addEventListener('change', onChange, false);
-		function onChange() {
-			visible.style.display = 'none';
-			visible = document.getElementById(files.value);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
 			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
 			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
 		}
 	})();
 	</script>

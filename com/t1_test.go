@@ -2,7 +2,6 @@ package com
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/pschlump/dbgo"
@@ -37,122 +36,23 @@ func Test_Com01(t *testing.T) {
 		}
 	}
 
-	// Tests Exists
-	if Exists("./t1/a.tpl") {
-		fmt.Printf("ok: %s %s\n", LINE(1), FILE(1))
-	} else {
-		t.Errorf("Exists() %s %s\n", LINE(), FILE())
-	}
-	if Exists("./t1/ab.tpl") {
-		t.Errorf("Exists() %s %s\n", LINE(), FILE())
-	} else {
-		fmt.Printf("ok: %d %s\n", LINEn(1), FILE())
-	}
-
-	DbOnFlags["debug_test"] = true
-
 	// Tests DirExists
 	if DirExists("./t1/a.tpl") {
-		t.Errorf("DirExists() %s %s\n", LINE(), FILE())
-	} else {
-		DbPrintf("debug_test", "ok: %s\n", LF(1))
+		t.Errorf("DirExists() failed.")
 	}
-	if DirExists("./t1") {
-		if DbOn("debug_test") {
-			fmt.Printf("ok: %s\n", LF())
-		}
-	} else {
-		t.Errorf("DirExists() %s %s\n", LINE(), FILE())
+	if !DirExists("./t1") {
+		t.Errorf("DirExists() failed.")
 	}
 	if DirExists("./t5") {
-		t.Errorf("DirExists() %s %s\n", LINE(), FILE())
-	} else {
-		fmt.Printf("ok: %s\n", LF())
-	}
-
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//  Should be line 100 in this file - change comments above to adjust
-	ln := LINE()
-	fn := FILE()
-	lnn := LINEn(1)
-	ln1 := LINE(1)
-	fn1 := FILE(1)
-	lf := LF()
-	lf1 := LF(1)
-
-	if ln != "101" {
-		t.Errorf("LINE() failed\n")
-	}
-	if fn != "/Users/corwin/Projects/pongo2/lexie/com/t1_test.go" {
-		t.Errorf("FILE() failed, got >%s<\n", fn)
-	}
-	if lnn != 103 {
-		t.Errorf("LINEn() failed\n")
-	}
-	if ln1 != "104" {
-		t.Errorf("LINEn(1) failed\n")
-	}
-	if fn1 != "/Users/corwin/Projects/pongo2/lexie/com/t1_test.go" {
-		t.Errorf("FILE(1) failed, got >%s<\n", fn)
-	}
-	if lf != "File: /Users/corwin/Projects/pongo2/lexie/com/t1_test.go LineNo:106" {
-		t.Errorf("LF() failed, got >%s<\n", lf)
-	}
-	if lf1 != "File: /Users/corwin/Projects/pongo2/lexie/com/t1_test.go LineNo:107" {
-		t.Errorf("LF(1) failed, got >%s<\n", lf1)
+		t.Errorf("DirExists() failed.")
 	}
 
 	StashError("s")
-	DbOnFlags["OutputErrors"] = true
 	StashError("t")
 
-	fp1, err := Fopen("tF/a.a", "w")
-	if err != nil {
-		t.Errorf("Fopen 1\n")
-	}
-	fp1.Close()
-
-	fp1, err = Fopen("tF/a.a", "r")
-	if err != nil {
-		t.Errorf("Fopen 2\n")
-	}
-	fp1.Close()
-
-	fp1, err = Fopen("tF/a.a", "a")
-	if err != nil {
-		t.Errorf("Fopen 3\n")
-	}
-	fp1.Close()
-
-	fp1, err = Fopen("tF/a.a", "x")
-	if err == nil {
-		t.Errorf("Fopen 4\n")
+	ns := GetErrorStash()
+	if ns == "" {
+		t.Errorf("Falied to get stashed errors\n")
 	}
 
 	ss := ConvertActionFlagToString(0xFFFF)
@@ -163,7 +63,6 @@ func Test_Com01(t *testing.T) {
 	if ss != "**No A Flag**" {
 		t.Errorf("Dislaying flags (2)\n")
 	}
-	// fmt.Printf("ss= >%s<-\n", ss)
 
 	x1 := ChkOrX(true)
 	if x1 != "\u2714" {
@@ -184,7 +83,6 @@ func Test_Com01(t *testing.T) {
 	}
 
 	vv := CompareSlices([]int{1, 2, 4, 4}, []int{2, 1, 2, 3})
-	// fmt.Printf("vv=%+v\n", vv)
 	if len(vv) != 2 {
 		t.Errorf("err")
 	} else {
@@ -199,7 +97,6 @@ func Test_Com01(t *testing.T) {
 	}
 
 	q2 := USortIntSlice([]int{1, 5, 2, 1})
-	// fmt.Printf("q2=%+v\n", q2)
 	if len(q2) != 3 {
 		t.Errorf("err")
 	} else {
@@ -213,7 +110,6 @@ func Test_Com01(t *testing.T) {
 	ms["c"] = "2"
 	ms["b"] = "3"
 	s2 := SortMapStringString(ms)
-	// fmt.Printf("%+v\n", s2)
 	if len(s2) != 3 {
 		t.Errorf("err")
 	} else {
@@ -230,7 +126,5 @@ func Test_Com01(t *testing.T) {
 	if aa != "<>" {
 		t.Errorf("err")
 	}
-
-	DbFprintf("debug_test", os.Stdout, "ok: %s\n", LF(1))
 
 }
