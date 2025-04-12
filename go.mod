@@ -14,6 +14,8 @@ require (
 )
 
 require (
+	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/gorilla/css v1.0.1 // indirect
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/kr/text v0.1.0 // indirect
 	github.com/pschlump/go-colorable v0.0.24 // indirect
@@ -25,6 +27,6 @@ require (
 
 replace github.com/pschlump/dbgo => ../dbgo
 
-replace github.com/microcosm-cc/bluemonday => ../../microcosm-cc/bluemonday
+// replace github.com/microcosm-cc/bluemonday => ../../microcosm-cc/bluemonday
 
-replace github.com/russross/blackfriday => ../../russross/blackfriday
+// replace github.com/russross/blackfriday => ../../russross/blackfriday
