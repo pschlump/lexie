@@ -1,11 +1,12 @@
 //
 // I N - Part of Lexie Lexical Generation System
 //
-// (C) Philip Schlump, 2014-2015.
+// (C) Philip Schlump, 2014-2025.
 // Version: 1.0.8
 // BuildNo: 203
 //
-// Special Thanks to 2C-Why, LLC for supporting this project.
+// Basic scanning and input to convert an input file into an internal data structure.
+// It is ironic that this tool uses a hand-coded scanner when being a scanner generator.
 //
 
 package in
@@ -84,11 +85,7 @@ type ImDefinedValueType struct {
 	SeenAt       map[string]ImSeenAtType //
 }
 
-var Tok_map map[int]string
-
-func init() {
-	Tok_map = make(map[int]string)
-}
+var Tok_map = make(map[int]string)
 
 type ImDefsType struct {
 	DefsAre map[string]ImDefinedValueType //
@@ -119,25 +116,74 @@ func ReadFileIntoString(fn string) string {
 	return string(s)
 }
 
-func ClasifyLine(ln string) (cls string) {
-	if strings.HasPrefix(ln, "$machine") {
-		cls = "$machine"
-	} else if strings.HasPrefix(ln, "$end") {
-		cls = "$end"
-	} else if strings.HasPrefix(ln, "$eof") {
-		cls = "$eof"
-	} else if strings.HasPrefix(ln, "$def") {
-		cls = "$def"
-	} else if strings.HasPrefix(ln, "\"") {
-		cls = "str0"
-	} else if strings.HasPrefix(ln, "'") {
-		cls = "str1"
-	} else if strings.HasPrefix(ln, "`") {
-		cls = "str2"
-	} else {
-		cls = "pattern"
+type ClsOfString int
+
+const (
+	ClsMachine ClsOfString = 1
+	ClsEnd     ClsOfString = 2
+	ClsEof     ClsOfString = 3
+	ClsDef     ClsOfString = 4
+	ClsStr0    ClsOfString = 5
+	ClsStr1    ClsOfString = 6
+	ClsStr2    ClsOfString = 7
+	ClsPattern ClsOfString = 8
+)
+
+func (cls ClsOfString) String() string {
+	switch cls {
+	case ClsMachine:
+		return "$machine"
+	case ClsEnd:
+		return "$end"
+	case ClsEof:
+		return "$eof"
+	case ClsDef:
+		return "$def"
+	case ClsStr0:
+		return "str0"
+	case ClsStr1:
+		return "str1"
+	case ClsStr2:
+		return "str2"
+	case ClsPattern:
+		return "pattern"
 	}
-	return
+	return "--Unknown--ClsOfString--"
+}
+
+var reDollarMachine = regexp.MustCompile(`^\$machine[ 	]*\(`)
+var reDollarEnd = regexp.MustCompile(`^\$end[ 	]*$`)
+var reDollarEof = regexp.MustCompile(`^\$eof[ 	]*$`)
+var reDollarDef = regexp.MustCompile(`^\$def[ 	]*\(`)
+
+// Clasify a line into it's basic type.
+func clasifyLine(ln string) (cls ClsOfString) {
+	// if strings.HasPrefix(ln, "$machine") {
+	if reDollarMachine.MatchString(ln) {
+		return ClsMachine
+	}
+	// if strings.HasPrefix(ln, "$end") {
+	if reDollarEnd.MatchString(ln) {
+		return ClsEnd
+	}
+	// if strings.HasPrefix(ln, "$eof") {
+	if reDollarEof.MatchString(ln) {
+		return ClsEof
+	}
+	// if strings.HasPrefix(ln, "$def") {
+	if reDollarDef.MatchString(ln) {
+		return ClsDef
+	}
+	if strings.HasPrefix(ln, "\"") {
+		return ClsStr0
+	}
+	if strings.HasPrefix(ln, "'") {
+		return ClsStr1
+	}
+	if strings.HasPrefix(ln, "`") {
+		return ClsStr2
+	}
+	return ClsPattern
 }
 
 func EscapeLiteralString(in string) (rv string) {
@@ -184,12 +230,12 @@ func EscapeNormalString(in string) (rv string) {
 	return
 }
 
-func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) {
+func PickOffPatternAtBeginning(cls ClsOfString, ln string) (pat string, rest string) {
 	var ii int
-	// cls := ClasifyLine(ln)
+	// cls := clasifyLine(ln)
 	//fmt.Printf("cls = %s, %s\n", cls, dbgo.LF())
 	switch cls {
-	case "str0":
+	case ClsStr0: // "str0":
 		pat = ""
 		for ii = 1; ii < len(ln); ii++ {
 			if ln[ii] == '\\' && ii+1 < len(ln) {
@@ -211,7 +257,7 @@ func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) 
 		if ii+1 < len(ln) {
 			rest = ln[ii+1:]
 		}
-	case "str1":
+	case ClsStr1: // "str1":
 		pat = ""
 		for ii = 1; ii < len(ln); ii++ {
 			if ln[ii] == '\\' && ii+1 < len(ln) {
@@ -236,7 +282,7 @@ func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) 
 		//fmt.Printf("ii = %d ln[]= ->%s<-, %s\n", ii, ln[1:ii], dbgo.LF())
 		//fmt.Printf("pat ->%s<-, %s\n", pat, dbgo.LF())
 		//fmt.Printf("rest ->%s<-, %s\n", rest, dbgo.LF())
-	case "str2":
+	case ClsStr2: // "str2":
 		pat = ""
 		for ii = 1; ii < len(ln); ii++ {
 			if ii+1 < len(ln) && ln[ii] == '`' && ln[ii+1] == '`' {
@@ -255,7 +301,7 @@ func PickOffPatternAtBeginning(cls string, ln string) (pat string, rest string) 
 		//fmt.Printf("ii = %d, %s\n", ii, dbgo.LF())
 		//fmt.Printf("pat ->%s<-, %s\n", pat, dbgo.LF())
 		//fmt.Printf("rest ->%s<-, %s\n", rest, dbgo.LF())
-	case "pattern":
+	case ClsPattern: // "pattern":
 		for ii = 0; ii < len(ln); ii++ {
 			if ln[ii] == ' ' || ln[ii] == '\t' {
 				break
@@ -321,7 +367,7 @@ func ParseAction(ln string) [][]string {
 	return Action
 }
 
-func ParsePattern(cls string, ln string) (pat string, flag string, opt []string) {
+func ParsePattern(cls ClsOfString, ln string) (pat string, flag string, opt []string) {
 	flag = ""
 	pat, rest := PickOffPatternAtBeginning(cls, ln)
 	// fmt.Printf("pat >%s< rest >%s<, %s\n", pat, rest, dbgo.LF())
@@ -443,21 +489,20 @@ func (Im *ImType) SaveDef(DefType string, Defs []string, line_no int, file_name 
 			}
 			dbgo.DbPrintf("in", "Input: ->%s<- n >%s< v >%s<\n", nm, n, v)
 			if v != "" {
-				dd.NameValue[n] = -2 //							//
+				dd.NameValue[n] = -2
 				if vv, ok1 := dd.NameValueStr[n]; !ok1 {
-					dd.NameValueStr[n] = v //						//
+					dd.NameValueStr[n] = v
 				} else {
 					if vv != v {
 						fmt.Printf("Error: Attempt to redfine %s from %s to %s - Probably an error\n", n, vv, v)
 					}
 				}
 			} else {
-				dd.NameValue[n] = -1 //							//
+				dd.NameValue[n] = -1
 				if _, ok1 := dd.NameValueStr[n]; !ok1 {
-					dd.NameValueStr[n] = "" //							//
+					dd.NameValueStr[n] = ""
 				}
 			}
-			// dd.Seq = seq + 1
 			sa := dd.SeenAt[n]
 			sa.LineNo = append(sa.LineNo, line_no)
 			sa.FileName = append(sa.FileName, file_name)
@@ -465,7 +510,6 @@ func (Im *ImType) SaveDef(DefType string, Defs []string, line_no int, file_name 
 			Im.Def.DefsAre[DefType] = dd
 		}
 	}
-	// fmt.Printf("It Is:%+v\n", Im)
 }
 
 func (Im *ImType) ParseFile(data []string) {
@@ -477,39 +521,39 @@ func (Im *ImType) ParseFile(data []string) {
 		line_no := line_no_m1 + 1
 		line = RemoveComment(line)
 		if !IsEmptyLine(line) {
-			cls := ClasifyLine(line)
+			cls := clasifyLine(line)
 			switch cls {
-			case "$machine":
+			case ClsMachine: // "$machine":
 				st = 1
 				// fmt.Printf("Found $machine ->%s<-\n", line)
 				m := ParseMachine(line) // parse machine
 				MNo = Im.SaveMachine(m) //  save machine
-			case "$end":
+			case ClsEnd: // "$end":
 				st = 0
 				// fmt.Printf("Found $end ->%s<-\n", line)
-			case "$def":
+			case ClsDef: // "$def":
 				// fmt.Printf("Found $def ->%s<-\n", line)
 				if st != 0 {
 					fmt.Printf("Error: $def found inside of a machine specificaiton, Line: %d\n", line_no)
 				}
 				d := ParseDef(line)
 				Im.SaveDef(d[0], d[1:], line_no, "unk-file")
-			case "str0":
+			case ClsStr0: // "str0":
 				fallthrough
-			case "str1":
+			case ClsStr1: // "str1":
 				fallthrough
-			case "str2":
+			case ClsStr2: // "str2":
 				fallthrough
-			case "pattern":
+			case ClsPattern: // "pattern":
 				pat, _, opt := ParsePattern(cls, line)
 				// fmt.Printf("pat >%s< opt >%s<\n", pat, opt)
 				Im.SavePattern(MNo, pat, false, opt, line_no, "unk-file")
-			case "$eof":
+			case ClsEof: // "$eof":
 				// fmt.Printf("Found $eof ->%s<-\n", line)
 				if st != 1 {
 					fmt.Printf("Error: $eof found outside of a machine specificaiton, Line: %d\n", line_no)
 				}
-				_, _, opt := ParsePattern("pattern", line[1:]) // parse $eof pattern -
+				_, _, opt := ParsePattern(ClsPattern, line[1:]) // parse $eof pattern -
 				Im.SavePattern(MNo, "", true, opt, line_no, "unk-file")
 			default:
 				panic("Unreacable Code")
@@ -566,7 +610,7 @@ func (Im *ImType) SavePattern(MNo int, pat string, isEof bool, opt []string, lin
 			x.WEString = param
 			Im.SaveDef("Errors", []string{param}, line_no, file_name)
 		case "Reset":
-			// xyzzy - not implemented yet
+			// TODO xyzzy - not implemented yet
 		default:
 			fmt.Printf("Error: %s is not a defined operation, line %d file %s\n", nm, line_no, file_name)
 		}

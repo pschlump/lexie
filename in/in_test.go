@@ -105,7 +105,7 @@ func Test_ParseAction(t *testing.T) {
 			}
 			if vv.ResultTst4 != "" {
 
-				cls := ClasifyLine(vv.Inp)
+				cls := clasifyLine(vv.Inp)
 				// fmt.Printf("Test %s cls: %s for -->>%s<<--, %s\n", vv.Test, cls, vv.Inp, dbgo.LF())
 				atFront, rest := PickOffPatternAtBeginning(cls, vv.Inp)
 				_ = rest
@@ -122,7 +122,7 @@ func Test_ParseAction(t *testing.T) {
 				}
 
 			} else if vv.ResultTst2 != "" {
-				cls := ClasifyLine(vv.Inp)
+				cls := clasifyLine(vv.Inp)
 				pat, flag, opt := ParsePattern(cls, vv.Inp)
 				r := fmt.Sprintf("%v", opt)
 				if r != vv.ResultTst2 {
