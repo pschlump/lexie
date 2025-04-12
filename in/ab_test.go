@@ -188,6 +188,26 @@ func Test_ParseFile(t *testing.T) {
 	}
 }
 
+// func ReadFileIntoString(fn string) string {
+func Test_ReadFileIntoString(t *testing.T) {
+	ss := ReadFileIntoString("./django3.lex")
+	_ = ss
+}
+
+func Test_ReadFileIntoStringError(t *testing.T) {
+	ss := ReadFileIntoString("./,,,,,")
+	if ss != "" {
+		t.Errorf("Expected error, got >%s<\n", ss)
+	}
+}
+
+func Test_ReadFileIntoLinesError(t *testing.T) {
+	ss := ReadFileIntoLines("./,,,,,")
+	if len(ss) != 0 {
+		t.Errorf("Expected error, got >%s<\n", ss)
+	}
+}
+
 func Test_MiscTests(t *testing.T) {
 	Add_Lookup_Token(1, "bobbob")
 	x := Lookup_Tok_Name(1)

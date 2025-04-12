@@ -106,7 +106,7 @@ type ImType struct {
 func ReadFileIntoLines(fn string) (rv []string) {
 	s, err := ioutil.ReadFile(fn)
 	if err != nil {
-		fmt.Printf("Unable to read %s\n", fn)
+		fmt.Printf("Unable to read %s, error: %s\n", fn, err)
 		return
 	}
 	rv = strings.Split(string(s), "\n")
@@ -116,7 +116,7 @@ func ReadFileIntoLines(fn string) (rv []string) {
 func ReadFileIntoString(fn string) string {
 	s, err := ioutil.ReadFile(fn)
 	if err != nil {
-		fmt.Printf("Unable to read %s\n", fn)
+		fmt.Printf("Unable to read %s, error:%s\n", fn, err)
 		return ""
 	}
 	return string(s)
@@ -175,8 +175,8 @@ func EscapeNormalString(in string) (rv string) {
 				rv += "\f"
 			case 'r':
 				rv += "\r"
-			case 'v':
-				rv += "\v"
+			//case 'v':
+			//	rv += "\v"
 			default:
 				rv += string(c)
 			}
