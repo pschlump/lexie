@@ -85,15 +85,17 @@ import (
 	"time"
 
 	"github.com/jessevdk/go-flags"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/filelib"
-	"github.com/pschlump/lexie/bluemonday"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/pbread"
 	"github.com/pschlump/lexie/test01"
 	"github.com/russross/blackfriday"
 )
+
+// "github.com/pschlump/lexie/bluemonday"
 
 var opts struct {
 	BaseAssets   string `short:"b" long:"baseAssets"    description:"Base Assets (static)"             default:"./assets"`                     //

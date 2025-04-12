@@ -23,9 +23,6 @@ import (
 	"strings"
 
 	"github.com/pschlump/filelib"
-	//	"encoding/json"
-	// "../../../go-lib/flags"  //		"github.com/jessevdk/go-flags"
-	// "../../../go-lib/sizlib" //
 )
 
 func USortIntSlice(inputSet []int) (rv []int) {
@@ -307,8 +304,7 @@ func GetFilenames(dir string) (filenames, dirs []string) {
 	return
 }
 
-// -------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------
+// EscapeStr performs a HTML escape of a string if the 'on' flag is true.
 func EscapeStr(v string, on bool) string {
 	if on {
 		return html.EscapeString(v)
@@ -318,7 +314,6 @@ func EscapeStr(v string, on bool) string {
 }
 
 // -------------------------------------------------------------------------------------------------
-// xyzzy - need "fast" version of "CompareFiles" with some limits on what it will use "fast"
 // compare for - .jpg,.gif,.png fiels - a fiel size before uses fast etc.   Compare Size?
 // Compare name?  What is the "fast" compare for rsync? -- Calculate Hashes for each and
 // keep them around?
@@ -516,45 +511,11 @@ func init() {
 	trueValues["ON"] = true
 }
 
+// ParseBool convers common strings that are true/false to a boolean true/false.
 func ParseBool(s string) (b bool) {
 	_, b = trueValues[s]
 	return
 }
-
-/*
-// -------------------------------------------------------------------------------------------------
-func SVar(v interface{}) string {
-	s, err := json.Marshal(v)
-	// s, err := json.MarshalIndent ( v, "", "\t" )
-	if err != nil {
-		return fmt.Sprintf("Error:%s", err)
-	} else {
-		return string(s)
-	}
-}
-
-// -------------------------------------------------------------------------------------------------
-func SVarI(v interface{}) string {
-	// s, err := json.Marshal ( v )
-	s, err := json.MarshalIndent(v, "", "\t")
-	if err != nil {
-		return fmt.Sprintf("Error:%s", err)
-	} else {
-		return string(s)
-	}
-}
-*/
-
-// -------------------------------------------------------------------------------------------------
-// Exists returns true if the named file or directory exists.
-//func Exists(name string) bool {
-//	if _, err := os.Stat(name); err != nil {
-//		if os.IsNotExist(err) {
-//			return false
-//		}
-//	}
-//	return true
-//}
 
 // -------------------------------------------------------------------------------------------------
 // xyzzy - str.
