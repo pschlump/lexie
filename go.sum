@@ -11,8 +11,6 @@ github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/microcosm-cc/bluemonday v1.0.26 h1:xbqSvqzQMeEHCqMi64VAs4d8uy6Mequs3rQ0k/Khz58=
 github.com/microcosm-cc/bluemonday v1.0.26/go.mod h1:JyzOCs9gkyQyjs+6h10UEVSe02CGwkhd72Xdqh78TWs=
-github.com/pschlump/MiscLib v1.0.7 h1:h9Fd5qZujNOVGufBk7VvSpb+VPY2W0wNMqzEHrJdyPo=
-github.com/pschlump/MiscLib v1.0.7/go.mod h1:SF2sAhmiyWURRP+VkBjODUS/nt7kbsaZwvnQQkjs7YQ=
 github.com/pschlump/ansi v1.0.9 h1:Nj9oorxRHUAsi2qPCzuG9wE4gatgG1oco5WNX4EAssU=
 github.com/pschlump/ansi v1.0.9/go.mod h1:CzZZ4t336n7+UNOG+DiJzJQ5ckhTCRRM0FyR1roBRJ4=
 github.com/pschlump/filelib v1.0.12 h1:pB5nVPPBBOaBXlqZoa4LOI9XdCNXcWejHsodJK0mcN0=
@@ -21,8 +19,6 @@ github.com/pschlump/go-colorable v0.0.24 h1:Hy8yEeu6E0CjRbuN9YIbp+GmNU2Ae+hNY4tE
 github.com/pschlump/go-colorable v0.0.24/go.mod h1:RDuV+672zHfIXcIK16S3Cz4XsaG6Y6g6Rz0B1MxfTc0=
 github.com/pschlump/go-isatty v0.0.24 h1:ezZN/8BcvlUVb9RjIi0sLGihaHVTdj1onp9b7W0Kufc=
 github.com/pschlump/go-isatty v0.0.24/go.mod h1:wbb9IF4/HcSBikMDpzbZXxRI9IqYv0uOSZM7OyxcrKA=
-github.com/pschlump/godebug v1.0.7 h1:I6hBJwcYyGBEb51L6qwHmKsV7F3b+12+KCUtGY5N7ew=
-github.com/pschlump/godebug v1.0.7/go.mod h1:c0I5L+AZnZ+oPqVmOvwyo1R0EeNWzFyfIv6w9QYOnpo=
 github.com/pschlump/json v1.12.1 h1:0E7lGxBvv7N+iY4p3/futCjRYAD62qpRL6+DdnZcSXY=
 github.com/pschlump/json v1.12.1/go.mod h1:O7hZ/dn2YrWqDT4CG8CJKJCSIv6Z+Lv1wINCA7BHeJA=
 github.com/pschlump/uuid v1.0.3 h1:aRd+yQH+Ghu4BQo5m0PoRemKXVp3AOwrGkIf7bShdIs=

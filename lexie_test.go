@@ -12,12 +12,10 @@ import (
 	"testing"
 
 	"github.com/pschlump/dbgo"
+	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/nfa"
-
-	sizlib "github.com/pschlump/filelib" // "../../go-lib/sizlib"
-	tr "github.com/pschlump/godebug"     // "../../go-lib/tr"
 
 	. "gopkg.in/check.v1"
 )
@@ -80,7 +78,7 @@ var _ = Suite(&LexieTestSuite{})
 func (s *LexieTestSuite) TestLexie(c *C) {
 
 	return
-	fmt.Fprintf(os.Stderr, "Test Parsing of REs, %s\n", tr.LF())
+	fmt.Fprintf(os.Stderr, "Test Parsing of REs, %s\n", dbgo.LF())
 
 	dbOn["db_NFA"] = true
 	dbOn["db_NFA_LnNo"] = true
@@ -109,7 +107,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 		Pool.Sigma = Pool.GenerateSigma()
 
 		if false {
-			DbPrintf("test7", "Pool=%s\n", tr.SVarI(Pool))
+			DbPrintf("test7", "Pool=%s\n", dbgo.SVarI(Pool))
 		}
 		Pool.DumpPool(false)
 		Pool.DumpPoolJSON(os.Stdout, vv.Re, vv.Rv)
@@ -128,7 +126,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			panic("unable to read file, " + cmpFile)
 		}
 
-		if sizlib.Exists(cmpFile) {
+		if filelib.Exists(cmpFile) {
 			ref, err := ioutil.ReadFile(cmpFile)
 			if err != nil {
 				panic("unable to read file, " + cmpFile)
@@ -148,7 +146,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 
 		out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 		if err != nil {
-			fmt.Printf("Error from dot, %s, %s\n", err, tr.LF())
+			fmt.Printf("Error from dot, %s, %s\n", err, dbgo.LF())
 			fmt.Printf("Output: %s\n", out)
 		}
 	}
@@ -171,7 +169,7 @@ var _ = Suite(&LambdaClosureTestSuite{})
 func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	return
-	fmt.Fprintf(os.Stderr, "Test NFA generation from REs, %s\n", tr.LF())
+	fmt.Fprintf(os.Stderr, "Test NFA generation from REs, %s\n", dbgo.LF())
 
 	n_err := 0
 
@@ -252,7 +250,7 @@ var _ = Suite(&NFA_to_DFA_TestSuite{})
 func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 
 	// return
-	fmt.Fprintf(os.Stderr, "Test NFA to DFA, %s\n", tr.LF())
+	fmt.Fprintf(os.Stderr, "Test NFA to DFA, %s\n", dbgo.LF())
 
 	n_err := 0
 	n_skip := 0
@@ -297,7 +295,7 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 				panic("unable to read file, " + cmpFile)
 			}
 
-			if sizlib.Exists(cmpFile) {
+			if filelib.Exists(cmpFile) {
 				ref, err := ioutil.ReadFile(cmpFile)
 				if err != nil {
 					panic("unable to read file, " + cmpFile)
@@ -330,7 +328,7 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 
 			out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
-				fmt.Printf("Error from dot, %s, %s\n", err, tr.LF())
+				fmt.Printf("Error from dot, %s, %s\n", err, dbgo.LF())
 				fmt.Printf("Output: %s\n", out)
 			}
 		}
@@ -373,7 +371,7 @@ var _ = Suite(&Reader_TestSuite{})
 func (s *Reader_TestSuite) TestLexie(c *C) {
 
 	// return
-	fmt.Fprintf(os.Stderr, "Test Matcher test from .json file, %s\n", tr.LF())
+	fmt.Fprintf(os.Stderr, "Test Matcher test from .json file, %s\n", dbgo.LF())
 
 	dbOn["db_DumpDFAPool"] = true // DFA Dump Pool
 	dbOn["db_DumpPool"] = true    // NFA Dump Pool

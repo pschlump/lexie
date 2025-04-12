@@ -134,12 +134,14 @@ func main() {
 	test01.Dbf = os.Stdout
 	if opts.Debug != "" {
 		s := strings.Split(opts.Debug, ";")
-		com.DbOnFlags[opts.Debug] = true
+		// com.DbOnFlags[opts.Debug] = true
+		dbgo.SetADbFlag(opts.Debug, true)
 		for _, v := range s {
 			if len(v) > 5 && v[0:4] == "out:" {
 				test01.Dbf, _ = filelib.Fopen(v[4:], "w")
 			} else {
-				com.DbOnFlags[v] = true
+				// com.DbOnFlags[v] = true
+				dbgo.SetADbFlag(v, true)
 			}
 		}
 	}
@@ -153,7 +155,7 @@ func main() {
 	Options.LeaveTmpFiles = false
 	Options.TmpDir = "./tmp"
 
-	if !com.Exists(Options.TmpDir) {
+	if !filelib.Exists(Options.TmpDir) {
 		os.Mkdir(Options.TmpDir, 0700)
 	}
 
@@ -164,7 +166,7 @@ func main() {
 
 	// ------------------------------------------------------ input machine  --------------------------------------------------------------
 	if opts.LexPat != "" {
-		if !com.Exists(opts.LexPat) {
+		if !filelib.Exists(opts.LexPat) {
 			fmt.Fprintf(os.Stderr, "Fatal: Must have -l <fn> lexical analyzer machine.  Missing file.\n")
 			os.Exit(1)
 		}
@@ -236,7 +238,7 @@ func main() {
 
 		mds := com.ReplaceEach(dirs, opts.Input, opts.Output)
 		for _, aDir := range mds {
-			if !com.Exists(aDir) {
+			if !filelib.Exists(aDir) {
 				err := os.Mkdir(aDir, 0764)
 				if err != nil {
 					if db_debug3 {
@@ -260,14 +262,14 @@ func main() {
 			data["user"] = opts.User
 			data["theme"] = opts.Theme
 			mfmod := com.Qt(mff, data)
-			if com.Exists(mfmod) {
+			if filelib.Exists(mfmod) {
 				final = append(final, mfmod)
 			} else {
 
 				data["user"] = ""
 				// data["theme"] = "A-Theme"
 				mfmod := com.Qt(mff, data)
-				if com.Exists(mfmod) {
+				if filelib.Exists(mfmod) {
 					final = append(final, mfmod)
 				} else {
 
@@ -275,7 +277,7 @@ func main() {
 					// data["user"] = ""
 					data["theme"] = ""
 					mfmod := com.Qt(mff, data)
-					if com.Exists(mfmod) {
+					if filelib.Exists(mfmod) {
 						final = append(final, mfmod)
 					} else {
 						fmt.Printf("Error: File Missing %s\n", mfmod)
@@ -483,7 +485,7 @@ func ProcessFileList(pt *test01.Parse2Type, inList []string, outFn string) (err 
 	}
 
 	for _, fn := range inList {
-		if !com.Exists(fn) {
+		if !filelib.Exists(fn) {
 			fmt.Fprintf(os.Stderr, "Fatal: Missing input file %s\n", fn)
 			err = fmt.Errorf("Fatal: Missing input file %s", fn)
 			return
@@ -551,14 +553,14 @@ func CopyInAssets(optsSiteName string, BaseAssets string, SiteAssets string, opt
 	// Generate list of top directories to search
 	top := make([]string, 0, 10)
 	topDirs := com.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
-	if com.Exists(topDirs) {
+	if filelib.Exists(topDirs) {
 		top = append(top, topDirs)
 	}
 
 	data["user"] = ""
 	// data["theme"] = "A-Theme"
 	topDirs = com.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
-	if com.Exists(topDirs) {
+	if filelib.Exists(topDirs) {
 		top = append(top, topDirs)
 	}
 
@@ -566,7 +568,7 @@ func CopyInAssets(optsSiteName string, BaseAssets string, SiteAssets string, opt
 	// data["user"] = ""
 	data["theme"] = ""
 	topDirs = com.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
-	if com.Exists(topDirs) {
+	if filelib.Exists(topDirs) {
 		top = append(top, topDirs)
 	}
 
@@ -594,7 +596,7 @@ func CopyInAssets(optsSiteName string, BaseAssets string, SiteAssets string, opt
 
 			for kk, in := range infn {
 				// fmt.Printf("Loop %2d: in=>%s<- dir=%s\n", kk, in, dir)
-				if com.Exists(in) {
+				if filelib.Exists(in) {
 					// xyzzy - compare time stamps and size
 					if InputModified(in, outfn[kk], forcedCpFlag) || FileSizeDiffers(in, outfn[kk]) {
 						cpList2[outfn[kk]] = in
