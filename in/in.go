@@ -35,9 +35,6 @@ import (
 	"github.com/pschlump/lexie/com"
 )
 
-//	"../../../go-lib/sizlib"
-//	"../../../go-lib/tr"
-
 const (
 	ImPattern       = 1 //
 	ImLiteralString = 2 // Use EscapeLiternalString to get to ImPattern data
