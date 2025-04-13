@@ -12,6 +12,8 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+// https://labix.org/gocheck
+
 /*
 ============================================================
 Tests

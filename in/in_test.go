@@ -221,7 +221,11 @@ func Test_MiscTests(t *testing.T) {
 
 	Im := NewIm()
 	Im.LookupMachine("AName")
+}
 
+func Test_ClsString(t *testing.T) {
+	s := fmt.Sprintf("%s", ClsPattern)
+	_ = s
 }
 
 /* vim: set noai ts=4 sw=4: */

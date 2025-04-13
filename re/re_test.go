@@ -20,6 +20,8 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+// https://labix.org/gocheck
+
 type TokByte struct {
 	Tok LR_TokType // Node Type
 	Dat []byte

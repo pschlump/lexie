@@ -7,6 +7,8 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+// https://labix.org/gocheck
+
 type Ri struct {
 	R rune
 	I int

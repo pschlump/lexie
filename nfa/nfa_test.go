@@ -19,6 +19,8 @@ import (
 	. "gopkg.in/check.v1"
 )
 
+// https://labix.org/gocheck
+
 // Test the generation of NFA - Non-Deterministic Finite state Automata.
 // ------------------------------------------------------------------------------------
 //

@@ -8,6 +8,7 @@
 // Basic scanning and input to convert an input file into an internal data structure.
 // It is ironic that this tool uses a hand-coded scanner when being a scanner generator.
 //
+// Error: TODO xyzzy108: This is not relly correct, try a comment inside a quoted string and see why
 
 package in
 
@@ -34,13 +35,6 @@ import (
 
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
-)
-
-const (
-	ImPattern       = 1 //
-	ImLiteralString = 2 // Use EscapeLiternalString to get to ImPattern data
-	ImString        = 3 //
-	ImEOF           = 4 //
 )
 
 type ImMachineType struct {
@@ -317,33 +311,19 @@ func PickOffPatternAtBeginning(cls ClsOfString, ln string) (pat string, rest str
 	return
 }
 
-var pa_re *regexp.Regexp
-var pnv_re *regexp.Regexp
-var fx_re *regexp.Regexp
-var pl_re *regexp.Regexp
-var com_re *regexp.Regexp
-var empty_re *regexp.Regexp
-var def_left_re *regexp.Regexp
-var def_right_re *regexp.Regexp
-var mach_left_re *regexp.Regexp
-var mach_right_re *regexp.Regexp
-var numeric_re *regexp.Regexp
+var pa_re = regexp.MustCompile("[ \t]*:([ \t]*)|([a-zA-Z]+([^ \t]*))*")
+var pnv_re = regexp.MustCompile("([a-zA-Z_][a-zA-Z0-9_]*)(=(.*))?")
+var fx_re = regexp.MustCompile("([a-zA-Z_][a-zA-Z0-9_]*)\\([ \t]*([^) \t]*[ \t]*)\\)")
+var pl_re = regexp.MustCompile("((([a-zA-Z_][a-zA-Z0-9_]*)((=[^, ]*)?)))*")
+var com_re = regexp.MustCompile("[ \t]*//.*$")
+var empty_re = regexp.MustCompile("^[ \t]*$")
+var def_left_re = regexp.MustCompile("^[ \t]*\\$def[ \t]*\\(")
+var def_right_re = regexp.MustCompile("[ \t]*\\)[ \t]*$")
+var mach_left_re = regexp.MustCompile("^[ \t]*\\$machine[ \t]*\\(")
+var mach_right_re = regexp.MustCompile("[ \t]*\\)[ \t]*$")
+var numeric_re = regexp.MustCompile("^[0-9]+$")
 
-func init() {
-	pa_re = regexp.MustCompile("[ \t]*:([ \t]*)|([a-zA-Z]+([^ \t]*))*")
-	pnv_re = regexp.MustCompile("([a-zA-Z_][a-zA-Z0-9_]*)(=(.*))?")
-	fx_re = regexp.MustCompile("([a-zA-Z_][a-zA-Z0-9_]*)\\([ \t]*([^) \t]*[ \t]*)\\)")
-	// pl_re = regexp.MustCompile("((([a-zA-Z_][a-zA-Z0-9_]*)(=(.*))?),?)*")
-	pl_re = regexp.MustCompile("((([a-zA-Z_][a-zA-Z0-9_]*)((=[^, ]*)?)))*")
-	com_re = regexp.MustCompile("[ \t]*//.*$")
-	empty_re = regexp.MustCompile("^[ \t]*$")
-	def_left_re = regexp.MustCompile("^[ \t]*\\$def[ \t]*\\(")
-	def_right_re = regexp.MustCompile("[ \t]*\\)[ \t]*$")
-	mach_left_re = regexp.MustCompile("^[ \t]*\\$machine[ \t]*\\(")
-	mach_right_re = regexp.MustCompile("[ \t]*\\)[ \t]*$")
-	numeric_re = regexp.MustCompile("^[0-9]+$")
-}
-
+// IsEmptyLine will return true if th eline is empty.  Blanks and tabs only will return true.
 func IsEmptyLine(ln string) bool {
 	a := empty_re.FindAllStringSubmatch(ln, -1)
 	if len(a) > 0 {
@@ -352,7 +332,7 @@ func IsEmptyLine(ln string) bool {
 	return false
 }
 
-// if len(ADef) > 0 && IsNumeric(ADef) {
+// IsNumeric will return true if the line all numeric 0-9.
 func IsNumeric(s string) bool {
 	a := numeric_re.FindAllStringSubmatch(s, -1)
 	if len(a) > 0 {
@@ -362,7 +342,6 @@ func IsNumeric(s string) bool {
 }
 
 func ParseAction(ln string) [][]string {
-	//Action := pa_re.FindAllString(ln, -1)
 	Action := pa_re.FindAllStringSubmatch(ln, -1)
 	return Action
 }
@@ -382,7 +361,7 @@ func ParsePattern(cls ClsOfString, ln string) (pat string, flag string, opt []st
 	return
 }
 
-// Tok_Name=1 Tok_Name "T O K"
+// ParseNameValue will convert a string like Tok_Name=1 into a pair, name="Tok_Name", value="1".
 func ParseNameValue(nv string) (name string, value string) {
 	name, value = "", ""
 	t1 := pnv_re.FindAllStringSubmatch(nv, -1)
@@ -398,11 +377,12 @@ func ParseNameValue(nv string) (name string, value string) {
 	return
 }
 
-// This is not relly correct, try a comment inside a quoted string and see why
+// RemoveComment will remove any comments from a line of text, returning the modified line.
+// Trailing white space will be removed.
+// Error: TODO xyzzy108: This is not relly correct, try a comment inside a quoted string and see why
 func RemoveComment(ln string) (oln string) {
 	// com_re = regexp.MustCompile("[ \t]*//.*$")
 	oln = com_re.ReplaceAllLiteralString(ln, "")
-	// fmt.Printf("Orig: -->%s<-- - After remvoing comment -->%s<--\n", ln, oln)
 	return
 }
 
