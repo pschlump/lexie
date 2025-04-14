@@ -63,8 +63,8 @@ func (s *SMapTypeTestSuite) TestLexie(c *C) {
 			if t_debug {
 				fmt.Printf("Results: %v\n", t1)
 			}
-			// t1. MapRune(rn rune) int {
 			for jj, ww := range vv.RIData {
+				// t1. MapRune(rn rune) int {
 				rx := t1.MapRune(ww.R)
 				if rx != ww.I {
 					if t_debug {

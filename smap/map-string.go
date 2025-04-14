@@ -1,11 +1,8 @@
 //
 // S M A P - Part of Lexie Lexical Generation System
 //
-// (C) Philip Schlump, 2014-2015.
+// (C) Philip Schlump, 2014-2025.
 // Version: 1.0.8
-// BuildNo: 203
-//
-// Special Thanks to 2C-Why, LLC for supporting this project.
 //
 
 package smap
@@ -216,25 +213,6 @@ func (smap *SMapType) String() string {
 	s += fmt.Sprintf("}}}\n")
 	return s
 }
-
-// Display SmapType as a human readable content.
-//func (smap *SMapType) StringOrig() string {
-//	s := ""
-//	s += fmt.Sprintf("{{{ smap.MinV = %d, smap.MaxV = %d, smap.Len = %d\n", smap.MinV, smap.MaxV, smap.Len)
-//	s += fmt.Sprintf("smap.NoMap = %04x ( %s ), smap.NoMapTo = %d\n", smap.NoMap, string(smap.NoMap), smap.NoMapTo)
-//	s += fmt.Sprintf("smap.M0 = (%d items)\n", len(smap.M0))
-//	for ii := range smap.M0 {
-//		s += fmt.Sprintf("    %2d: [ %3d 0x%x %s ] = %d\n", ii, ii, ii+smap.MinV, string(rune(ii+smap.MinV)), smap.M0[ii])
-//	}
-//	s += fmt.Sprintf("smap.M1 = (%d items)\n", len(smap.M1))
-//	kv := KeyIntMapSort(smap.M1)
-//	for _, ii := range kv {
-//		vv := smap.M1[ii]
-//		s += fmt.Sprintf("    %s: %d\n", string(ii), vv )
-//	}
-//	s += fmt.Sprintf("}}}\n")
-//	return s
-//}
 
 func KeyIntMapSort(in map[int]int) []int {
 	var rv []int
