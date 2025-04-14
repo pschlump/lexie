@@ -4,7 +4,7 @@ package lexie
 //
 // Lexie Input for the Django Teplate Superset, Ringo
 //
-// (C) Philip Schlump, 2010-2025.
+// Copyright (C) Philip Schlump, 2010-2025.
 // Version: 1.0.8
 //
 
