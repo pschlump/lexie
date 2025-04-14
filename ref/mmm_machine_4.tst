@@ -155,7 +155,10 @@ Machine:
 	
 	
 {"Input":"Lex-Machine-4", "Rv":1, "Start": 0, "States":[
- { "Sn":0,  "Edge":[ { "On":"", "Fr":0, "To":1 }, { "On":"", "Fr":0, "To":2 }]}
+ { "Sn":0,  "Edge":[ { "On":"e", "Fr":0, "To":1 }, { "On":"f", "Fr":0, "To":1 }, { "On":"o", "Fr":0, "To":1 }, { "On":"", "Fr":0, "To":2 }, { "On":"", "Fr":0, "To":1 }]}
  { "Sn":1,  "Edge":[ ]}
- { "Sn":2,  "Edge":[ ]}
+ { "Sn":2,  "Edge":[ { "On":"e", "Fr":2, "To":3 }]}
+ { "Sn":3,  "Edge":[ { "On":"o", "Fr":3, "To":4 }]}
+ { "Sn":4,  "Edge":[ { "On":"f", "Fr":4, "To":5 }]}
+ { "Sn":5,  "Edge":[ ]}
 ]}

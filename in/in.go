@@ -1,9 +1,8 @@
 //
 // I N - Part of Lexie Lexical Generation System
 //
-// (C) Philip Schlump, 2014-2025.
+// Copyright (C) Philip Schlump, 2014-2025.
 // Version: 1.0.8
-// BuildNo: 203
 //
 // Basic scanning and input to convert an input file into an internal data structure.
 // It is ironic that this tool uses a hand-coded scanner when being a scanner generator.

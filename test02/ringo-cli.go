@@ -3,11 +3,8 @@ package main
 //
 // C L I / T E S T 2 - Part of Lexie Lexical Generation System
 //
-// (C) Philip Schlump, 2014-2015.
+// Copyright (C) Philip Schlump, 2014-2025.
 // Version: 0.0.8
-// BuildNo: 3
-//
-// Special Thanks to 2C-Why, LLC for supporting this project.
 //
 
 /*

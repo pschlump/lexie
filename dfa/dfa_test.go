@@ -387,19 +387,19 @@ func (s *Reader_TestSuite) TestLexie(c *C) {
 
 		if !vv.SkipTest {
 
-			fmt.Printf("\n\nTest:%s ------------------------- Start --------------------------, %d, Input: -->>%s<<--\n", vv.Test, ii, vv.Inp)
+			dbgo.Printf("\n\n%(yellow)Test:%s ------------------------- Start --------------------------, %d, Input: -->>%s<<--\n", vv.Test, ii, vv.Inp)
 
 			// r := strings.NewReader(vv.Inp)
-			r := pbread.NewPbRead()
-			r.PbString(vv.Inp)
-			r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii)) // simulate  file = sf-
+			r := pbread.NewPbRead()                      // Create a push-back buffer
+			r.PbString(vv.Inp)                           // set the input to the string
+			r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii)) // simulate  file = sf-%d.txt, set line to 1
 
-			fmt.Printf("At: %s\n", dbgo.LF())
+			dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
 			lex.MatcherLexieTable(r, "S_Init")
-			fmt.Printf("At: %s\n", dbgo.LF())
+			dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
 
 			if len(vv.Result) > 0 {
-				fmt.Printf("At: %s\n", dbgo.LF())
+				dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
 				if len(lex.TokList.TokenData) != len(vv.Result) {
 					fmt.Printf("Lengths did not match, %s", dbgo.SVarI(lex.TokList.TokenData))
 					c.Check(len(lex.TokList.TokenData), Equals, len(vv.Result))
@@ -424,7 +424,7 @@ func (s *Reader_TestSuite) TestLexie(c *C) {
 				}
 			}
 
-			fmt.Printf("At: %s\n", dbgo.LF())
+			dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
 			fmt.Printf("Test:%s ------------------------- End --------------------------\n\n", vv.Test)
 
 		}

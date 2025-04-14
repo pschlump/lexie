@@ -3,6 +3,12 @@ digraph finite_state_machine {
 	size="18,5"
 	node [shape = doublecircle]; ;
 	node [shape = circle];
+	s0 -> s1 [ label = "e" ];
+	s0 -> s1 [ label = "f" ];
+	s0 -> s1 [ label = "o" ];
+	s0 -> s2 [ label = "EOL" ];
 	s0 -> s1 [ label = "◉" ];
-	s0 -> s2 [ label = "EOF" ];
+	s2 -> s3 [ label = "e" ];
+	s3 -> s4 [ label = "o" ];
+	s4 -> s5 [ label = "f" ];
 }

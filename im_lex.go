@@ -4,9 +4,8 @@ package lexie
 //
 // Lexie Input for the Django Teplate Superset, Ringo
 //
-// (C) Philip Schlump, 2010-2015.
+// (C) Philip Schlump, 2010-2025.
 // Version: 1.0.8
-// BuildNo: 141
 //
 
 $def('type',"Name","Value",...)

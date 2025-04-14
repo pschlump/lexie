@@ -1,7 +1,7 @@
 //
 // S M A P - Part of Lexie Lexical Generation System
 //
-// (C) Philip Schlump, 2014-2025.
+// Copyright (C) Philip Schlump, 2014-2025.
 // Version: 1.0.8
 //
 

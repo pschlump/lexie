@@ -1,7 +1,7 @@
 digraph finite_state_machine {
 	rankdir=LR;
 	size="18,40"
-	node [shape = doublecircle]; s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s32 s33 s34 s35 s36 s37 s38 s39 s40 s41 s42 s43 s44 s45 s46 s47 s49 s50 s51 s52 s53 s54 s55 s56 s57 s58 s59 s60 s61 s62 s63 s64;
+	node [shape = doublecircle]; s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 s22 s23 s24 s26 s27 s28 s29 s32 s33 s34 s35 s36 s37 s38 s39 s40 s41 s42 s43 s44 s45 s46 s47 s49 s50 s51 s52 s53 s54 s55 s56 s57 s58 s59 s60 s62 s63 s64 s65;
 	node [shape = circle];
 	s0 -> s1 [ label = "\\t" ];
 	s0 -> s1 [ label = "\\n" ];
@@ -31,15 +31,18 @@ digraph finite_state_machine {
 	s0 -> s22 [ label = "^" ];
 	s0 -> s23 [ label = "_" ];
 	s0 -> s24 [ label = "`" ];
-	s0 -> s25 [ label = "{" ];
-	s0 -> s26 [ label = "|" ];
-	s0 -> s27 [ label = "}" ];
-	s0 -> s28 [ label = "~" ];
-	s0 -> s29 [ label = "0-9" ];
+	s0 -> s25 [ label = "e" ];
+	s0 -> s25 [ label = "f" ];
+	s0 -> s25 [ label = "o" ];
+	s0 -> s26 [ label = "{" ];
+	s0 -> s27 [ label = "|" ];
+	s0 -> s28 [ label = "}" ];
+	s0 -> s29 [ label = "~" ];
+	s0 -> s30 [ label = "EOL" ];
+	s0 -> s31 [ label = "0-9" ];
 	s0 -> s23 [ label = "a-z" ];
 	s0 -> s23 [ label = "A-Z" ];
-	s0 -> s30 [ label = "◉" ];
-	s0 -> s31 [ label = "EOF" ];
+	s0 -> s25 [ label = "◉" ];
 	s2 -> s32 [ label = "=" ];
 	s4 -> s33 [ label = "=" ];
 	s4 -> s34 [ label = "}" ];
@@ -65,19 +68,22 @@ digraph finite_state_machine {
 	s23 -> s53 [ label = "0-9" ];
 	s23 -> s53 [ label = "a-z" ];
 	s23 -> s53 [ label = "A-Z" ];
-	s25 -> s54 [ label = "%" ];
-	s25 -> s55 [ label = "{" ];
-	s26 -> s56 [ label = "=" ];
-	s26 -> s57 [ label = "|" ];
-	s27 -> s58 [ label = "}" ];
-	s28 -> s59 [ label = "=" ];
-	s28 -> s60 [ label = "~" ];
-	s44 -> s61 [ label = "=" ];
-	s47 -> s62 [ label = "=" ];
-	s48 -> s63 [ label = "=" ];
-	s50 -> s64 [ label = "=" ];
+	s26 -> s54 [ label = "%" ];
+	s26 -> s55 [ label = "{" ];
+	s27 -> s56 [ label = "=" ];
+	s27 -> s57 [ label = "|" ];
+	s28 -> s58 [ label = "}" ];
+	s29 -> s59 [ label = "=" ];
+	s29 -> s60 [ label = "~" ];
+	s30 -> s61 [ label = "e" ];
+	s44 -> s62 [ label = "=" ];
+	s47 -> s63 [ label = "=" ];
+	s48 -> s64 [ label = "=" ];
+	s50 -> s65 [ label = "=" ];
 	s53 -> s53 [ label = "_" ];
 	s53 -> s53 [ label = "0-9" ];
 	s53 -> s53 [ label = "a-z" ];
 	s53 -> s53 [ label = "A-Z" ];
+	s61 -> s66 [ label = "o" ];
+	s66 -> s67 [ label = "f" ];
 }

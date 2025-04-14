@@ -3,11 +3,8 @@ package pbread
 //
 // P B B U F F E R - Push back buffer - test.
 //
-// (C) Philip Schlump, 2013-2015.
+// Copyright (C) Philip Schlump, 2013-2025.
 // Version: 1.0.0
-// BuildNo: 28
-//
-// Special Thanks to 2C-Why, LLC for supporting this project.
 //
 
 import (

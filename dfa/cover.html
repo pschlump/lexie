@@ -3,6 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>dfa: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -54,11 +55,11 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">_/../../../../../Users/corwin/Projects/pongo2/lexie/dfa/dfa.go (81.3%)</option>
+				<option value="file0">github.com/pschlump/lexie/dfa/dfa.go (81.3%)</option>
 				
-				<option value="file1">_/../../../../../Users/corwin/Projects/pongo2/lexie/dfa/match.go (81.1%)</option>
+				<option value="file1">github.com/pschlump/lexie/dfa/match.go (76.9%)</option>
 				
-				<option value="file2">_/../../../../../Users/corwin/Projects/pongo2/lexie/dfa/nm.go (86.9%)</option>
+				<option value="file2">github.com/pschlump/lexie/dfa/nm.go (85.4%)</option>
 				
 				</select>
 			</div>
@@ -72,7 +73,7 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" >//
+		<pre class="file" id="file0" style="display: none">//
 // D F A - Part of Lexie Lexical Generation System
 //
 // (C) Philip Schlump, 2014-2015.
@@ -108,13 +109,12 @@ import (
         "unicode"
         "unicode/utf8"
 
-        "../com"
-        "../nfa"
-        "../re"
-        "../smap"
-        "../tok"
-
-        "../../../go-lib/sizlib"
+        "github.com/pschlump/dbgo"
+        "github.com/pschlump/lexie/com"
+        "github.com/pschlump/lexie/nfa"
+        "github.com/pschlump/lexie/re"
+        "github.com/pschlump/lexie/smap"
+        "github.com/pschlump/lexie/tok"
 )
 
 type DFA_Type struct {
@@ -165,22 +165,22 @@ func (dfa *DFA_PoolType) DumpTokenBuffer() <span class="cov0" title="0">{
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 // Allocate an DFA tree node
 func (dfa *DFA_PoolType) GetDFA() int <span class="cov8" title="1">{
-        //fmt.Printf("at %s\n", com.LF())
+        //fmt.Printf("at %s\n", dbgo.LF())
         tmp := 0
         if dfa.Cur &lt; dfa.Top &amp;&amp; !dfa.Pool[dfa.Cur].IsUsed </span><span class="cov8" title="1">{
-                //fmt.Printf("at %s\n", com.LF())
+                //fmt.Printf("at %s\n", dbgo.LF())
                 tmp = dfa.Cur
                 dfa.Cur++
-        }</span><span class="cov8" title="1"> else if dfa.Cur &gt;= dfa.Top || dfa.NextFree == -1 </span><span class="cov8" title="1">{
-                //fmt.Printf("at %s, dfa.Cur=%d dfa.Top=%d dfa.NextFree=%d\n", com.LF(), dfa.Cur, dfa.Top, dfa.NextFree)
+        }</span> else<span class="cov8" title="1"> if dfa.Cur &gt;= dfa.Top || dfa.NextFree == -1 </span><span class="cov8" title="1">{
+                //fmt.Printf("at %s, dfa.Cur=%d dfa.Top=%d dfa.NextFree=%d\n", dbgo.LF(), dfa.Cur, dfa.Top, dfa.NextFree)
                 dfa.Top = 2 * dfa.Top
                 newPool := make([]DFA_Type, dfa.Top, dfa.Top) // extend array
                 copy(newPool, dfa.Pool)
                 dfa.Pool = newPool
                 tmp = dfa.Cur
                 dfa.Cur++
-        }</span><span class="cov0" title="0"> else {
-                //fmt.Printf("at %s\n", com.LF())
+        }</span> else<span class="cov0" title="0"> {
+                //fmt.Printf("at %s\n", dbgo.LF())
                 tmp = dfa.NextFree
                 dfa.NextFree = dfa.Pool[tmp].NextFree
         }</span>
@@ -189,7 +189,7 @@ func (dfa *DFA_PoolType) GetDFA() int <span class="cov8" title="1">{
         dfa.Pool[tmp].Next2 = dfa.Pool[tmp].Next2[:0]
         dfa.Pool[tmp].IsUsed = true
         dfa.Pool[tmp].A_IAm = tmp
-        dfa.Pool[tmp].LineNo = com.LINE(2)
+        dfa.Pool[tmp].LineNo = dbgo.LINE(2)
         return tmp</span>
 }
 
@@ -218,11 +218,11 @@ func (dfa *DFA_PoolType) DiscardPool() <span class="cov0" title="0">{
 }</span>
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-//                 3. Input Parsing Issues/Errors/Warnings
-//                                1. Can not have A_Pop and A_Push at same time - Check for this.
-//                                2. A_Pop must be a hard match -
-//                                3. A_Pop must be a terminal! - Return() must have a Rv()
-//                                4. A_Push, A_Pop, A_Reset can not be ambiguous tokens, can not {% POP and {%= Return a value, won't work ( At least not yet )
+//  3. Input Parsing Issues/Errors/Warnings
+//  1. Can not have A_Pop and A_Push at same time - Check for this.
+//  2. A_Pop must be a hard match -
+//  3. A_Pop must be a terminal! - Return() must have a Rv()
+//  4. A_Push, A_Pop, A_Reset can not be ambiguous tokens, can not {% POP and {%= Return a value, won't work ( At least not yet )
 func (dfa *DFA_PoolType) VerifyMachine() <span class="cov8" title="1">{
         for ii, vv := range dfa.Pool </span><span class="cov8" title="1">{
                 if vv.IsUsed </span><span class="cov8" title="1">{
@@ -269,11 +269,11 @@ func (lex *Lexie) ConvertMachineNameToText(ee int) string {
 
 func (dfa *DFA_PoolType) DumpPool(all bool) <span class="cov8" title="1">{
         if all </span><span class="cov0" title="0">{
-                com.DbPrintf("db_DumpDFAPool", "Cur: %d Top: %d NextFree %d\n", dfa.Cur, dfa.Top, dfa.NextFree)
+                dbgo.DbPrintf("db_DumpDFAPool", "Cur: %d Top: %d NextFree %d\n", dfa.Cur, dfa.Top, dfa.NextFree)
         }</span>
-        <span class="cov8" title="1">com.DbPrintf("db_DumpDFAPool", "\n---------------------------- DFA Output -----------------------------------------------\n")
-        com.DbPrintf("db_DumpDFAPool", "\nDFA InitState: %d, Sigma -&gt;%s&lt;-\n\n", dfa.InitState, dfa.Sigma)
-        pLnNo := com.DbOn("db_DFA_LnNo")
+        <span class="cov8" title="1">dbgo.DbPrintf("db_DumpDFAPool", "\n---------------------------- DFA Output -----------------------------------------------\n")
+        dbgo.DbPrintf("db_DumpDFAPool", "\nDFA InitState: %d, Sigma -&gt;%s&lt;-\n\n", dfa.InitState, dfa.Sigma)
+        pLnNo := dbgo.IsDbOn("db_DFA_LnNo")
         IfLnNo := func(s string) string </span><span class="cov8" title="1">{
                 if pLnNo </span><span class="cov0" title="0">{
                         t := fmt.Sprintf("[%3s]", s)
@@ -281,58 +281,58 @@ func (dfa *DFA_PoolType) DumpPool(all bool) <span class="cov8" title="1">{
                 }</span>
                 <span class="cov8" title="1">return ""</span>
         }
-        <span class="cov8" title="1">com.DbPrintf("db_DumpDFAPool", "%3s%s: ", "St", IfLnNo("/Ln"))
-        com.DbPrintf("db_DumpDFAPool", " %12s %12s \u2714              \tEdges", "StateName", "StateSet")
-        com.DbPrintf("db_DumpDFAPool", "\n\n")
+        <span class="cov8" title="1">dbgo.DbPrintf("db_DumpDFAPool", "%3s%s: ", "St", IfLnNo("/Ln"))
+        dbgo.DbPrintf("db_DumpDFAPool", " %12s %12s \u2714              \tEdges", "StateName", "StateSet")
+        dbgo.DbPrintf("db_DumpDFAPool", "\n\n")
         for ii, vv := range dfa.Pool </span><span class="cov8" title="1">{
                 if all || vv.IsUsed </span><span class="cov8" title="1">{
-                        com.DbPrintf("db_DumpDFAPool", "%3d%s: ", ii, IfLnNo(vv.LineNo))
-                        com.DbPrintf("db_DumpDFAPool", " %12s %12s %s :", vv.StateName, sizlib.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
+                        dbgo.DbPrintf("db_DumpDFAPool", "%3d%s: ", ii, IfLnNo(vv.LineNo))
+                        dbgo.DbPrintf("db_DumpDFAPool", " %12s %12s %s :", vv.StateName, dbgo.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
                         if vv.Rv &gt; 0 </span><span class="cov8" title="1">{
                                 if vv.Is0Ch </span><span class="cov8" title="1">{
-                                        com.DbPrintf("db_DumpDFAPool", " \u03c4:Tau:%04d ", vv.Rv)
-                                }</span><span class="cov8" title="1"> else {
-                                        com.DbPrintf("db_DumpDFAPool", " T:%04d ", vv.Rv)
+                                        dbgo.DbPrintf("db_DumpDFAPool", " \u03c4:Tau:%04d ", vv.Rv)
+                                }</span> else<span class="cov8" title="1"> {
+                                        dbgo.DbPrintf("db_DumpDFAPool", " T:%04d ", vv.Rv)
                                 }</span>
-                        }<span class="cov8" title="1"> else {
-                                com.DbPrintf("db_DumpDFAPool", "        ")
+                        } else<span class="cov8" title="1"> {
+                                dbgo.DbPrintf("db_DumpDFAPool", "        ")
                         }</span>
-                        <span class="cov8" title="1">if com.DbOn("db_DumpDFAPool") </span><span class="cov8" title="1">{
+                        <span class="cov8" title="1">if dbgo.IsDbOn("db_DumpDFAPool") </span><span class="cov8" title="1">{
                                 fmt.Printf("\t E:")
                                 for _, ww := range vv.Next2 </span><span class="cov8" title="1">{
                                         if ww.Is0ChMatch </span><span class="cov0" title="0">{
-                                                fmt.Printf("//Found  \u03c4 (%s) //", com.LF()) // Show a Tau(t) for a lambda that matchiens on else conditions.
+                                                fmt.Printf("//Found  \u03c4 (%s) //", dbgo.LF()) // Show a Tau(t) for a lambda that matchiens on else conditions.
                                         }</span>
                                         <span class="cov8" title="1">if ww.IsLambda </span><span class="cov0" title="0">{
                                                 fmt.Printf("{  ERROR!! \u03bb  %2d -&gt; %2d  %s}  ", ww.From, ww.To, ww.LineNo)
-                                        }</span><span class="cov8" title="1"> else {
+                                        }</span> else<span class="cov8" title="1"> {
                                                 // fmt.Printf("{ \"%s\" %2d -&gt; %2d  %s}  ", ww.On, ww.From, ww.To, IfLnNo(ww.LineNo))
                                                 on, _ := utf8.DecodeRune([]byte(ww.On))
                                                 son := fmt.Sprintf("%q", ww.On)
                                                 switch on </span>{
-                                                <span class="cov8" title="1">case re.R_DOT: // = '\uF8FA' // Any char in Sigma
+                                                case re.R_DOT:<span class="cov8" title="1"> // = '\uF8FA' // Any char in Sigma
                                                         son = "DOT/uF8FA"</span>
-                                                <span class="cov0" title="0">case re.R_BOL: // = '\uF8F3' // Beginning of line
+                                                case re.R_BOL:<span class="cov0" title="0"> // = '\uF8F3' // Beginning of line
                                                         son = "BOL/uF8F3"</span>
-                                                <span class="cov0" title="0">case re.R_EOL: // = '\uF8F4' // End of line
+                                                case re.R_EOL:<span class="cov8" title="1"> // = '\uF8F4' // End of line
                                                         son = "EOL/uF8F4"</span>
-                                                <span class="cov8" title="1">case re.R_NUMERIC: // = '\uF8F5'
+                                                case re.R_NUMERIC:<span class="cov8" title="1"> // = '\uF8F5'
                                                         son = "NUMERIC/uF8F5"</span>
-                                                <span class="cov8" title="1">case re.R_LOWER: // = '\uF8F6'
+                                                case re.R_LOWER:<span class="cov8" title="1"> // = '\uF8F6'
                                                         son = "LOWER/uF8F6"</span>
-                                                <span class="cov8" title="1">case re.R_UPPER: // = '\uF8F7'
+                                                case re.R_UPPER:<span class="cov8" title="1"> // = '\uF8F7'
                                                         son = "UPPER/uF8F7"</span>
-                                                <span class="cov0" title="0">case re.R_ALPHA: // = '\uF8F8'
+                                                case re.R_ALPHA:<span class="cov0" title="0"> // = '\uF8F8'
                                                         son = "ALPHA/uF8F8"</span>
-                                                <span class="cov0" title="0">case re.R_ALPHNUM: // = '\uF8F9'
+                                                case re.R_ALPHNUM:<span class="cov0" title="0"> // = '\uF8F9'
                                                         son = "ALPHANUM/uF8F9"</span>
-                                                <span class="cov8" title="1">case re.R_EOF: // = '\uF8FB'
+                                                case re.R_EOF:<span class="cov0" title="0"> // = '\uF8FB'
                                                         son = "EOF/uF8FB"</span>
-                                                <span class="cov0" title="0">case re.R_not_CH: // = '\uF8FC' // On input lookup if the char is NOT in Signa then it is returned as this.
+                                                case re.R_not_CH:<span class="cov0" title="0"> // = '\uF8FC' // On input lookup if the char is NOT in Signa then it is returned as this.
                                                         son = "else_CH/uF8Fc"</span>
-                                                <span class="cov0" title="0">case re.R_N_CCL: // = '\uF8FD' // If char is not matched in this state then take this path
+                                                case re.R_N_CCL:<span class="cov0" title="0"> // = '\uF8FD' // If char is not matched in this state then take this path
                                                         son = "N_CCL/uF8Fd"</span>
-                                                <span class="cov0" title="0">case re.R_LAMBDA_MATCH: // = '\uF8FE'
+                                                case re.R_LAMBDA_MATCH:<span class="cov0" title="0"> // = '\uF8FE'
                                                         son = "LambdaM/uF8FE"</span>
                                                 }
                                                 <span class="cov8" title="1">fmt.Printf("{ %s  %2d -&gt; %2d  %s}  ", son, ww.From, ww.To, IfLnNo(ww.LineNo))</span>
@@ -340,7 +340,7 @@ func (dfa *DFA_PoolType) DumpPool(all bool) <span class="cov8" title="1">{
                                 }
                                 <span class="cov8" title="1">fmt.Printf("\n")
                                 if vv.Info.Action != 0 || vv.Info.MatchLength != 0 </span><span class="cov8" title="1">{
-                                        // fmt.Printf("\t\t\tInfo: %s\n", sizlib.SVar(vv.Info))                // xyzzy - output Info
+                                        // fmt.Printf("\t\t\tInfo: %s\n", dbgo.SVar(vv.Info))                // xyzzy - output Info
                                         // xyzzy - NextState info
                                         fmt.Printf("\t\t\tDFA.Info: %s", nfa.DumpInfo(vv.Info))
                                         // if ((vv.Info.Action&amp;com.A_Pop) != 0 || (vv.Info.Action&amp;com.A_Push) != 0 || (vv.Info.Action&amp;com.A_Reset) != 0) &amp;&amp; !vv.Info.HardMatch {                // xyzzy8
@@ -354,7 +354,7 @@ func (dfa *DFA_PoolType) DumpPool(all bool) <span class="cov8" title="1">{
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 func (dfa *DFA_PoolType) DumpPoolOneState(ii int) string <span class="cov0" title="0">{
-        pLnNo := com.DbOn("db_DFA_LnNo")
+        pLnNo := dbgo.IsDbOn("db_DFA_LnNo")
         IfLnNo := func(s string) string </span><span class="cov0" title="0">{
                 if pLnNo </span><span class="cov0" title="0">{
                         t := fmt.Sprintf("[%3s]", s)
@@ -365,17 +365,17 @@ func (dfa *DFA_PoolType) DumpPoolOneState(ii int) string <span class="cov0" titl
         <span class="cov0" title="0">vv := dfa.Pool[ii]
         s := ""
         s += fmt.Sprintf("%3d%s: ", ii, IfLnNo(vv.LineNo))
-        s += fmt.Sprintf(" %12s %12s %s :", vv.StateName, sizlib.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
+        s += fmt.Sprintf(" %12s %12s %s :", vv.StateName, dbgo.SVar(vv.StateSet), com.ChkOrBlank(vv.Visited))
         if vv.Rv &gt; 0 </span><span class="cov0" title="0">{
                 s += fmt.Sprintf(" T:%04d ", vv.Rv)
-        }</span><span class="cov0" title="0"> else {
+        }</span> else<span class="cov0" title="0"> {
                 s += fmt.Sprintf("        ")
         }</span>
         <span class="cov0" title="0">s += fmt.Sprintf("\t E:")
         for _, ww := range vv.Next2 </span><span class="cov0" title="0">{
                 if ww.IsLambda </span><span class="cov0" title="0">{
                         s += fmt.Sprintf("{  ERROR!! \u03bb  %2d -&gt; %2d  %s}  ", ww.From, ww.To, ww.LineNo)
-                }</span><span class="cov0" title="0"> else {
+                }</span> else<span class="cov0" title="0"> {
                         s += fmt.Sprintf("{ \"%s\" %2d -&gt; %2d  %s}  ", ww.On, ww.From, ww.To, IfLnNo(ww.LineNo))
                 }</span>
         }
@@ -389,9 +389,9 @@ func (dfa *DFA_PoolType) DumpPoolOneState(ii int) string <span class="cov0" titl
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 func (dfa *DFA_PoolType) HaveStateAlready(inputSet []int) (loc int) <span class="cov8" title="1">{
-        // fmt.Printf("HaveStateAlready: &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 0 inputSet: %s\n", sizlib.SVar(inputSet))
+        // fmt.Printf("HaveStateAlready: &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 0 inputSet: %s\n", dbgo.SVar(inputSet))
         inputSet = com.USortIntSlice(inputSet) // Make set unique
-        // fmt.Printf("HaveStateAlready: &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 1 inputSet: %s\n", sizlib.SVar(inputSet))
+        // fmt.Printf("HaveStateAlready: &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 1 inputSet: %s\n", dbgo.SVar(inputSet))
         s := com.NameOf(inputSet)
         // fmt.Printf("HaveStateAlready: &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Name searcing for is: %s\n", s)
         for ii, vv := range dfa.Pool </span><span class="cov8" title="1">{
@@ -444,7 +444,7 @@ func (dfa *DFA_PoolType) GetDFAName(StateSet []int) int <span class="cov8" title
 func (dfa *DFA_PoolType) AddEdge(fr, to int, on string) <span class="cov8" title="1">{
         // Check if edge already exists - if so skip this
         if !dfa.EdgeExists(fr, to, on) </span><span class="cov8" title="1">{
-                dfa.Pool[fr].Next2 = append(dfa.Pool[fr].Next2, nfa.TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: com.LINE(2)})
+                dfa.Pool[fr].Next2 = append(dfa.Pool[fr].Next2, nfa.TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: dbgo.LINE(2)})
         }</span>
 }
 
@@ -473,72 +473,72 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) <span class="cov8"
 
         nn.Sigma = nn.GenerateSigma()
         dfa.Sigma = nn.Sigma
-        com.DbPrintf("dfa2", "Sigma at top -&gt;%s&lt;-\n", dfa.Sigma)
+        dbgo.DbPrintf("dfa2", "Sigma at top -&gt;%s&lt;-\n", dfa.Sigma)
 
         // Build initial state
         dfa_set := nn.LambdaClosure([]int{StartState}) // Find all the lambda closures from specified state
         dfa_set = append(dfa_set, StartState)          // Add in initial state
         dfa_set = com.USortIntSlice(dfa_set)           // Make set unique
-        com.DbPrintf("db_DFAGen", "\nStart: %s, \u03a3 =-&gt;%s&lt;-, %s\n", sizlib.SVar(dfa_set), dfa.Sigma, com.LF())
+        dbgo.DbPrintf("db_DFAGen", "\nStart: %s, \u03a3 =-&gt;%s&lt;-, %s\n", dbgo.SVar(dfa_set), dfa.Sigma, dbgo.LF())
         A := dfa.GetDFAName(dfa_set)
         if r, is, info, Is0Ch := nn.IsTerminalState(dfa_set); is </span><span class="cov8" title="1">{
                 dfa.Pool[A].Rv = r
                 dfa.Pool[A].Is0Ch = Is0Ch
                 dfa.Pool[A].Info = info
-        }</span><span class="cov8" title="1"> else {
+        }</span> else<span class="cov8" title="1"> {
                 dfa.Pool[A].Info = info
         }</span>
-        <span class="cov8" title="1">if com.DbOn("db_DFAGen") </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if dbgo.IsDbOn("db_DFAGen") </span><span class="cov0" title="0">{
                 dfa.DumpPool(false)
         }</span>
         // Look at all the locaitons we can get to from this "state"
         <span class="cov8" title="1">for _, S := range dfa.Sigma </span><span class="cov8" title="1">{
                 StateSet := nn.LambdaClosureSet(dfa_set, string(S))
-                com.DbPrintf("db_DFAGen", "FOR INITIAL state -&gt;%s&lt;- StateSet=%s, %s\n", string(S), sizlib.SVar(StateSet), com.LF())
+                dbgo.DbPrintf("db_DFAGen", "FOR INITIAL state -&gt;%s&lt;- StateSet=%s, %s\n", string(S), dbgo.SVar(StateSet), dbgo.LF())
                 if len(StateSet) &gt; 0 </span><span class="cov8" title="1">{
-                        com.DbPrintf("db_DFAGen", "Have a non-empty result, %s\n", com.LF())
-                        com.DbPrintf("db_DFAGen", "&lt;&gt;&lt;&gt;&lt;&gt; this is the point where we should check to see if 'S' is DOT or NCCL, %s\n", com.LF())
+                        dbgo.DbPrintf("db_DFAGen", "Have a non-empty result, %s\n", dbgo.LF())
+                        dbgo.DbPrintf("db_DFAGen", "&lt;&gt;&lt;&gt;&lt;&gt; this is the point where we should check to see if 'S' is DOT or NCCL, %s\n", dbgo.LF())
 
                         StateSetT := nn.LambdaClosure(StateSet) // need to lambda complete the state set
                         StateSet = append(StateSet, StateSetT...)
                         StateSet = com.USortIntSlice(StateSet) // Make set unique
-                        com.DbPrintf("db_DFAGen", "    Output Is %s, %s\n", sizlib.SVar(StateSet), com.LF())
+                        dbgo.DbPrintf("db_DFAGen", "    Output Is %s, %s\n", dbgo.SVar(StateSet), dbgo.LF())
                         B := 0
                         if t := dfa.HaveStateAlready(StateSet); t != -1 </span><span class="cov8" title="1">{ // Have Already
                                 B = t
-                                com.DbPrintf("db_DFAGen", "    Already have this state at location %d, %s\n", t, com.LF())
-                        }</span><span class="cov8" title="1"> else {
+                                dbgo.DbPrintf("db_DFAGen", "    Already have this state at location %d, %s\n", t, dbgo.LF())
+                        }</span> else<span class="cov8" title="1"> {
                                 B = dfa.GetDFAName(StateSet)
-                                com.DbPrintf("db_DFAGen", "    *** New state %d, %s\n", B, com.LF())
+                                dbgo.DbPrintf("db_DFAGen", "    *** New state %d, %s\n", B, dbgo.LF())
                         }</span>
                         <span class="cov8" title="1">dfa.AddEdge(A, B, string(S))
-                        com.DbPrintf("db_DFAGen", "    *** Before (top) %s\n", com.LF())
+                        dbgo.DbPrintf("db_DFAGen", "    *** Before (top) %s\n", dbgo.LF())
                         if r, is, info, Is0Ch := nn.IsTerminalState(StateSet); is </span><span class="cov8" title="1">{
                                 dfa.Pool[B].Rv = r
                                 dfa.Pool[B].Is0Ch = Is0Ch
                                 dfa.Pool[B].Info = info
-                                com.DbPrintf("db_DFAGen", "    *** New state %d, %s\n", B, com.LF())
-                        }</span><span class="cov8" title="1"> else if _, is, info, Is0Ch := nn.IsNonTerminalPushPopState(StateSet); is </span><span class="cov8" title="1">{
+                                dbgo.DbPrintf("db_DFAGen", "    *** New state %d, %s\n", B, dbgo.LF())
+                        }</span> else<span class="cov8" title="1"> if _, is, info, Is0Ch := nn.IsNonTerminalPushPopState(StateSet); is </span><span class="cov8" title="1">{
                                 dfa.Pool[B].Is0Ch = Is0Ch
                                 dfa.Pool[B].Info = info
-                                com.DbPrintf("db_DFAGen", "    *** New info for state %d, %s\n", B, com.LF())
-                        }</span><span class="cov8" title="1"> else {
+                                dbgo.DbPrintf("db_DFAGen", "    *** New info for state %d, %s\n", B, dbgo.LF())
+                        }</span> else<span class="cov8" title="1"> {
                                 dfa.Pool[B].Info = info
-                                com.DbPrintf("db_DFAGen", "    *** NO State Info for state %d, %s\n", B, com.LF())
+                                dbgo.DbPrintf("db_DFAGen", "    *** NO State Info for state %d, %s\n", B, dbgo.LF())
                         }</span>
-                        <span class="cov8" title="1">com.DbPrintf("db_DFAGen", "    *** After (top) %s\n", com.LF())
-                        if com.DbOn("db_DFAGen") </span><span class="cov0" title="0">{
-                                fmt.Printf("for %s StateSet=%s, A=%d, B=%s %s\n", string(S), sizlib.SVar(StateSet), A, sizlib.SVar(B), com.LF())
+                        <span class="cov8" title="1">dbgo.DbPrintf("db_DFAGen", "    *** After (top) %s\n", dbgo.LF())
+                        if dbgo.IsDbOn("db_DFAGen") </span><span class="cov0" title="0">{
+                                fmt.Printf("for %s StateSet=%s, A=%d, B=%s %s\n", string(S), dbgo.SVar(StateSet), A, dbgo.SVar(B), dbgo.LF())
                                 dfa.DumpPool(false)
                         }</span>
                 }
         }
         <span class="cov8" title="1">dfa.Pool[A].Visited = true
 
-        com.DbPrintf("db_DFAGen", "\nBefore Main Loop, %s\n", com.LF())
+        dbgo.DbPrintf("db_DFAGen", "\nBefore Main Loop, %s\n", dbgo.LF())
         limit := 0
         for stateToDo := dfa.FindNotVisited(); stateToDo != -1; stateToDo = dfa.FindNotVisited() </span><span class="cov8" title="1">{
-                com.DbPrintf("db_DFAGen", "\nMain Loop: !!TOP!! State:%d\n", stateToDo)
+                dbgo.DbPrintf("db_DFAGen", "\nMain Loop: !!TOP!! State:%d\n", stateToDo)
                 // -----------------------------------------------------------------------------------------------------------
                 if !dfa.Pool[stateToDo].Visited </span><span class="cov8" title="1">{
                         dfa_set := nn.LambdaClosure(dfa.Pool[stateToDo].StateSet)  // Find all the lambda closures from specified state
@@ -546,40 +546,40 @@ func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) <span class="cov8"
                         dfa_set = com.USortIntSlice(dfa_set)                       // Make set unique
                         for _, S := range dfa.Sigma </span><span class="cov8" title="1">{
                                 StateSet := nn.LambdaClosureSet(dfa_set, string(S))
-                                com.DbPrintf("db_DFAGen", "    for initial state %s StateSet=%s, %s\n", string(S), sizlib.SVar(StateSet), com.LF())
-                                com.DbPrintf("db_DFAGen", "&lt;&gt;&lt;&gt;&lt;&gt; this is the point where we should check to see if 'S' is DOT or NCCL, %s\n", com.LF())
+                                dbgo.DbPrintf("db_DFAGen", "    for initial state %s StateSet=%s, %s\n", string(S), dbgo.SVar(StateSet), dbgo.LF())
+                                dbgo.DbPrintf("db_DFAGen", "&lt;&gt;&lt;&gt;&lt;&gt; this is the point where we should check to see if 'S' is DOT or NCCL, %s\n", dbgo.LF())
                                 if len(StateSet) &gt; 0 </span><span class="cov8" title="1">{
-                                        com.DbPrintf("db_DFAGen", "    &gt;&gt;&gt; Have a non-empty result, Input Is %s, %s\n", sizlib.SVar(StateSet), com.LF())
+                                        dbgo.DbPrintf("db_DFAGen", "    &gt;&gt;&gt; Have a non-empty result, Input Is %s, %s\n", dbgo.SVar(StateSet), dbgo.LF())
                                         StateSetT := nn.LambdaClosure(StateSet) // need to lambda complete the state set
                                         StateSet = append(StateSet, StateSetT...)
                                         StateSet = com.USortIntSlice(StateSet) // Make set unique
-                                        com.DbPrintf("db_DFAGen", "    &gt;&gt;&gt; Output Is %s, %s\n", sizlib.SVar(StateSet), com.LF())
+                                        dbgo.DbPrintf("db_DFAGen", "    &gt;&gt;&gt; Output Is %s, %s\n", dbgo.SVar(StateSet), dbgo.LF())
                                         B := 0
                                         if t := dfa.HaveStateAlready(StateSet); t != -1 </span><span class="cov8" title="1">{ // Have Already
                                                 B = t
-                                                com.DbPrintf("db_DFAGen", "    Already have this state at location %d, %s\n", t, com.LF())
-                                        }</span><span class="cov8" title="1"> else {
+                                                dbgo.DbPrintf("db_DFAGen", "    Already have this state at location %d, %s\n", t, dbgo.LF())
+                                        }</span> else<span class="cov8" title="1"> {
                                                 B = dfa.GetDFAName(StateSet)
                                         }</span>
                                         <span class="cov8" title="1">dfa.AddEdge(stateToDo, B, string(S))
-                                        com.DbPrintf("db_DFAGen", "    *** Before %s\n", com.LF())
+                                        dbgo.DbPrintf("db_DFAGen", "    *** Before %s\n", dbgo.LF())
                                         if r, is, info, Is0Ch := nn.IsTerminalState(StateSet); is </span><span class="cov8" title="1">{
                                                 dfa.Pool[B].Rv = r
                                                 dfa.Pool[B].Is0Ch = Is0Ch
                                                 dfa.Pool[B].Info = info
-                                                com.DbPrintf("db_DFAGen", "    *** New state %d, %s\n", B, com.LF())
-                                        }</span><span class="cov8" title="1"> else if _, is, info, Is0Ch := nn.IsNonTerminalPushPopState(StateSet); is </span><span class="cov8" title="1">{
+                                                dbgo.DbPrintf("db_DFAGen", "    *** New state %d, %s\n", B, dbgo.LF())
+                                        }</span> else<span class="cov8" title="1"> if _, is, info, Is0Ch := nn.IsNonTerminalPushPopState(StateSet); is </span><span class="cov8" title="1">{
                                                 dfa.Pool[B].Is0Ch = Is0Ch
                                                 dfa.Pool[B].Info = info
-                                                com.DbPrintf("db_DFAGen", "    *** New info for state %d, %s\n", B, com.LF())
-                                        }</span><span class="cov8" title="1"> else {
-                                                com.DbPrintf("db_DFAGen", "    *** NO State Info for state %d, %s\n", B, com.LF())
+                                                dbgo.DbPrintf("db_DFAGen", "    *** New info for state %d, %s\n", B, dbgo.LF())
+                                        }</span> else<span class="cov8" title="1"> {
+                                                dbgo.DbPrintf("db_DFAGen", "    *** NO State Info for state %d, %s\n", B, dbgo.LF())
                                                 dfa.Pool[B].Info = info
                                         }</span>
-                                        <span class="cov8" title="1">com.DbPrintf("db_DFAGen", "    *** After %s\n", com.LF())
-                                        if com.DbOn("db_DFAGen") </span><span class="cov0" title="0">{
-                                                fmt.Printf("    Add New Edge on %s fr %d to %d, %s\n", string(S), stateToDo, B, com.LF())
-                                                fmt.Printf("    for %s StateSet=%s, A(stateToDo)=%d, %s\n", string(S), sizlib.SVar(StateSet), stateToDo, com.LF())
+                                        <span class="cov8" title="1">dbgo.DbPrintf("db_DFAGen", "    *** After %s\n", dbgo.LF())
+                                        if dbgo.IsDbOn("db_DFAGen") </span><span class="cov0" title="0">{
+                                                fmt.Printf("    Add New Edge on %s fr %d to %d, %s\n", string(S), stateToDo, B, dbgo.LF())
+                                                fmt.Printf("    for %s StateSet=%s, A(stateToDo)=%d, %s\n", string(S), dbgo.SVar(StateSet), stateToDo, dbgo.LF())
                                                 dfa.DumpPool(false)
                                         }</span>
                                 }
@@ -627,13 +627,13 @@ func (dfa *DFA_PoolType) GenerateGVFile(fo io.Writer, td string, tn int) <span c
         siz := "5"
         if len(dfa.Pool) &gt; 100 </span><span class="cov0" title="0">{
                 siz = "50"
-        }</span><span class="cov8" title="1"> else if len(dfa.Pool) &gt; 50 </span><span class="cov8" title="1">{
+        }</span> else<span class="cov8" title="1"> if len(dfa.Pool) &gt; 50 </span><span class="cov8" title="1">{
                 siz = "40"
-        }</span><span class="cov8" title="1"> else if len(dfa.Pool) &gt; 30 </span><span class="cov0" title="0">{
+        }</span> else<span class="cov8" title="1"> if len(dfa.Pool) &gt; 30 </span><span class="cov0" title="0">{
                 siz = "55"
-        }</span><span class="cov8" title="1"> else if len(dfa.Pool) &gt; 20 </span><span class="cov0" title="0">{
+        }</span> else<span class="cov8" title="1"> if len(dfa.Pool) &gt; 20 </span><span class="cov0" title="0">{
                 siz = "10"
-        }</span><span class="cov8" title="1"> else if len(dfa.Pool) &gt; 10 </span><span class="cov8" title="1">{
+        }</span> else<span class="cov8" title="1"> if len(dfa.Pool) &gt; 10 </span><span class="cov8" title="1">{
                 siz = "8"
         }</span>
         <span class="cov8" title="1">fmt.Fprintf(fo,
@@ -667,7 +667,7 @@ func (dfa *DFA_PoolType) GenerateGVFile(fo io.Writer, td string, tn int) <span c
                         for _, ww := range vv.Next2 </span><span class="cov8" title="1">{
                                 if ww.On[0] &lt;= ' ' </span><span class="cov8" title="1">{
                                         fmt.Fprintf(fo, "        s%d -&gt; s%d [ label = %q ];\n", ww.From, ww.To, re.EscapeStrForGV(ww.On))
-                                }</span><span class="cov8" title="1"> else {
+                                }</span> else<span class="cov8" title="1"> {
                                         fmt.Fprintf(fo, "        s%d -&gt; s%d [ label = \"%s\" ];\n", ww.From, ww.To, re.EscapeStr(ww.On))
                                 }</span>
                         }
@@ -744,21 +744,21 @@ func (dfa *DFA_PoolType) ConvertToTable() (rv dfaTable) <span class="cov8" title
                                         // fmt.Printf("Found a dot, at jj=%d\n", jj)
                                         dot = true
                                         dotTo = ww.To
-                                }</span><span class="cov8" title="1"> else if ww.On == re.X_ALPHA </span><span class="cov0" title="0">{
+                                }</span> else<span class="cov8" title="1"> if ww.On == re.X_ALPHA </span><span class="cov0" title="0">{
                                         // fmt.Printf("Found a alpha, at jj=%d\n", jj)
                                         alpha = true
                                         alphaTo = ww.To
                                         rr, _ := utf8.DecodeRune([]byte(ww.On))
                                         xx := rv.SMap.MapRune(rr)
                                         rv.Machine[jj].To[xx] = ww.To
-                                }</span><span class="cov8" title="1"> else if ww.On == re.X_NUMERIC </span><span class="cov8" title="1">{
-                                        // com.DbPrintf("dfa2", "Found a numeric, at jj=%d\n", jj)
+                                }</span> else<span class="cov8" title="1"> if ww.On == re.X_NUMERIC </span><span class="cov8" title="1">{
+                                        // dbgo.DbPrintf("dfa2", "Found a numeric, at jj=%d\n", jj)
                                         num = true
                                         numTo = ww.To
                                         rr, _ := utf8.DecodeRune([]byte(ww.On))
                                         xx := rv.SMap.MapRune(rr)
                                         rv.Machine[jj].To[xx] = ww.To
-                                }</span><span class="cov8" title="1"> else {
+                                }</span> else<span class="cov8" title="1"> {
                                         rr, _ := utf8.DecodeRune([]byte(ww.On))
                                         xx := rv.SMap.MapRune(rr)
                                         rv.Machine[jj].To[xx] = ww.To
@@ -769,7 +769,7 @@ func (dfa *DFA_PoolType) ConvertToTable() (rv dfaTable) <span class="cov8" title
                                         // rn := rune(ii + rv.SMap.MinV)
                                         rn := rv.SMap.SigmaRN[ii]
                                         // func (smap *SMapType) ReverseMapRune(x int) rune {
-                                        // com.DbPrintf("dfa2", "numeric: -&gt;%s&lt;-\n", string(rn))
+                                        // dbgo.DbPrintf("dfa2", "numeric: -&gt;%s&lt;-\n", string(rn))
                                         if rv.Machine[jj].To[ii] == -1 &amp;&amp; unicode.IsDigit(rn) </span><span class="cov0" title="0">{
                                                 rv.Machine[jj].To[ii] = numTo
                                         }</span>
@@ -792,7 +792,7 @@ func (dfa *DFA_PoolType) ConvertToTable() (rv dfaTable) <span class="cov8" title
                                 }
                         }
                         <span class="cov8" title="1">if ((vv.Info.Action&amp;com.A_Pop) != 0 || (vv.Info.Action&amp;com.A_Push) != 0 || (vv.Info.Action&amp;com.A_Reset) != 0) &amp;&amp; !vv.Info.HardMatch </span><span class="cov8" title="1">{ // xyzzy8
-                                com.DbPrintf("dfa7", "Info2-in-TabGen: State[%d] a Push/Call or a Pop/Return/Reset optration Must be a terminal state with fixed string matched, 'a*' or 'a?' is not a legitimate match.\n", ii)
+                                dbgo.DbPrintf("dfa7", "Info2-in-TabGen: State[%d] a Push/Call or a Pop/Return/Reset optration Must be a terminal state with fixed string matched, 'a*' or 'a?' is not a legitimate match.\n", ii)
                                 //for ii := 0; ii &lt; rv.Width; ii++ {
                                 //        if rv.Machine[jj].To[ii] == -1 {
                                 //                rv.Machine[jj].To[ii] = dotTo
@@ -822,7 +822,7 @@ func (dfa *DFA_PoolType) OutputInFormat(fo io.Writer, format string) <span class
         //dt := dfa.ConvertToTable()
         //dfa.MTab = &amp;dt
 
-        if com.DbOn("output-machine") </span><span class="cov8" title="1">{
+        if dbgo.IsDbOn("output-machine") </span><span class="cov8" title="1">{
 
                 if format == "text" </span><span class="cov8" title="1">{
 
@@ -840,7 +840,7 @@ Width = %d
                                         rn, sz := utf8.DecodeRune([]byte(dfa.Sigma[pp:]))
                                         SigmaArray[jj] = rn
                                         pp += sz
-                                }</span><span class="cov8" title="1"> else {
+                                }</span> else<span class="cov8" title="1"> {
                                         // SigmaArray[jj] = rune(0xFBAD)
                                         SigmaArray[jj] = dt.SMap.NoMap
                                 }</span>
@@ -864,7 +864,7 @@ Width = %d
                                         s := fmt.Sprintf("%q", string(SigmaArray[jj]))
                                         s = s[1:]
                                         fmt.Fprintf(fo, "   %2s", s[0:len(s)-1])
-                                }</span><span class="cov8" title="1"> else {
+                                }</span> else<span class="cov8" title="1"> {
                                         fmt.Fprintf(fo, "   %2s", string(SigmaArray[jj]))
                                 }</span>
                         }
@@ -882,14 +882,14 @@ Width = %d
                                 }</span>
                                 <span class="cov8" title="1">if vv.Info.Action == 0 </span><span class="cov8" title="1">{
                                         fmt.Fprintf(fo, "m[%3d] : %4d%s %5s %5v %4d %4d    | ", ii, vv.Rv, tau, "", vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
-                                }</span><span class="cov8" title="1"> else {
+                                }</span> else<span class="cov8" title="1"> {
                                         fmt.Fprintf(fo, "m[%3d] : %4d%s %5x %5v %4d %4d    | ", ii, vv.Rv, tau, vv.Info.Action, vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
                                 }</span>
                                 <span class="cov8" title="1">for _, ww := range vv.To </span><span class="cov8" title="1">{
                                         if ww == -1 </span><span class="cov8" title="1">{
                                                 // fmt.Fprintf(fo, "   %2s", "\u26d4") // No Entry
                                                 fmt.Fprintf(fo, "   %2s", "\u2629")
-                                        }</span><span class="cov8" title="1"> else {
+                                        }</span> else<span class="cov8" title="1"> {
                                                 fmt.Fprintf(fo, "   %2d", ww)
                                         }</span>
                                 }
@@ -897,7 +897,7 @@ Width = %d
                         }
                         <span class="cov8" title="1">fmt.Fprintf(fo, "\n")</span>
 
-                }<span class="cov0" title="0"> else {
+                } else<span class="cov0" title="0"> {
                         fmt.Fprintf(os.Stderr, "Invalid Output Format for dfa.OutputInFomrat, %s\n", format)
                 }</span>
         }
@@ -971,16 +971,19 @@ package dfa
 import (
         "fmt"
         "io"
+        "os"
         "os/exec"
         "sort"
         "strings"
 
-        "../com"
-        "../in"
-        "../nfa"
-        "../pbread"
-        "../re"
-        "../tok"
+        "github.com/pschlump/dbgo"
+        "github.com/pschlump/filelib"
+        "github.com/pschlump/lexie/com"
+        "github.com/pschlump/lexie/in"
+        "github.com/pschlump/lexie/nfa"
+        "github.com/pschlump/lexie/pbread"
+        "github.com/pschlump/lexie/re"
+        "github.com/pschlump/lexie/tok"
 )
 
 type LexieChanelType struct {
@@ -1063,7 +1066,7 @@ func KeyIntSort(in []int) (rv []int) <span class="cov0" title="0">{
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//        lex .DumpTokenBuffer()
+// lex .DumpTokenBuffer()
 func (lex *Lexie) DumpTokenBuffer(fo io.Writer) <span class="cov0" title="0">{
         lex.TokList.FDumpTokenBuffer(fo, false)
 }</span>
@@ -1074,14 +1077,14 @@ func (lex *Lexie) DumpTokenBuffer2(fo io.Writer) <span class="cov0" title="0">{
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 func (lex *Lexie) OutputActionFlags(dfa *DFA_PoolType) <span class="cov8" title="1">{
-        com.DbPrintf("match", "Action Flags Are:\n")
+        dbgo.DbPrintf("match", "Action Flags Are:\n")
         // com. ConvertActionFlagToString(kk int) (rv string) {
         dn := make(map[int]bool)
         for _, vv := range dfa.Pool </span><span class="cov8" title="1">{
                 if vv.IsUsed </span><span class="cov8" title="1">{
                         if vv.Info.Action != 0 </span><span class="cov8" title="1">{
                                 if _, ok := dn[vv.Info.Action]; !ok </span><span class="cov8" title="1">{
-                                        com.DbPrintf("match", "    %2x: %s\n", vv.Info.Action, com.ConvertActionFlagToString(vv.Info.Action))
+                                        dbgo.DbPrintf("match", "    %2x: %s\n", vv.Info.Action, com.ConvertActionFlagToString(vv.Info.Action))
                                         dn[vv.Info.Action] = true
                                 }</span>
                         }
@@ -1136,7 +1139,7 @@ func convRuleToActionFlag(ww *in.ImRuleType) int <span class="cov8" title="1">{
         <span class="cov8" title="1">if ww.Reset </span><span class="cov0" title="0">{
                 rv |= com.A_Reset
         }</span>
-        <span class="cov8" title="1">if ww.PatternType == 2 </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if ww.PatternType == 2 </span><span class="cov0" title="0">{
                 rv |= com.A_EOF
         }</span>
         <span class="cov8" title="1">if ww.Err </span><span class="cov8" title="1">{
@@ -1154,7 +1157,7 @@ func convRuleToActionFlag(ww *in.ImRuleType) int <span class="cov8" title="1">{
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-func (lex *Lexie) NewReadFile(path string) <span class="cov8" title="1">{
+func (lex *Lexie) NewReadFile(path string) (err error) <span class="cov8" title="1">{
         lex.Im = in.ImReadFile(path)
 
         lex.NFA_Machine = make([]*nfa.NFA_PoolType, 0, 100)
@@ -1166,7 +1169,7 @@ func (lex *Lexie) NewReadFile(path string) <span class="cov8" title="1">{
                 // func (st *SymbolTable) DefineReservedWord(name string, fxid int) (ss *SymbolType) {
                 _ = ii
                 _ = vv
-                com.DbPrintf("dfa5", "vv=%T %+v, %s\n", vv, vv, com.LF())
+                dbgo.DbPrintf("dfa5", "vv=%T %+v, %s\n", vv, vv, dbgo.LF())
         }</span>
 
         <span class="cov8" title="1">for ii, vv := range lex.Im.Machine </span><span class="cov8" title="1">{
@@ -1178,19 +1181,19 @@ func (lex *Lexie) NewReadFile(path string) <span class="cov8" title="1">{
                 for jj, ww := range vv.Rules </span><span class="cov8" title="1">{
                         rVx := ww.Rv
                         if ww.ReservedWord </span><span class="cov8" title="1">{
-                                com.DbPrintf("dfa5", "This rule rv=%d is a reserved word rule, AAbbCC\n", rVx)
+                                dbgo.DbPrintf("dfa5", "This rule rv=%d is a reserved word rule, AAbbCC\n", rVx)
                         }</span>
                         <span class="cov8" title="1">ww_A := convRuleToActionFlag(ww)
                         if ww.Repl </span><span class="cov8" title="1">{
                                 rVx = 9900 // 9900 is replace
-                                com.DbPrintf("match", "###################################### ww.Replace: ii=%d jj=%d -&gt;%s&lt;-, %s\n", ii, jj, ww.ReplString, com.LF())
+                                dbgo.DbPrintf("match", "###################################### ww.Replace: ii=%d jj=%d -&gt;%s&lt;-, %s\n", ii, jj, ww.ReplString, dbgo.LF())
                         }</span>
                         <span class="cov8" title="1">cur := -1
-                        if ww.PatternType == 2 </span><span class="cov8" title="1">{
-                                com.DbPrintf("db_Matcher_02", "ADDING AT %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", jj, "&lt;M_EOF&gt;", ww.Rv, rVx, com.LF())
+                        if ww.PatternType == 2 </span><span class="cov0" title="0">{
+                                dbgo.DbPrintf("db_Matcher_02", "ADDING AT %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", jj, "&lt;M_EOF&gt;", ww.Rv, rVx, dbgo.LF())
                                 cur = Nfa.AddReInfo(re.X_EOF, "", jj+1, rVx, nfa.InfoType{Action: ww_A, NextState: ww.Call})
-                        }</span><span class="cov8" title="1"> else {
-                                com.DbPrintf("db_Matcher_02", "M= -&gt;%s&lt;- Adding at %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", ww.Pattern, jj, ww.Pattern, ww.Rv, rVx, com.LF())
+                        }</span> else<span class="cov8" title="1"> {
+                                dbgo.DbPrintf("db_Matcher_02", "M= -&gt;%s&lt;- Adding at %2d RE: %-30s (Rv:%2d, final=%4d), %s\n", ww.Pattern, jj, ww.Pattern, ww.Rv, rVx, dbgo.LF())
                                 cur = Nfa.AddReInfo(ww.Pattern, "", jj+1, rVx, nfa.InfoType{Action: ww_A, NextState: ww.Call, ReplStr: ww.ReplString})
                         }</span>
                         <span class="cov8" title="1">if ww.ReservedWord </span><span class="cov8" title="1">{
@@ -1198,30 +1201,32 @@ func (lex *Lexie) NewReadFile(path string) <span class="cov8" title="1">{
                         }</span>
                 }
 
-                <span class="cov8" title="1">com.DbPrintf("match", "BuildDFA_2: Nfa.Sigma Before Finialize-&gt;%s&lt;-\n", Nfa.Sigma)
-                if com.DbOn("db_Matcher_02") </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", "NFA for (Before Finialize) -&gt;%s&lt;-\n", nm)
+                <span class="cov8" title="1">dbgo.DbPrintf("match", "BuildDFA_2: Nfa.Sigma Before Finialize-&gt;%s&lt;-\n", Nfa.Sigma)
+                if dbgo.IsDbOn("db_Matcher_02") </span><span class="cov8" title="1">{
+                        dbgo.DbPrintf("match", "NFA for (Before Finialize) -&gt;%s&lt;-\n", nm)
                         Nfa.DumpPool(false)
                 }</span>
 
                 <span class="cov8" title="1">Nfa.FinializeNFA()
 
-                com.DbPrintf("match", "BuildDFA_2: Nfa.Sigma -&gt;%s&lt;-\n", Nfa.Sigma)
-                if com.DbOn("db_Matcher_02") </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", "Final NFA for -&gt;%s&lt;-\n", nm)
+                dbgo.DbPrintf("match", "BuildDFA_2: Nfa.Sigma -&gt;%s&lt;-\n", Nfa.Sigma)
+                if dbgo.IsDbOn("db_Matcher_02") </span><span class="cov8" title="1">{
+                        dbgo.DbPrintf("match", "Final NFA for -&gt;%s&lt;-\n", nm)
                         Nfa.DumpPool(false)
                 }</span>
                 <span class="cov8" title="1">lex.NFA_Machine = append(lex.NFA_Machine, Nfa)
 
                 Dfa := NewDFA_Pool()
                 Dfa.ConvNDA_to_DFA(Nfa)
-                if com.DbOn("db_Matcher_02") </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", "Final DFA for -&gt;%s&lt;-\n", nm)
+                if dbgo.IsDbOn("db_Matcher_02") </span><span class="cov8" title="1">{
+                        dbgo.DbPrintf("match", "Final DFA for -&gt;%s&lt;-\n", nm)
                         Dfa.DumpPool(false)
                 }</span>
                 <span class="cov8" title="1">lex.DFA_Machine = append(lex.DFA_Machine, Dfa)
 
-                if com.DbOn("db_Matcher_02") </span><span class="cov8" title="1">{
+                if dbgo.IsDbOn("db_Matcher_02") </span><span class="cov8" title="1">{
+
+                        // lex.Im.InputLines // has the entire input.
 
                         last := len(lex.DFA_Machine) - 1
 
@@ -1229,21 +1234,34 @@ func (lex *Lexie) NewReadFile(path string) <span class="cov8" title="1">{
                         gvFile := fmt.Sprintf("../ref/mmm_%s_%d.gv", "machine", last)
                         svgFile := fmt.Sprintf("../ref/mmm_%s_%d.svg", "machine", last)
 
-                        fp, _ := filelib.Fopen(newFile, "w")
-                        lex.DFA_Machine[last].DumpPoolJSON(fp, fmt.Sprintf("Lex-Machine-%d", last), 1)
+                        fp, err := filelib.Fopen(newFile, "w")
+                        if err != nil </span><span class="cov0" title="0">{
+                                fmt.Fprintf(os.Stderr, "Error opening otput file %s, error: %s\n", newFile, err)
+                                return err
+                        }</span>
+                        <span class="cov8" title="1">fmt.Fprintf(fp, "Machine:\n")
+                        for _, ss := range lex.Im.InputLines </span><span class="cov8" title="1">{
+                                fmt.Fprintf(fp, "\t%s\n", ss)
+                        }</span>
+                        <span class="cov8" title="1">lex.DFA_Machine[last].DumpPoolJSON(fp, fmt.Sprintf("Lex-Machine-%d", last), 1)
                         fp.Close()
 
-                        gv, _ := filelib.Fopen(gvFile, "w")
-                        lex.DFA_Machine[last].GenerateGVFile(gv, fmt.Sprintf("Lex-Machine-%d", last), 1)
+                        gv, err := filelib.Fopen(gvFile, "w")
+                        if err != nil </span><span class="cov0" title="0">{
+                                fmt.Fprintf(os.Stderr, "Error opening otput file %s, error: %s\n", gvFile, err)
+                                return err
+                        }</span>
+                        <span class="cov8" title="1">lex.DFA_Machine[last].GenerateGVFile(gv, fmt.Sprintf("Lex-Machine-%d", last), 1)
                         gv.Close()
 
                         out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
                         if err != nil </span><span class="cov8" title="1">{
-                                com.DbPrintf("match", "%sError%s from dot, %s, %s\n", com.Red, com.Reset, err, com.LF())
-                                com.DbPrintf("match", "Output: %s\n", out)
+                                dbgo.DbPrintf("match", "%(red)Error%(reset) from dot, %s, %(LF)\n", err)
+                                dbgo.DbPrintf("match", "Output: %s\n", out)
                         }</span>
                 }
         }
+        <span class="cov8" title="1">return nil</span>
 }
 
 /* vim: set noai ts=4 sw=4: */
@@ -1312,12 +1330,14 @@ func (lex *Lexie) NewReadFile(path string) <span class="cov8" title="1">{
 package dfa
 
 import (
+        "fmt"
         "os"
 
-        "../com"
-        "../pbread"
-        "../re"
-        "../tok"
+        "github.com/pschlump/dbgo"
+        "github.com/pschlump/lexie/com"
+        "github.com/pschlump/lexie/pbread"
+        "github.com/pschlump/lexie/re"
+        "github.com/pschlump/lexie/tok"
 )
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1338,13 +1358,16 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) <span
 
         init = lex.Im.LookupMachine(s_init)
         for ii := range lex.DFA_Machine </span><span class="cov8" title="1">{
-                com.DbPrintf("match", "Machine[%d] =\n", ii)
+                if db1 </span><span class="cov0" title="0">{
+                        fmt.Printf("At: %s\n", dbgo.LF())
+                }</span>
+                <span class="cov8" title="1">dbgo.DbPrintf("match", "Machine[%d] =\n", ii)
                 dfa = lex.DFA_Machine[ii]
                 dfa.MachineId = ii
                 dfa.OutputInFormat(os.Stdout, "text")
 
-                lex.OutputActionFlags(dfa)
-        }</span>
+                lex.OutputActionFlags(dfa)</span>
+        }
         <span class="cov8" title="1">dfa = lex.DFA_Machine[init]
 
         ctx := NewContext(dfa.MTab.InitState, nil)
@@ -1369,7 +1392,7 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) <span
                         AtEOF = true
                         rn = re.R_EOF
                         return
-                }</span><span class="cov8" title="1"> else {
+                }</span> else<span class="cov8" title="1"> {
                         SMatch += string(rn)
                         pos_no++
                 }</span>
@@ -1404,21 +1427,21 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) <span
                 // func (st *SymbolTable) LookupSymbol(name string) (as *SymbolType, err error) {
                 // vv=in.ImDefinedValueType {Seq:1 WhoAmI:ReservedWords NameValueStr:map[and:Tok_L_AND not:Tok_not as:Tok_as in:Tok_in bor:Tok_B_OR band:Tok_B_AND xor:Tok_XOR or:Tok_L_OR true:Tok_true false:Tok_false export:Tok_export] NameValue:map[and:4 true:32 as:34 bor:42 band:41 xor:64 or:5 false:33 not:31 export:35 in:28] Reverse:map[5:or 32:true 42:bor 31:not 41:band 35:export 33:false 28:in 64:xor 4:and 34:as] SeenAt:map[bor:{LineNo:[39] FileName:[unk-file]} band:{LineNo:[39] FileName:[unk-file]} and:{LineNo:[39] FileName:[unk-file]} true:{LineNo:[39] FileName:[unk-file]} export:{LineNo:[39] FileName:[unk-file]} in:{LineNo:[39] FileName:[unk-file]} as:{LineNo:[39] FileName:[unk-file]} or:{LineNo:[39] FileName:[unk-file]} false:{LineNo:[39] FileName:[unk-file]} not:{LineNo:[39 39] FileName:[unk-file unk-file]} xor:{LineNo:[39] FileName:[unk-file]}]}, File: /Users/corwin/Projects/pongo2/lexie/dfa/match.go LineNo:260
                 if dfa.MTab.Machine[ctx.St].Info.ReservedWord </span><span class="cov8" title="1">{
-                        com.DbPrintf("match4", "\n\nFound a  reserved word ------------------------------------------------------------------------ CCddEE, %s\n", com.LF())
-                        com.DbPrintf("match4", "SMatch &gt;%s&lt;, %s\n", SMatch, com.LF())
+                        dbgo.DbPrintf("match4", "\n\nFound a  reserved word ------------------------------------------------------------------------ CCddEE, %s\n", dbgo.LF())
+                        dbgo.DbPrintf("match4", "SMatch &gt;%s&lt;, %s\n", SMatch, dbgo.LF())
 
                         vv, ok := lex.Im.Def.DefsAre["ReservedWords"].NameValue[SMatch]
-                        if ok </span><span class="cov8" title="1">{
-                                com.DbPrintf("match4", "Substituting(2) -- xyzzy hard coded for test --- Found it as %d !!!, %s\n", vv, com.LF())
+                        if ok </span><span class="cov0" title="0">{
+                                dbgo.DbPrintf("match4", "Substituting(2) -- xyzzy hard coded for test --- Found it as %d !!!, %s\n", vv, dbgo.LF())
                                 lRv = vv
                         }</span>
 
-                        <span class="cov8" title="1">com.DbPrintf("match4", "\n\n")</span>
+                        <span class="cov8" title="1">dbgo.DbPrintf("match4", "\n\n")</span>
                 }
 
-                <span class="cov8" title="1">com.DbPrintf("match", "+==================================================================================\n")
-                com.DbPrintf("match", "+ SaveToken: Line:%d Col:%d\n", line_no, col_no)
-                com.DbPrintf("match", "+==================================================================================\n")
+                <span class="cov8" title="1">dbgo.DbPrintf("match", "+==================================================================================\n")
+                dbgo.DbPrintf("match", "+ SaveToken: Line:%d Col:%d\n", line_no, col_no)
+                dbgo.DbPrintf("match", "+==================================================================================\n")
                 lex.TokList.AddTokenToBuffer(tok.Token{
                         Match:    SMatch,
                         Val:      SMatch,
@@ -1433,16 +1456,17 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) <span
 
         <span class="cov8" title="1">FlushToken := func(isHard bool) </span><span class="cov8" title="1">{
                 if dfa.MTab.Machine[ctx.St].Rv == 9900 &amp;&amp; (com.A_Repl&amp;dfa.MTab.Machine[ctx.St].Info.Action) != 0 </span><span class="cov0" title="0">{
-                        com.DbPrintf("match", " Doing Replace on Token, Len %d to -&gt;%s&lt;-\n ", dfa.MTab.Machine[ctx.St].Info.MatchLength, dfa.MTab.Machine[ctx.St].Info.ReplStr)
+                        dbgo.DbPrintf("match", " Doing Replace on Token, Len %d to -&gt;%s&lt;-\n ", dfa.MTab.Machine[ctx.St].Info.MatchLength, dfa.MTab.Machine[ctx.St].Info.ReplStr)
                         lex.TokList.ReplaceToken(dfa.MTab.Machine[ctx.St].Info.MatchLength, dfa.MTab.Machine[ctx.St].Info.ReplStr)
                 }</span>
-                <span class="cov8" title="1">com.DbPrintf("match4", "FlushTokenStareted ------------------------------------------------------------------------------\n")
+                <span class="cov8" title="1">dbgo.DbPrintf("match4", "FlushTokenStareted ------------------------------------------------------------------------------\n")
                 beforeFlush := len(lex.TokList.TokenData)
                 lex.TokList.FlushTokenBuffer(TokStart, isHard, AtEOF)
                 afterFlush := len(lex.TokList.TokenData)
 
                 if lex.SendOnChanel </span><span class="cov0" title="0">{
                         for ll := beforeFlush; ll &lt; afterFlush; ll++ </span><span class="cov0" title="0">{
+                                fmt.Printf("At: %s\n", dbgo.LF())
 
                                 tt := LexieChanelType{Token: lex.TokList.TokenData[ll]}
                                 lex.Message &lt;- tt
@@ -1450,20 +1474,21 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) <span
                 }
                 <span class="cov8" title="1">TokStart = 0
                 SMatch = ""
-                com.DbPrintf("match4", "FlushTokenEnded ------------------------------------------------------------------------------\n")</span>
+                dbgo.DbPrintf("match4", "FlushTokenEnded ------------------------------------------------------------------------------\n")</span>
         }
 
         <span class="cov8" title="1">DumpStack := func() </span><span class="cov8" title="1">{
-                com.DbPrintf("match4", "\tDump ctx_stack len=[%d]\n", len(ctx_stack))
+                dbgo.DbPrintf("match4", "\tDump ctx_stack len=[%d]\n", len(ctx_stack))
                 for ii := range ctx_stack </span><span class="cov8" title="1">{
-                        com.DbPrintf("match4", "\t\tDump ctx_stack[%d] = machine %d\n", ii, ctx_stack[ii].Dfa.MachineId)
+                        fmt.Printf("At: %s\n", dbgo.LF())
+                        dbgo.DbPrintf("match4", "\t\tDump ctx_stack[%d] = machine %d\n", ii, ctx_stack[ii].Dfa.MachineId)
                 }</span>
         }
 
         <span class="cov8" title="1">PushState := func(St int) </span><span class="cov8" title="1">{
-                com.DbPrintf("match", "\n-------------------------------------------------------------------------------\n")
-                com.DbPrintf("match", "Found a PUSH: to %d -- This should be subscript of new machine\n", dfa.MTab.Machine[St].Info.NextState)
-                com.DbPrintf("match", "-------------------------------------------------------------------------------\n")
+                dbgo.DbPrintf("match", "\n-------------------------------------------------------------------------------\n")
+                dbgo.DbPrintf("match", "Found a PUSH: to %d -- This should be subscript of new machine\n", dfa.MTab.Machine[St].Info.NextState)
+                dbgo.DbPrintf("match", "-------------------------------------------------------------------------------\n")
                 t_ctx := NewContext(0, dfa)
 
                 ns := dfa.MTab.Machine[St].Info.NextState
@@ -1479,113 +1504,125 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) <span
                         t_ctx := ctx_stack[len(ctx_stack)-1]
                         ctx_stack = ctx_stack[0 : len(ctx_stack)-1]
                         dfa = t_ctx.Dfa
-                        com.DbPrintf("match", "\n-------------------------------------------------------------------------------\n")
-                        com.DbPrintf("match", "Found a POP: State Poping like Corn, Machine now %d\n", dfa.MachineId)
-                        com.DbPrintf("match", "-------------------------------------------------------------------------------\n")
+                        dbgo.DbPrintf("match", "\n-------------------------------------------------------------------------------\n")
+                        dbgo.DbPrintf("match", "Found a POP: State Poping like Corn, Machine now %d\n", dfa.MachineId)
+                        dbgo.DbPrintf("match", "-------------------------------------------------------------------------------\n")
                         DumpStack()
-                }</span><span class="cov0" title="0"> else {
-                        com.DbPrintf("match", "Error: Attempt to pop when stack is empty\n")
+                }</span> else<span class="cov0" title="0"> {
+                        dbgo.DbPrintf("match", "Error: Attempt to pop when stack is empty\n")
                 }</span>
                 <span class="cov8" title="1">ctx.St = 0</span>
         }
 
         <span class="cov8" title="1">ResetState := func() </span><span class="cov0" title="0">{
-                com.DbPrintf("match", "Found a RESET\n")
+                dbgo.DbPrintf("match", "Found a RESET\n")
                 ctx_stack = ctx_stack[:0]
                 dfa = lex.DFA_Machine[init]
                 ctx.St = 0
         }</span>
 
         <span class="cov8" title="1">for !done </span><span class="cov8" title="1">{
-                com.DbPrintf("match", "\n**********************************************************************************************************\n")
-                com.DbPrintf("match", "Top: (machine number %d) ctx.St:%d\n", dfa.MachineId, ctx.St)
+                dbgo.DbPrintf("match", "\n**********************************************************************************************************\n")
+                dbgo.DbPrintf("match", "Top: (machine number %d) ctx.St:%d\n", dfa.MachineId, ctx.St)
                 cur_st := ctx.St
 
                 rn = Peek()
                 ii = dfa.MTab.SMap.MapRune(rn)
                 to = dfa.MTab.Machine[cur_st].To[ii]
                 hh := dfa.MTab.Machine[cur_st].Info.HardMatch
-                com.DbPrintf("match", " (peek) machine=%d cur_st=%d ii=%d for rune rn=-&gt;%s&lt;- to=%d hard=%v Rv=%d Tau=%v\n",
-                        dfa.MachineId, cur_st, ii, string(rn), to, hh, dfa.MTab.Machine[cur_st].Rv, dfa.MTab.Machine[cur_st].Tau)
+                dbgo.DbPrintf("match", " (peek) machine=%d cur_st=%d ii=%d for rune rn=-&gt;%s&lt;- to=%d hard=%v Rv=%d Tau=%v Action=%x, ctx_stack=%d\n",
+                        dfa.MachineId, cur_st, ii, string(rn), to, hh, dfa.MTab.Machine[cur_st].Rv, dfa.MTab.Machine[cur_st].Tau,
+                        dfa.MTab.Machine[cur_st].Info.Action, ctx_stack)
                 if rn == re.R_EOF </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", " At: %s\n", com.LF())
+                        dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
                         FlushToken(true)
-                }</span><span class="cov8" title="1"> else if dfa.MTab.Machine[cur_st].Rv &gt; 0 &amp;&amp; dfa.MTab.Machine[cur_st].Tau &amp;&amp; to == -1 </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", " At: %s\n", com.LF())
+                }</span> else<span class="cov8" title="1"> if dfa.MTab.Machine[cur_st].Rv &gt; 0 &amp;&amp; dfa.MTab.Machine[cur_st].Tau &amp;&amp; to == -1 </span><span class="cov8" title="1">{
+                        dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
                         SaveToken()
                         FlushToken(hh)
-                }</span><span class="cov8" title="1"> else if dfa.MTab.Machine[cur_st].Rv &gt; 0 &amp;&amp; hh </span><span class="cov8" title="1">{
+                }</span> else<span class="cov8" title="1"> if dfa.MTab.Machine[cur_st].Rv &gt; 0 &amp;&amp; hh </span><span class="cov8" title="1">{
                         if to == -1 </span><span class="cov8" title="1">{
-                                com.DbPrintf("match", " At: %s\n", com.LF())
+                                dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
                                 SaveToken()
                                 FlushToken(hh)
-                        }</span><span class="cov8" title="1"> else {
-                                com.DbPrintf("match", " At: %s\n", com.LF())
+                        }</span> else<span class="cov8" title="1"> {
+                                dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
                                 // (peek) machine=0 cur_st=3 ii=5 for rune rn=-&gt; &lt;- to=0 hard=true Rv=8 Tau=true
                                 if (com.A_Push &amp; dfa.MTab.Machine[cur_st].Info.Action) == 0 </span><span class="cov8" title="1">{
-                                        com.DbPrintf("match", " At: %s\n", com.LF())
+                                        dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
                                         rn = Next() // Remove makes beginning work
                                 }</span>
-                                <span class="cov8" title="1">SaveToken()</span>
+                                <span class="cov8" title="1">SaveToken()
+                                FlushToken(hh)</span> // PJS added Wed Jul 15 15:43:28 MDT 2015
                         }
                         <span class="cov8" title="1">ctx.St = to</span>
-                }<span class="cov8" title="1"> else if dfa.MTab.Machine[cur_st].Rv &gt; 0 </span><span class="cov8" title="1">{ // &amp;&amp; !dfa.MTab.Machine[cur_st].Tau &amp;&amp; to != -1 {
-                        com.DbPrintf("match", " At: %s\n", com.LF())
+                } else<span class="cov8" title="1"> if dfa.MTab.Machine[cur_st].Rv &gt; 0 </span><span class="cov8" title="1">{ // &amp;&amp; !dfa.MTab.Machine[cur_st].Tau &amp;&amp; to != -1 {
+                        dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
                         rn = Next()
                         SaveToken()
                         ctx.St = to
-                }</span><span class="cov8" title="1"> else if ((com.A_Push | com.A_Pop | com.A_Reset) &amp; dfa.MTab.Machine[cur_st].Info.Action) != 0 </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", "-- critical -- At: %s\n", com.LF())
+                }</span> else<span class="cov8" title="1"> if ((com.A_Push | com.A_Pop | com.A_Reset) &amp; dfa.MTab.Machine[cur_st].Info.Action) != 0 </span><span class="cov0" title="0">{
+                        dbgo.DbPrintf("match", "-- critical -- At: %s\n", dbgo.LF())
                         // (peek) machine=2 cur_st=21 ii=24 for rune rn=-&gt;{&lt;- to=36 hard=false Rv=0 Tau=false
                         // (peek) machine=2 cur_st=24 ii=4 for rune rn=-&gt; &lt;- to=-1 hard=true Rv=0 Tau=false
                         if to &gt;= 0 </span><span class="cov0" title="0">{
                                 rn = Next()
                         }</span>
-                        <span class="cov8" title="1">ctx.St = to</span>
-                }<span class="cov0" title="0"> else {
-                        com.DbPrintf("match", "-- other --  At: %s\n", com.LF())
-                        if to &gt;= 0 </span><span class="cov0" title="0">{
+                        <span class="cov0" title="0">ctx.St = to</span>
+                } else<span class="cov8" title="1"> {
+                        dbgo.DbPrintf("match", "-- other --  At: %s\n", dbgo.LF())
+                        if to &gt;= 0 </span><span class="cov8" title="1">{
                                 rn = Next()
                         }</span>
-                        <span class="cov0" title="0">ctx.St = to</span>
+                        <span class="cov8" title="1">ctx.St = to</span>
                 }
 
                 <span class="cov8" title="1">if (com.A_Push &amp; dfa.MTab.Machine[cur_st].Info.Action) != 0 </span><span class="cov8" title="1">{ //                                         xyzzy - total bullshit -- Allows to hapen on non-termaial in middle of stuff -- call non-terminal
-                        com.DbPrintf("match", "PUSH: At: %s\n", com.LF())
+                        dbgo.DbPrintf("match", "PUSH: At: %s\n", dbgo.LF())
                         PushState(cur_st)
-                }</span><span class="cov8" title="1"> else if (com.A_Pop&amp;dfa.MTab.Machine[cur_st].Info.Action) != 0 &amp;&amp; to == -1 </span><span class="cov8" title="1">{ //         xyzzy - total bullshit -- Only on terminal state!
-                        com.DbPrintf("match", "POP: cur_st=%d Rv=%d At: %s\n", cur_st, dfa.MTab.Machine[cur_st].Rv, com.LF())
+                }</span> else<span class="cov8" title="1"> if (com.A_Pop &amp; dfa.MTab.Machine[cur_st].Info.Action) != 0 </span><span class="cov8" title="1">{ // PJS modded Wed Jul 15 15:43:28 MDT 2015
+                        // } else if (com.A_Pop&amp;dfa.MTab.Machine[cur_st].Info.Action) != 0 &amp;&amp; to == -1 { //         xyzzy - total bullshit -- Only on terminal state!
+                        dbgo.DbPrintf("match", "POP: cur_st=%d Rv=%d At: %s\n", cur_st, dfa.MTab.Machine[cur_st].Rv, dbgo.LF())
                         PopState()
-                }</span><span class="cov8" title="1"> else if (com.A_Reset &amp; dfa.MTab.Machine[cur_st].Info.Action) != 0 </span><span class="cov0" title="0">{
-                        com.DbPrintf("match", "RESET: At: %s\n", com.LF())
+                }</span> else<span class="cov8" title="1"> if (com.A_Reset &amp; dfa.MTab.Machine[cur_st].Info.Action) != 0 </span><span class="cov0" title="0">{
+                        dbgo.DbPrintf("match", "RESET: At: %s\n", dbgo.LF())
                         ResetState()
                 }</span>
 
-                <span class="cov8" title="1">com.DbPrintf("match4", "Match, continuing to advance[ctx.St=%d] rn=%s", ctx.St, string(rn))
-                com.DbPrintf("match4", " ii=%d to=%d\n", ii, to)
+                <span class="cov8" title="1">dbgo.DbPrintf("match4", "Match, continuing to advance[ctx.St=%d] rn=%s", ctx.St, string(rn))
+                dbgo.DbPrintf("match4", " ii=%d to=%d\n", ii, to)
                 if to == -1 </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", "to=-1, At: %s\n", com.LF())
+                        dbgo.DbPrintf("match", "to=-1, At: %s\n", dbgo.LF())
                         ctx.St = 0
                 }</span>
                 <span class="cov8" title="1">if rn == re.R_EOF </span><span class="cov8" title="1">{
-                        com.DbPrintf("match", " At: %s\n", com.LF())
+                        dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
+                        // AtEOF = true
                         done = true
                 }</span>
 
         }
         <span class="cov8" title="1">if AtEOF </span><span class="cov8" title="1">{
-                com.DbPrintf("match", " Reached EOF\n")
-        }</span><span class="cov0" title="0"> else {
-                com.DbPrintf("match", " Early Exit!!!, no match!!!\n")
+                dbgo.DbPrintf("match", " Reached EOF\n")
+        }</span> else<span class="cov0" title="0"> {
+                dbgo.DbPrintf("match", " Early Exit!!!, no match!!!\n")
         }</span>
 
-        <span class="cov8" title="1">if lex.SendOnChanel </span><span class="cov0" title="0">{
+        // Mods July 14
+        <span class="cov8" title="1">dbgo.DbPrintf("match", " send EOF \n")
+        if lex.SendOnChanel </span><span class="cov0" title="0">{
+                dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
                 tt := LexieChanelType{Token: tok.Token{TokNo: aTok_EOF}}
                 lex.Message &lt;- tt
                 //pjs July 3 - close(lex.Message)
         }</span>
+        <span class="cov8" title="1">dbgo.DbPrintf("match", " At: %s\n", dbgo.LF())
+        dbgo.DbPrintf("match", " end of function \n")</span>
+        // lex.Message &lt;- tt
 
 }
+
+const db1 = false
 </pre>
 		
 		</div>
@@ -1593,13 +1630,27 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) <span
 	<script>
 	(function() {
 		var files = document.getElementById('files');
-		var visible = document.getElementById('file0');
+		var visible;
 		files.addEventListener('change', onChange, false);
-		function onChange() {
-			visible.style.display = 'none';
-			visible = document.getElementById(files.value);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
 			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
 			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
 		}
 	})();
 	</script>

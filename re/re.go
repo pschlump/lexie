@@ -1,11 +1,8 @@
 //
 // R E - Part of Lexie Lexical Generation System
 //
-// (C) Philip Schlump, 2014-2015.
+// Copyright (C) Philip Schlump, 2014-2025.
 // Version: 1.0.8
-// BuildNo: 203
-//
-// Special Thanks to 2C-Why, LLC for supporting this project.
 //
 
 package re
