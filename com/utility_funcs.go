@@ -599,4 +599,16 @@ func QtR(format string, data map[string]interface{}) string {
 	}))
 }
 
+// StringEscape will take a string and put a backslash in front of each double quote mark.
+func StringEscape(s string) (o string) {
+	for _, c := range s {
+		if c == '"' {
+			// dbgo.Printf("%(cyan)AT: %(LF) found quote\n")
+			o += `\`
+		}
+		o += string(c)
+	}
+	return
+}
+
 /* vim: set noai ts=4 sw=4: */

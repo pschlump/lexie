@@ -143,7 +143,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 
 	for ii, vv := range Lexie01Data {
 		if !vv.SkipTest {
-			fmt.Printf("\n\n--- %d Test: %s -----------------------------------------------------------------------------\n\n", ii, vv.Test)
+			dbgo.Printf("\n\n%(yellow)--- %d Test: %s -----------------------------------------------------------------------------\n\n", ii, vv.Test)
 
 			Pool := NewNFA_Pool()
 			Cur := Pool.GetNFA()
@@ -188,7 +188,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			}
 
 			gv, _ := filelib.Fopen(gvFile, "w")
-			Pool.GenerateGVFile(gv, vv.Re, vv.Rv)
+			Pool.GenerateGVFile(gv, vv.Re, vv.Rv, "xyzzy401")
 			gv.Close()
 
 			// out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
@@ -307,6 +307,7 @@ type NFATest_02DataType struct {
 	Test     string
 	Data     []NFATest_03Type
 	SkipTest bool
+	fullRv   string
 }
 
 var NFATest_02Data = []NFATest_02DataType{
@@ -337,7 +338,6 @@ var _ = Suite(&NFA_Multi_Part_TestSuite{})
 
 func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 
-	// return
 	fmt.Fprintf(os.Stderr, "Test NFA Multi-Part RE - NFA test %s\n", dbgo.LF())
 	n_err := 0
 	n_skip := 0
@@ -347,7 +347,15 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 	// ------------------------- ------------------------- --------------------------------------- ---------------------------------------
 
 	for ii, vv := range NFATest_02Data {
-		fmt.Printf("\n\n--- %2d Test: %4s -------------------------------------------------------------------------------\n", ii, vv.Test)
+		s := ""
+		for _, ww := range vv.Data {
+			s += ww.Re
+		}
+		NFATest_02Data[ii].fullRv = s
+	}
+
+	for ii, vv := range NFATest_02Data {
+		dbgo.Printf("\n\n%(yellow)--- %2d Test: %4s RE: ->%s<- -------------------------------------------------------------------------------\n", ii, vv.Test, vv.fullRv)
 		Pool := NewNFA_Pool()
 		Cur := Pool.GetNFA()
 		Pool.InitState = Cur
@@ -393,9 +401,14 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 			n_skip++
 		}
 
-		gv, _ := filelib.Fopen(gvFile, "w")
-		Pool.GenerateGVFile(gv, vv.Test, 0)
-		gv.Close()
+		gv, err := filelib.Fopen(gvFile, "w")
+		if err != nil {
+			dbgo.Fprintf(os.Stderr, "%(red)Error - unable to open %s for output, error: %s\n", gvFile, err)
+			n_err++
+			continue
+		}
+		defer gv.Close()
+		Pool.GenerateGVFile(gv, vv.Test, 0, vv.fullRv)
 
 		// _, err = exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
 		out, err := exec.Command(dotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()

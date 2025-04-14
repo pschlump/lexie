@@ -16,6 +16,7 @@ package nfa
 import (
 	"fmt"
 	"io"
+	"os"
 	"sort"
 	"unicode/utf8"
 
@@ -100,10 +101,8 @@ func NewNFA_Pool() *NFA_PoolType {
 
 // Allocate an NFA tree node
 func (nn *NFA_PoolType) GetNFA() int {
-	//fmt.Printf("at %s\n", dbgo.LF())
 	tmp := 0
 	if nn.Cur < nn.Top && !nn.Pool[nn.Cur].IsUsed {
-		//fmt.Printf("at %s\n", dbgo.LF())
 		tmp = nn.Cur
 		nn.Cur++
 	} else if nn.Cur >= nn.Top || nn.NextFree == -1 {
@@ -115,7 +114,6 @@ func (nn *NFA_PoolType) GetNFA() int {
 		tmp = nn.Cur
 		nn.Cur++
 	} else {
-		//fmt.Printf("at %s\n", dbgo.LF())
 		tmp = nn.NextFree
 		nn.NextFree = nn.Pool[tmp].NextFree
 	}
@@ -148,22 +146,6 @@ func (nn *NFA_PoolType) DiscardPool() {
 	nn.Top = InitNFASize
 	nn.NextFree = -1
 }
-
-// Add a new string to the NFA graph
-//func (nn *NFA_PoolType) AddString(buf string, tRv int) {
-//	Cur := nn.Pos0Start() // Start new NFA at Init Pos
-//	for ii := range buf {
-//		ss := buf[ii : ii+1]
-//		if y, hasIt := nn.Pool[Cur].Next[ss]; hasIt {
-//			Cur = y
-//		} else {
-//			x := nn.GetNFA()
-//			nn.Pool[Cur].Next[ss] = x
-//			Cur = x
-//		}
-//	}
-//	nn.Pool[Cur].Rv = tRv
-//}
 
 //
 // Take a regular expression and add it to the NFA.  The tRuleMatchId is the unique ID for this R.E.
@@ -241,8 +223,16 @@ func runeInString(ww rune, vv string) bool {
 
 func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int, Children []re.ReTreeNodeType) (int, int) {
 
+	// xyzzy401 - add a "title" to the .gv file, The test for the title is in 'lr.Buf' -> needs to be copied into
+
 	if depth > 3000 {
 		panic("infinite recursion")
+	}
+
+	dbgo.Fprintf(os.Stderr, "%(cyan)AT:%(LF) depth=%d\n", depth)
+	if depth == 0 {
+		// xyzzy401 - add a "title" to the .gv file, The test for the title is in 'lr.Buf' -> needs to be copied into
+		dbgo.Fprintf(os.Stderr, "%(cyan)AT:%(LF) -- adding in the buf\n")
 	}
 
 	Cur := CurIn
@@ -322,7 +312,6 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 			childStart, childEnd := nn.ConvParsedReToNFA(depth+1, lr, Cur, vv.Children[0:1])
 			dbgo.DbPrintf("db_NFA", "Return from PLUS call, %d, %d, %s\n", childStart, childEnd, dbgo.LF())
 			nn.Mark(Cur, re.LR_PLUS)
-			// xyzzy400 - possible error --
 			// xyzzy400 - possible error --
 			// nn.AddLambda(Cur, childStart)
 			nn.AddLambda(childEnd, childStart)
@@ -689,36 +678,42 @@ func (nn *NFA_PoolType) UniqSigma() (rv string) {
 	return
 }
 
-/*
-digraph finite_state_machine {
-	rankdir=LR;
-	size="8,5"
-	node [shape = doublecircle]; LR_0 LR_3 LR_4 LR_8;
-	node [shape = circle];
-	LR_0 -> LR_2 [ label = "SS(B)" ];
-	LR_0 -> LR_1 [ label = "SS(S)" ];
-	LR_1 -> LR_3 [ label = "S($end)" ];
-	LR_2 -> LR_6 [ label = "SS(b)" ];
-	LR_2 -> LR_5 [ label = "SS(a)" ];
-	LR_2 -> LR_4 [ label = "S(A)" ];
-	LR_5 -> LR_7 [ label = "S(b)" ];
-	LR_5 -> LR_5 [ label = "S(a)" ];
-	LR_6 -> LR_6 [ label = "S(b)" ];
-	LR_6 -> LR_5 [ label = "S(a)" ];
-	LR_7 -> LR_8 [ label = "S(b)" ];
-	LR_7 -> LR_5 [ label = "S(a)" ];
-	LR_8 -> LR_6 [ label = "S(b)" ];
-	LR_8 -> LR_5 [ label = "S(a)" ];
-}
-*/
-
-func (nn *NFA_PoolType) GenerateGVFile(fo io.Writer, td string, tn int) {
+// GenerateGVFile will generate a 'dot' digraph file, '.gv' to draw out (visualize) how the graph is put togheter.
+//
+// Exampel of a 'dot' digraph:
+// ```
+//
+//	digraph finite_state_machine {
+//		rankdir=LR;
+//		size="8,5"
+//		node [shape = doublecircle]; LR_0 LR_3 LR_4 LR_8;
+//		node [shape = circle];
+//		LR_0 -> LR_2 [ label = "SS(B)" ];
+//		LR_0 -> LR_1 [ label = "SS(S)" ];
+//		LR_1 -> LR_3 [ label = "S($end)" ];
+//		LR_2 -> LR_6 [ label = "SS(b)" ];
+//		LR_2 -> LR_5 [ label = "SS(a)" ];
+//		LR_2 -> LR_4 [ label = "S(A)" ];
+//		LR_5 -> LR_7 [ label = "S(b)" ];
+//		LR_5 -> LR_5 [ label = "S(a)" ];
+//		LR_6 -> LR_6 [ label = "S(b)" ];
+//		LR_6 -> LR_5 [ label = "S(a)" ];
+//		LR_7 -> LR_8 [ label = "S(b)" ];
+//		LR_7 -> LR_5 [ label = "S(a)" ];
+//		LR_8 -> LR_6 [ label = "S(b)" ];
+//		LR_8 -> LR_5 [ label = "S(a)" ];
+//
+// ```
+// }
+func (nn *NFA_PoolType) GenerateGVFile(fo io.Writer, td string, tn int, fullRv string) {
 	// fmt.Fprintf(fo, `{"Input":%q, "Rv":%d, "Start": %d, "Sigma":%q, "States":[%s`, td, tn, nn.InitState, nn.GenerateSigma(), "\n")
 	fmt.Fprintf(fo,
 		`digraph finite_state_machine {
+	label="Regular Expression: %s";
 	rankdir=LR;
 	size="8,5"
-`)
+`, com.StringEscape(fullRv))
+
 	// size= for bigger graph - should be configurable with tests -
 
 	var term []int

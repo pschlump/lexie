@@ -45,12 +45,6 @@ type LexReMatcherType struct {
 
 // -- Functions ------------------------------------------------------------------------------------------------------------
 
-func init() {
-	if false {
-		fmt.Printf("", dbgo.SVarI(nil), dbgo.LF())
-	}
-}
-
 func NameOfLR_TokType(x LR_TokType) string {
 	if t, ok := LR_TokTypeLookup[x]; ok {
 		return t
@@ -720,11 +714,12 @@ func (lr *LexReType) parseExpression(depth int, d_depth int, xTree *ReTreeNodeTy
 }
 
 func (lr *LexReType) ParseRe(ss string) {
-	dbgo.DbPrintf("db2", "at %s\n", dbgo.LF())
+	dbgo.DbPrintf("db2", "%(Cyan)AT %(LF), input = -->>%s<<--\n", ss)
+	dbgo.Printf("%(Cyan)AT %(LF), input = -->>%s<<--\n", ss)
 	lr.SetBuf(ss)
-	dbgo.DbPrintf("db2", "at %s\n", dbgo.LF())
+	dbgo.DbPrintf("db2", "at %(LF)\n")
 	lr.parseExpression(0, 0, nil)
-	dbgo.DbPrintf("db2", "at %s\n", dbgo.LF())
+	dbgo.DbPrintf("db2", "at %(LF)\n")
 }
 
 func expandCCL(s string) (ccl string) {

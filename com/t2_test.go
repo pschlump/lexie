@@ -45,3 +45,11 @@ func Test_Com02(t *testing.T) {
 
 	}
 }
+
+func Test_StringEscape(t *testing.T) {
+	got := StringEscape("abc\"def")
+	expect := "abc\\\"def"
+	if got != expect {
+		t.Errorf("Expected ->%s<- got ->%s<-\n", expect, got)
+	}
+}
