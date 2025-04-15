@@ -91,7 +91,7 @@ Ringo - the web framework for developers with deadlines that care about performa
 ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
 ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------ ------------------
 
-Steve Jobs, Elon Musk ... obsess over making “insanely great products”
+Steve Jobs ... obsess over making “insanely great products”
 ======================================================================
 
 You miss 100% of the shots you don't take
@@ -146,7 +146,6 @@ import (
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/gen"
 	"github.com/pschlump/lexie/tok"
-	// "../../../go-lib/sizlib"
 )
 
 type EvalType struct {

@@ -10,7 +10,7 @@ It is run like this:
 
 ```bash
 
-	$ ./cli -l ../in/django3.lex -i ./site/www_pschlump_com/index.html -o ./www/www_pschlump_com/index.html >,a
+	$ ./cli -l ./in/django3.lex -i ./site/www_pschlump_com/index.html -o ./www/www_pschlump_com/index.html >,a
 
 ```
 

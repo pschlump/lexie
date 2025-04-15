@@ -1,5 +1,5 @@
 digraph finite_state_machine {
-	label="Regular Expression: xyzzy401";
+	label="Regular Expression: (aλb|aШb|aaab)";
 	rankdir=LR;
 	size="8,5"
 	node [shape = doublecircle]; s1;

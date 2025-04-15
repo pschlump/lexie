@@ -1,7 +1,7 @@
-package test01
+package ringo
 
 //
-// C L I / T E S T 2 - Part of Lexie Lexical Generation System
+// R I N G O - A template engine using the lexie system.
 //
 // Copyright (C) Philip Schlump, 2014-2025.
 // Version: 0.1.0

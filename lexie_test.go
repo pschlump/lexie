@@ -77,14 +77,13 @@ var _ = Suite(&LexieTestSuite{})
 
 func (s *LexieTestSuite) TestLexie(c *C) {
 
-	return
 	fmt.Fprintf(os.Stderr, "Test Parsing of REs, %s\n", dbgo.LF())
 
-	dbOn["db_NFA"] = true
-	dbOn["db_NFA_LnNo"] = true
-	dbOn["db_DumpPool"] = true
-	dbOn["parseExpression"] = true
-	dbOn["CalcLength"] = true
+	dbgo.SetADbFlag("db_NFA", true)
+	dbgo.SetADbFlag("db_NFA_LnNo", true)
+	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("parseExpression", true)
+	dbgo.SetADbFlag("CalcLength", true)
 
 	// Add a test for any issue
 	c.Check(42, Equals, 42)
@@ -106,9 +105,8 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 		Pool.AddReInfo(vv.Re, "", 1, vv.Rv, nfa.InfoType{})
 		Pool.Sigma = Pool.GenerateSigma()
 
-		if false {
-			DbPrintf("test7", "Pool=%s\n", dbgo.SVarI(Pool))
-		}
+		dbgo.DbPrintf("test7", "Pool=%s\n", dbgo.SVarI(Pool))
+
 		Pool.DumpPool(false)
 		Pool.DumpPoolJSON(os.Stdout, vv.Re, vv.Rv)
 
@@ -118,7 +116,11 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 		cmpFile := fmt.Sprintf("./ref/nfa_%s.ref", vv.Test)
 		gvFile := fmt.Sprintf("./ref/nfa_%s.gv", vv.Test)
 		svgFile := fmt.Sprintf("./ref/nfa_%s.svg", vv.Test)
-		fp, _ := Fopen(newFile, "w")
+		fp, err := filelib.Fopen(newFile, "w")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to open %s for output: %s\n", newFile, err)
+			// t.Fatal("Invalid file name")
+		}
 		Pool.DumpPoolJSON(fp, vv.Re, vv.Rv)
 		fp.Close()
 		newData, err := ioutil.ReadFile(newFile)
@@ -133,15 +135,19 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			}
 			if string(ref) != string(newData) {
 				c.Check(string(newData), Equals, string(ref))
-				fmt.Printf("%sError%s: Test case %s failed to match\n", Red, Reset, vv.Test)
+				dbgo.Printf("%(red)Error%(reset): Test case %s failed to match\n", vv.Test)
 				n_err++
 			}
 		} else {
 			n_skip++
 		}
 
-		gv, _ := Fopen(gvFile, "w")
-		Pool.GenerateGVFile(gv, vv.Re, vv.Rv)
+		gv, err := filelib.Fopen(gvFile, "w")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to open %s for output: %s\n", gvFile, err)
+			// t.Fatal("Invalid file name")
+		}
+		Pool.GenerateGVFile(gv, vv.Re, vv.Rv, vv.Re)
 		gv.Close()
 
 		out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
@@ -173,10 +179,10 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	n_err := 0
 
-	dbOn["db_NFA"] = true
-	dbOn["db_NFA_LnNo"] = true
-	dbOn["db_DumpPool"] = true
-	dbOn["parseExpression"] = true
+	dbgo.SetADbFlag("db_NFA", true)
+	dbgo.SetADbFlag("db_NFA_LnNo", true)
+	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("parseExpression", true)
 
 	// {Test: "0011", Re: `a(bcd)*(ghi)+(jkl)*X`, Rv: 1011},     //
 	Pool := nfa.NewNFA_Pool()
@@ -194,7 +200,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	fmt.Printf("\n\nr1(1)=%v\n", r1)
 
 	if len(com.CompareSlices([]int{4, 1, 5, 6}, r1)) != 0 {
-		fmt.Printf("%sError%s: Test case 1 failed to match\n", Red, Reset)
+		dbgo.Printf("%(red)Error%(reset): Test case 1 failed to match\n")
 		n_err++
 	}
 	// c.Check(r1, Equals, []int{4, 1, 5, 6})
@@ -205,7 +211,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	fmt.Printf("\n\nr2(5,8,11)=%v\n", r2)
 
 	if len(com.CompareSlices([]int{6}, r2)) != 0 {
-		fmt.Printf("%sError%s: Test case 2 failed to match\n", Red, Reset)
+		dbgo.Printf("%(red)Error%(reset): Test case 2 failed to match\n")
 		n_err++
 	}
 	// c.Check(r2, Equals, []int{5, 8, 11})
@@ -216,7 +222,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 	fmt.Printf("\n\nr3(9)=%v\n", r3)
 
 	if len(com.CompareSlices([]int{6, 10, 13, 10, 14}, r3)) != 0 {
-		fmt.Printf("%sError%s: Test case 3 failed to match\n", Red, Reset)
+		dbgo.Printf("%(red)Error%(reset): Test case 3 failed to match\n")
 		n_err++
 	}
 	// c.Check(r3, Equals, []int{5, 8, 11})
@@ -227,7 +233,7 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 		c.Check(1, Equals, 0)
 		// c.Assert(2, Equals, 0) // Failure of an assert ends test (exit)
 		sss := c.GetTestLog()
-		fp, err := Fopen(",g", "w")
+		fp, err := filelib.Fopen(",g", "w")
 		c.Check(err, Equals, nil)
 		fmt.Fprintf(fp, "c.GetTestLog: ->%s<-\n", sss)
 	}
@@ -249,15 +255,14 @@ var _ = Suite(&NFA_to_DFA_TestSuite{})
 
 func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 
-	// return
 	fmt.Fprintf(os.Stderr, "Test NFA to DFA, %s\n", dbgo.LF())
 
 	n_err := 0
 	n_skip := 0
 
-	dbOn["db_DFAGen"] = true
-	dbOn["db_DumpDFAPool"] = true
-	dbOn["db_DFA_LnNo"] = true
+	dbgo.SetADbFlag("db_DFAGen", true)
+	dbgo.SetADbFlag("db_DumpDFAPool", true)
+	dbgo.SetADbFlag("db_DFA_LnNo", true)
 
 	// -----------------------------------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------------------------
@@ -287,7 +292,7 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 			Dfa := dfa.NewDFA_Pool()
 			Dfa.ConvNDA_to_DFA(Nfa)
 
-			fp, _ := Fopen(newFile, "w")
+			fp, _ := filelib.Fopen(newFile, "w")
 			Dfa.DumpPoolJSON(fp, vv.Re, vv.Rv)
 			fp.Close()
 			newData, err := ioutil.ReadFile(newFile)
@@ -302,7 +307,7 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 				}
 				if string(ref) != string(newData) {
 					c.Check(string(newData), Equals, string(ref))
-					fmt.Printf("%sError%s: Test case %s failed to match\n", Red, Reset, vv.Test)
+					dbgo.Printf("%(red)Error%(reset): Test case %s failed to match\n", vv.Test)
 					n_err++
 				}
 			} else {
@@ -317,11 +322,11 @@ func (s *NFA_to_DFA_TestSuite) TestLexie(c *C) {
 			Dfa.DumpPool(false)
 
 			// func (dfa *NFA_PoolType) GenerateGVFile(fo io.Writer, td string, tn int) {
-			gv, _ := Fopen(gvFile, "w")
+			gv, _ := filelib.Fopen(gvFile, "w")
 			Dfa.GenerateGVFile(gv, vv.Re, vv.Rv)
 			gv.Close()
 
-			tf, _ := Fopen(tabFile, "w")
+			tf, _ := filelib.Fopen(tabFile, "w")
 			//Dfa.DumpPoolJSON(fp, vv.Re, vv.Rv)
 			Dfa.OutputInFormat(tf, "text") // text, go-code, c-code, json, xml etc.
 			tf.Close()

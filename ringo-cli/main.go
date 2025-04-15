@@ -88,7 +88,7 @@ import (
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/pbread"
-	"github.com/pschlump/lexie/test01"
+	"github.com/pschlump/lexie/ringo"
 	"github.com/russross/blackfriday"
 )
 
@@ -130,14 +130,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	test01.Dbf = os.Stdout
+	ringo.Dbf = os.Stdout
 	if opts.Debug != "" {
 		s := strings.Split(opts.Debug, ";")
 		// com.DbOnFlags[opts.Debug] = true
 		dbgo.SetADbFlag(opts.Debug, true)
 		for _, v := range s {
 			if len(v) > 5 && v[0:4] == "out:" {
-				test01.Dbf, _ = filelib.Fopen(v[4:], "w")
+				ringo.Dbf, _ = filelib.Fopen(v[4:], "w")
 			} else {
 				// com.DbOnFlags[v] = true
 				dbgo.SetADbFlag(v, true)
@@ -145,7 +145,7 @@ func main() {
 		}
 	}
 
-	fmt.Fprintf(test01.Dbf, "Test Matcher test from %s file, %s\n", opts.LexPat, dbgo.LF())
+	fmt.Fprintf(ringo.Dbf, "Test Matcher test from %s file, %s\n", opts.LexPat, dbgo.LF())
 
 	// ------------------------------------------------------ Options --------------------------------------------------------------
 	// should be read in from a .json file!
@@ -159,7 +159,7 @@ func main() {
 	}
 
 	// ------------------------------------------------------ setup Lexie --------------------------------------------------------------
-	pt := test01.NewParse2Type()
+	pt := ringo.NewParse2Type()
 	pt.Lex = dfa.NewLexie()
 	pt.Lex.SetChanelOnOff(true) // Set for getting back stuff via Chanel
 
@@ -467,7 +467,7 @@ func ConvertMdToHtmlFileTmpFile(infn string) (outfn string, err error) {
 
 //
 
-func ProcessFileList(pt *test01.Parse2Type, inList []string, outFn string) (err error) {
+func ProcessFileList(pt *ringo.Parse2Type, inList []string, outFn string) (err error) {
 
 	var fp *os.File
 
@@ -503,19 +503,19 @@ func ProcessFileList(pt *test01.Parse2Type, inList []string, outFn string) (err 
 	// Generate a parse tree and print out.
 	xpt := pt.GenParseTree(0)
 	pt.TheTree = xpt
-	xpt.DumpMtType(test01.Dbf, 0, 0)
+	xpt.DumpMtType(ringo.Dbf, 0, 0)
 	pt.ExecuteFunctions(0)
 	if false {
-		fmt.Fprintf(test01.Dbf, "----------------------------------- debug output ----------------------------------------------------\n")
-		fmt.Fprintf(test01.Dbf, "%s\n", dbgo.SVarI(xpt))
+		fmt.Fprintf(ringo.Dbf, "----------------------------------- debug output ----------------------------------------------------\n")
+		fmt.Fprintf(ringo.Dbf, "%s\n", dbgo.SVarI(xpt))
 	}
-	fmt.Fprintf(test01.Dbf, "----------------------------------- errors ----------------------------------------------------\n")
+	fmt.Fprintf(ringo.Dbf, "----------------------------------- errors ----------------------------------------------------\n")
 	pp := pt.CollectErrorNodes(0)
 	for ii, vv := range pp {
-		fmt.Fprintf(test01.Dbf, "Error [%3d]: msg=%s\n", ii, vv.ErrorMsg)
+		fmt.Fprintf(ringo.Dbf, "Error [%3d]: msg=%s\n", ii, vv.ErrorMsg)
 	}
-	fmt.Fprintf(test01.Dbf, "----------------------------------- final template results  ----------------------------------------------------\n")
-	pt.OutputTree(test01.Dbf, 0)
+	fmt.Fprintf(ringo.Dbf, "----------------------------------- final template results  ----------------------------------------------------\n")
+	pt.OutputTree(ringo.Dbf, 0)
 
 	pt.OutputTree(fp, 0)
 

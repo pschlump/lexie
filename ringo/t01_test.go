@@ -1,4 +1,6 @@
-package test01
+package ringo
+
+// R I N G O - A template engine using the lexie system.
 
 import (
 	"fmt"

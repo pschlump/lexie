@@ -9,7 +9,7 @@
 <g id="graph0" class="graph" transform="scale(0.74639 0.74639) rotate(0) translate(4 478.32)">
 <title>finite_state_machine</title>
 <polygon fill="white" stroke="none" points="-4,4 -4,-478.32 332.96,-478.32 332.96,4 -4,4"/>
-<text text-anchor="middle" x="164.48" y="-7.2" font-family="Times,serif" font-size="14.00">Regular Expression: xyzzy401</text>
+<text text-anchor="middle" x="164.48" y="-7.2" font-family="Times,serif" font-size="14.00">Regular Expression: a(bcd)*(ghi)+(jkl)*X</text>
 <!-- s14 -->
 <g id="node1" class="node">
 <title>s14</title>
