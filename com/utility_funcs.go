@@ -564,11 +564,9 @@ func RmExt(filename string) string {
 	return name
 }
 
-var qtRegEx *regexp.Regexp
+/*
 
-func init() {
-	qtRegEx = regexp.MustCompile("%{([A-Za-z0-9_]*)%}")
-}
+var qtRegEx = regexp.MustCompile("%{([A-Za-z0-9_]*)%}")
 
 // QT: Quick template
 // %{name%} gets replace with substitution from map if it is in map, else ""
@@ -595,6 +593,7 @@ func QtR(format string, data map[string]interface{}) string {
 		}
 	}))
 }
+*/
 
 // StringEscape will take a string and put a backslash in front of each double quote mark.
 func StringEscape(s string) (o string) {

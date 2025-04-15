@@ -131,13 +131,11 @@ func main() {
 	ringo.Dbf = os.Stdout
 	if opts.Debug != "" {
 		s := strings.Split(opts.Debug, ";")
-		// com.DbOnFlags[opts.Debug] = true
 		dbgo.SetADbFlag(opts.Debug, true)
 		for _, v := range s {
 			if len(v) > 5 && v[0:4] == "out:" {
 				ringo.Dbf, _ = filelib.Fopen(v[4:], "w")
 			} else {
-				// com.DbOnFlags[v] = true
 				dbgo.SetADbFlag(v, true)
 			}
 		}
@@ -190,10 +188,10 @@ func main() {
 		data2["site_name"] = opts.SiteName
 
 		if opts.Input == "" && opts.SiteName != "" {
-			opts.Input = com.Qt("./site/%{site_name%}/", data2)
+			opts.Input = filelib.Qt("./site/%{site_name%}/", data2)
 		}
 		if opts.Output == "" && opts.SiteName != "" {
-			opts.Output = com.Qt("./www/%{site_name%}/", data2)
+			opts.Output = filelib.Qt("./www/%{site_name%}/", data2)
 		}
 
 		// ---------------------------------------------------------------------------------------------------------------------------------
@@ -258,14 +256,14 @@ func main() {
 		for _, mff := range mf {
 			data["user"] = opts.User
 			data["theme"] = opts.Theme
-			mfmod := com.Qt(mff, data)
+			mfmod := filelib.Qt(mff, data)
 			if filelib.Exists(mfmod) {
 				final = append(final, mfmod)
 			} else {
 
 				data["user"] = ""
 				// data["theme"] = "A-Theme"
-				mfmod := com.Qt(mff, data)
+				mfmod := filelib.Qt(mff, data)
 				if filelib.Exists(mfmod) {
 					final = append(final, mfmod)
 				} else {
@@ -273,7 +271,7 @@ func main() {
 					data["user"] = opts.User
 					// data["user"] = ""
 					data["theme"] = ""
-					mfmod := com.Qt(mff, data)
+					mfmod := filelib.Qt(mff, data)
 					if filelib.Exists(mfmod) {
 						final = append(final, mfmod)
 					} else {
@@ -540,23 +538,23 @@ func CopyInAssets(optsSiteName string, BaseAssets string, SiteAssets string, opt
 	data["theme"] = Theme
 
 	//if opts.Input == "" && optsSiteName != "" {
-	//	opts.Input = com.Qt("./site/%{site_name%}/", data2)
+	//	opts.Input = filelib.Qt("./site/%{site_name%}/", data2)
 	//}
 
 	if optsOutput == "" && optsSiteName != "" {
-		optsOutput = com.Qt("./www/%{site_name%}/", data)
+		optsOutput = filelib.Qt("./www/%{site_name%}/", data)
 	}
 
 	// Generate list of top directories to search
 	top := make([]string, 0, 10)
-	topDirs := com.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
+	topDirs := filelib.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
 	if filelib.Exists(topDirs) {
 		top = append(top, topDirs)
 	}
 
 	data["user"] = ""
 	// data["theme"] = "A-Theme"
-	topDirs = com.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
+	topDirs = filelib.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
 	if filelib.Exists(topDirs) {
 		top = append(top, topDirs)
 	}
@@ -564,7 +562,7 @@ func CopyInAssets(optsSiteName string, BaseAssets string, SiteAssets string, opt
 	data["user"] = User
 	// data["user"] = ""
 	data["theme"] = ""
-	topDirs = com.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
+	topDirs = filelib.Qt(SiteAssets+"/%{user%}/%{theme%}/", data) // ./site_assets/%{site_name%} ->  ./site_assets/%{site_name%}/%{user%}/%{theme%}/
 	if filelib.Exists(topDirs) {
 		top = append(top, topDirs)
 	}
