@@ -1,10 +1,10 @@
 package main
 
 //
-// C L I / T E S T 2 - Part of Lexie Lexical Generation System
+// R I N G O - Static site generator using a template system based on Python templates.
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 0.2.1
+// Version: 0.2.2
 //
 
 /*
@@ -92,8 +92,6 @@ import (
 	"github.com/russross/blackfriday"
 )
 
-// "github.com/pschlump/lexie/bluemonday"
-
 var opts struct {
 	BaseAssets   string `short:"b" long:"baseAssets"    description:"Base Assets (static)"             default:"./assets"`                     //
 	ForcedCpFlag bool   `short:"f" long:"forcedCopy"    description:"Copy files even if not changed"   default:"false"`                        //
@@ -155,7 +153,7 @@ func main() {
 	Options.TmpDir = "./tmp"
 
 	if !filelib.Exists(Options.TmpDir) {
-		os.Mkdir(Options.TmpDir, 0700)
+		os.MkdirAll(Options.TmpDir, 0700)
 	}
 
 	// ------------------------------------------------------ setup Lexie --------------------------------------------------------------
