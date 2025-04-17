@@ -249,7 +249,9 @@ var Test6Data = []Test6DataType{
 	/* 100 */ {Re: `abc{,}`, TopTok: []LR_TokType{LR_Text, LR_Text, LR_STAR}, TopVal: []string{"a", "b", "*"}, NExpectedErr: 0},
 
 	// Involving Extended CCLs/NCCLs -------------------------------------------------------------------------------------
-	/* 101 */ {Re: `a[3[:alpha:]4]d`, TopTok: []LR_TokType{LR_Text, LR_CCL, LR_Text}, TopVal: []string{"a", "34", "d"}, NExpectedErr: 0},
+	/* 101 */ {Re: `a[3[:alpha:]4]d`, TopTok: []LR_TokType{LR_Text, LR_CCL, LR_Text}, TopVal: []string{"a", "34", "d"}, NExpectedErr: 0},
+	// at File: /Users/philip/go/src/github.com/pschlump/lexie/re/re.go LineNo:381 [step 1] Item: [34] 9=LR_CCL, N-Children=0
+	// xyzzy821
 
 	/* 102 */ {Re: `\{\{`, TopTok: []LR_TokType{LR_Text, LR_Text}, TopVal: []string{"{", "{"}, NExpectedErr: 0},
 	/* 103 */ {Re: `\{\|\*\(\)\+\?\[\]`, TopTok: []LR_TokType{LR_Text, LR_Text, LR_Text, LR_Text, LR_Text, LR_Text, LR_Text, LR_Text, LR_Text},
@@ -306,16 +308,17 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 				if len(vv.SM) > 0 {
 					// Check correct token
 					if vv.SM[tn].Tok != ww {
-						fmt.Printf("     Failed to return the correct token, expecting %d/%s, got %d/%s\n", vv.SM[tn].Tok, LR_TokTypeLookup[vv.SM[tn].Tok], ww,
-							LR_TokTypeLookup[ww])
+						fmt.Printf("     Failed to return the correct token, expecting %d/%s, got %d/%s\n", vv.SM[tn].Tok, LR_TokTypeLookup[vv.SM[tn].Tok], ww, LR_TokTypeLookup[ww])
 						c.Check(int(vv.SM[tn].Tok), Equals, int(ww))
 						n_err++
+						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", ii)
 					}
 					// Check correct string/rune returned
 					if !CmpByteArr(vv.SM[tn].Dat, []byte(cc)) {
 						fmt.Printf("     The returned runes did not match\n")
 						c.Check(string(vv.SM[tn].Dat), Equals, cc)
 						n_err++
+						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", ii)
 					}
 
 				}
@@ -342,6 +345,7 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 					fmt.Printf("     The calculated and reference Sigma did not match\n")
 					c.Check(vv.Sigma, Equals, lr.Sigma)
 					n_err++
+					dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", ii)
 				}
 			}
 
@@ -354,6 +358,7 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 	dbgo.SetADbFlag("DumpParseNodes", true)
 	dbgo.SetADbFlag("DumpParseNodesX", true)
 	dbgo.SetADbFlag("db_DumpPool", true)
+	dbgo.SetADbFlag("debug", true)
 	dbgo.SetADbFlag("parseExpression", true)
 	for i, v := range Test6Data {
 		dbgo.DbPrintf("debug", "\nTest[%03d]: `%s` %s\n\n", i, v.Re, strings.Repeat("-", 120-len(v.Re)))
@@ -363,12 +368,14 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 			if len(v.TopTok) != len(lr.Tree.Children) {
 				dbgo.DbPrintf("debug", "%(red)Error%(reset): wrong number of tokens prsed, Expected: %d Got %d\n", len(v.TopTok), len(lr.Tree.Children))
 				n_err++
+				dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 			} else {
 				for i := 0; i < len(v.TopTok); i++ {
 					if v.TopTok[i] != lr.Tree.Children[i].LR_Tok {
 						dbgo.DbPrintf("debug", "%(red)Error%(reset): invalid token returnd at postion %d\n", i)
 						c.Check(v.TopTok[i], Equals, lr.Tree.Children[i].LR_Tok)
 						n_err++
+						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 					}
 				}
 			}
@@ -377,11 +384,14 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 			if len(v.TopVal) != len(lr.Tree.Children) {
 				dbgo.DbPrintf("debug", "%(red)Error%(reset): wrong number of tokens prsed, Expected: %d Got %d - Based on number of values, TopVal\n", len(v.TopVal), len(lr.Tree.Children))
 				n_err++
+				dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 			} else {
 				for i := 0; i < len(v.TopVal); i++ {
 					if v.TopVal[i] != lr.Tree.Children[i].Item {
-						dbgo.DbPrintf("debug", "%(red)Error%(reset): invalid value at postion %d, %s\n", i, dbgo.LF())
+						dbgo.DbPrintf("debug", "%(red)Error%(reset): invalid value at postion %d, %(LF)\n", i)
 						n_err++
+						// xyzzy821
+						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 					}
 				}
 			}
@@ -389,6 +399,7 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 		if len(lr.Error) > v.NExpectedErr {
 			dbgo.DbPrintf("debug", "%(red)Error%(reset): Errors reported in R.E. parsing %d\n", len(lr.Error))
 			n_err++
+			dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 		} else if len(lr.Error) > 0 {
 			dbgo.DbPrintf("debug", "%(green)Note%(reset): Errors reported in R.E. parsing %d\n", len(lr.Error))
 		}
