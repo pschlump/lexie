@@ -212,7 +212,7 @@ func (tl *TokenList) DumpTokenBuffer() {
 	fmt.Printf("TokenBuffer:\n")
 	fmt.Printf("\t%3s %-5s/%-15s %8s %-20s %s\n", "row", "TokNo", "Token Name", "sL/C", "Match", "Val")
 	for ii, jj := range tl.TokenData {
-		tn := in.Lookup_Tok_Name(jj.TokNo)
+		tn := in.LookupTokenName(jj.TokNo)
 		fmt.Printf("\t%3d %5d/%-15s %3d/%4d -->>%s<<-- -->%s<-\n", ii, jj.TokNo, tn, jj.LineNo, jj.ColNo, jj.Match, jj.Val)
 	}
 }

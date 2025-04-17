@@ -8,32 +8,9 @@ import (
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/lexie/pbread"
-
-	. "gopkg.in/check.v1"
 )
 
-// https://labix.org/gocheck
-
-func TestLexie(t *testing.T) { TestingT(t) }
-
-type Lr2Type struct {
-	TokNo    int
-	StrTokNo string
-	Match    string
-	LineNo   int
-	ColNo    int
-	FileName string
-}
-
-type Lexie02DataType struct {
-	Test     string
-	Inp      string
-	Rv       int
-	SkipTest bool
-	Result   []Lr2Type
-}
-
-var Lexie02Data = []Lexie02DataType{
+var Lexie03Data = []Lexie02DataType{
 	{Test: "4100", Inp: "abcd", Rv: 4100, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{StrTokNo: "Tok_HTML", Match: "abcd"}, // 0
@@ -56,7 +33,7 @@ var Lexie02Data = []Lexie02DataType{
 			  2    70   1/  10 -->>xyz<<-- -->xyz<-
 			  3    27   1/  12 -->>%}<<-- -->%}<-
 	*/
-	{Test: "4000", Inp: "abcd{% simple {{ \u2021 }} stuff %} mOre", Rv: 4000, SkipTest: true,
+	{Test: "4200", Inp: "abcd{% simple {{ \u2021 }} stuff %} mOre", Rv: 4200, SkipTest: true,
 		Result: []Lr2Type{
 			/*
 			   -			// Lr2Type{TokNo: 38, Match: "abcd"},
@@ -99,14 +76,14 @@ var Lexie02Data = []Lexie02DataType{
 		   ]
 	*/
 
-	{Test: "4001", Inp: "<BEF>{{ pp ! : {% qq ! : rr %} ss }}</aft>", Rv: 4001, SkipTest: true,
+	{Test: "4201", Inp: "<BEF>{{ pp ! : {% qq ! : rr %} ss }}</aft>", Rv: 4201, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{TokNo: 11, Match: "<BEF>"}, // xyzzy - update data restuls for test!!!!!!!!!!
 			Lr2Type{TokNo: 22, Match: "{{"},
 		},
 	},
 
-	{Test: "4002", Inp: "<bef>{{ pp != ! : {% qq != ! : rr %} ss }}</aft>", Rv: 4002, SkipTest: true,
+	{Test: "4202", Inp: "<bef>{{ pp != ! : {% qq != ! : rr %} ss }}</aft>", Rv: 4202, SkipTest: true,
 		Result: []Lr2Type{
 			//	row TokNo     sL/C     eL/C Match                Val
 			//	  0    38   1/   1   1/   1 -->><bef><<-- --><bef><-
@@ -180,13 +157,13 @@ var Lexie02Data = []Lexie02DataType{
 		<-
 		--------------------------------------------------------
 	*/
-	{Test: "4003", Inp: `<bef>{{
+	{Test: "4203", Inp: `<bef>{{
 pp != !
 :     {%
 qq != ! : {{ : {{ : {\{ : {% }} }}
 rr {% ss %} %}
 }} }} <aft>
-`, Rv: 4003, SkipTest: true,
+`, Rv: 4203, SkipTest: true,
 		Result: []Lr2Type{
 			//			  0    39   1/   5 -->><bef><<-- --><bef><-
 			//			  1     6   1/   8 -->>{{<<-- -->{{<-
@@ -248,7 +225,7 @@ rr {% ss %} %}
 	},
 
 	// Infinite loop! --------------------------------------------------------------------------------------------------------------
-	{Test: "4004", Inp: "abcd{% != {{ != }} != %} mOre", Rv: 4004, SkipTest: true,
+	{Test: "4204", Inp: "abcd{% != {{ != }} != %} mOre", Rv: 4204, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{StrTokNo: "Tok_HTML", Match: "abcd"},
 			Lr2Type{StrTokNo: "Tok_OP_BL", Match: "{%"},
@@ -262,7 +239,7 @@ rr {% ss %} %}
 		},
 	},
 
-	{Test: "4005", Inp: "abcd{% != <= != > != %} mOre", Rv: 4005, SkipTest: true,
+	{Test: "4205", Inp: "abcd{% != <= != > != %} mOre", Rv: 4205, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{StrTokNo: "Tok_HTML", Match: "abcd"},
 			Lr2Type{StrTokNo: "Tok_OP_BL", Match: "{%"},
@@ -276,13 +253,13 @@ rr {% ss %} %}
 		},
 	},
 
-	{Test: "4006", Inp: `abcd
+	{Test: "4206", Inp: `abcd
 {%
 123456789 
 
 
 %}
- number`, Rv: 4006, SkipTest: true,
+ number`, Rv: 4206, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{StrTokNo: "Tok_HTML", Match: "abcd\n"},
 			Lr2Type{StrTokNo: "Tok_OP_BL", Match: "{%"},
@@ -292,9 +269,9 @@ rr {% ss %} %}
 		},
 	},
 
-	{Test: "4007", Inp: "{% set_context %}", Rv: 4007, SkipTest: true},
+	{Test: "4207", Inp: "{% set_context %}", Rv: 4207, SkipTest: true},
 
-	{Test: "4008", Inp: "abc {% set_context f01 1 + 2 %} ghi", Rv: 4008, SkipTest: true,
+	{Test: "4208", Inp: "abc {% set_context f01 1 + 2 %} ghi", Rv: 4208, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{StrTokNo: "Tok_HTML", Match: "abc "},
 			Lr2Type{StrTokNo: "Tok_OP_BL", Match: "{%"},
@@ -308,7 +285,7 @@ rr {% ss %} %}
 		},
 	},
 
-	{Test: "4009", Inp: "abc {% set_context f01 1234 + 2333  %} ghi", Rv: 4009, SkipTest: true,
+	{Test: "4209", Inp: "abc {% set_context f01 1234 + 2333  %} ghi", Rv: 4209, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{StrTokNo: "Tok_HTML", Match: "abc "},
 			Lr2Type{StrTokNo: "Tok_OP_BL", Match: "{%"},
@@ -322,12 +299,12 @@ rr {% ss %} %}
 		},
 	},
 
-	{Test: "4010", Inp: "abc {% set_context f4010 1234567 * 87.65 + 2.333e-4.2  %} ghi", Rv: 4010, SkipTest: true,
+	{Test: "4210", Inp: "abc {% set_context f4210 1234567 * 87.65 + 2.333e-4.2  %} ghi", Rv: 4210, SkipTest: true,
 		Result: []Lr2Type{
 			Lr2Type{StrTokNo: "Tok_HTML", Match: "abc "},
 			Lr2Type{StrTokNo: "Tok_OP_BL", Match: "{%"},
 			Lr2Type{StrTokNo: "Tok_ID", Match: "set_context"},
-			Lr2Type{StrTokNo: "Tok_ID", Match: "f4010"},
+			Lr2Type{StrTokNo: "Tok_ID", Match: "f4210"},
 			Lr2Type{StrTokNo: "Tok_NUM", Match: "1234567"},
 			Lr2Type{StrTokNo: "Tok_STAR", Match: "*"},
 			Lr2Type{StrTokNo: "Tok_Float", Match: "87.65"},
@@ -338,11 +315,11 @@ rr {% ss %} %}
 		},
 	},
 
-	{Test: "4011", Inp: "abc {% set_context f01 1e2 + 2e-2 %} ghi", Rv: 4011, SkipTest: true},
+	{Test: "4211", Inp: "abc {% set_context f01 1e2 + 2e-2 %} ghi", Rv: 4211, SkipTest: true},
 
-	{Test: "4012", Inp: "abc {% set_context f01 1357 + 248  %} ghi", Rv: 4012, SkipTest: true},
+	{Test: "4212", Inp: "abc {% set_context f01 1357 + 248  %} ghi", Rv: 4212, SkipTest: true},
 
-	{Test: "4014", Inp: "abc {% set_context f01 1357 bor 248  %} ghi", Rv: 4014, SkipTest: true},
+	{Test: "4214", Inp: "abc {% set_context f01 1357 bor 248  %} ghi", Rv: 4214, SkipTest: true},
 	/*
 	   TokenBuffer:
 	   	row TokNo     sL/C Match                Val
@@ -358,7 +335,7 @@ rr {% ss %} %}
 	   --------------------------------------------------------
 	*/
 
-	{Test: "4015", Inp: "\n{% for ii, vv in [ 1, 2, 3 ] %}\n", Rv: 4015, SkipTest: true},
+	{Test: "4215", Inp: "\n{% for ii, vv in [ 1, 2, 3 ] %}\n", Rv: 4215, SkipTest: true},
 	/*
 	   --------------------------------------------------------
 	   TokenList:
@@ -389,17 +366,12 @@ rr {% ss %} %}
 	   --------------------------------------------------------
 	*/
 
-	{Test: "4016", Inp: `
+	{Test: "4216", Inp: `
 {% extend "abc.def" %}
-`, Rv: 4016, SkipTest: true},
+`, Rv: 4216, SkipTest: true},
 }
 
-// type Reader_TestSuite struct{}
-
-// var _ = Suite(&Reader_TestSuite{})
-
-// func (s *Reader_TestSuite) TestLexie(c *C) {
-func Test_DfaTestUsingDjango(t *testing.T) {
+func Test_03_DfaTestUsingDjango(t *testing.T) {
 
 	dbgo.Fprintf(os.Stderr, "\n\n%(cyan)Test Matcher test from ../in/django3.lex file, %(LF)\n========================================================================\n\n")
 
@@ -423,11 +395,11 @@ func Test_DfaTestUsingDjango(t *testing.T) {
 	dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 
 	lex := NewLexie()
-	lex.NewReadFile("../in/django3.lex")
+	lex.NewReadFile("../in/test03_dfa.lex")
 
-	in.Dump_Tok_Map()
+	in.DumpTokenMap()
 
-	for ii, vv := range Lexie02Data {
+	for ii, vv := range Lexie03Data {
 
 		if vv.SkipTest {
 			continue
@@ -456,19 +428,19 @@ func Test_DfaTestUsingDjango(t *testing.T) {
 				for i := 0; i < len(vv.Result); i++ {
 					dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
 					if vv.Result[i].StrTokNo != "" {
-						// func in.Lookup_Tok_Name(Tok int) (rv string) { -- use to repace token numbers '38' with Token Name and lookup for test
-						// c.Check(vv.Result[i].StrTokNo, Equals, in.Lookup_Tok_Name(int(lex.TokList.TokenData[i].TokNo))) // xyzzy
+						// func in.LookupTokenName(Tok int) (rv string) { -- use to repace token numbers '38' with Token Name and lookup for test
+						// c.Check(vv.Result[i].StrTokNo, Equals, in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo))) // xyzzy
 						dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
-						if vv.Result[i].StrTokNo != in.Lookup_Tok_Name(int(lex.TokList.TokenData[i].TokNo)) {
-							t.Errorf("Invalid token found.  Expected %d/%s got %d/%s\n", lex.TokList.TokenData[i].TokNo, in.Lookup_Tok_Name(int(lex.TokList.TokenData[i].TokNo)),
-								int(lex.TokList.TokenData[i].TokNo), in.Lookup_Tok_Name(int(lex.TokList.TokenData[i].TokNo)))
+						if vv.Result[i].StrTokNo != in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo)) {
+							t.Errorf("Invalid token found.  Expected %d/%s got %d/%s\n", lex.TokList.TokenData[i].TokNo, in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo)),
+								int(lex.TokList.TokenData[i].TokNo), in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo)))
 						}
 					} else {
 						dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
 						// c.Check(vv.Result[i].TokNo, Equals, int(lex.TokList.TokenData[i].TokNo)) // xyzzy
 						if vv.Result[i].TokNo != int(lex.TokList.TokenData[i].TokNo) {
-							t.Errorf("Invalid token found.  Expected %d/%s got %d/%s\n", lex.TokList.TokenData[i].TokNo, in.Lookup_Tok_Name(int(lex.TokList.TokenData[i].TokNo)),
-								int(lex.TokList.TokenData[i].TokNo), in.Lookup_Tok_Name(int(lex.TokList.TokenData[i].TokNo)))
+							t.Errorf("Invalid token found.  Expected %d/%s got %d/%s\n", lex.TokList.TokenData[i].TokNo, in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo)),
+								int(lex.TokList.TokenData[i].TokNo), in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo)))
 						}
 					}
 					/*

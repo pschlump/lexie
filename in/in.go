@@ -951,7 +951,7 @@ func ImReadFile(fn string) (Im *ImType) {
 	return
 }
 
-func Dump_Tok_Map() {
+func DumpTokenMap() {
 	// var Tok_map = make(map[int]string)
 	dbgo.Printf("%(cyan)Tok_map:\n")
 	for kk, vv := range Tok_map {
@@ -959,7 +959,7 @@ func Dump_Tok_Map() {
 	}
 }
 
-func Lookup_Tok_Name(Tok int) (rv string) {
+func LookupTokenName(Tok int) (rv string) {
 	ok := false
 	if rv, ok = Tok_map[Tok]; ok {
 		return
@@ -968,7 +968,7 @@ func Lookup_Tok_Name(Tok int) (rv string) {
 	return
 }
 
-func Add_Lookup_Token(Tok int, Name string) {
+func AddLookupToken(Tok int, Name string) {
 	Tok_map[Tok] = Name
 }
 

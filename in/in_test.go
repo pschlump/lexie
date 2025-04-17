@@ -209,12 +209,12 @@ func Test_ReadFileIntoLinesError(t *testing.T) {
 }
 
 func Test_MiscTests(t *testing.T) {
-	Add_Lookup_Token(1, "bobbob")
-	x := Lookup_Tok_Name(1)
+	AddLookupToken(1, "bobbob")
+	x := LookupTokenName(1)
 	if x != "bobbob" {
 		t.Errorf("Token Look bad\n")
 	}
-	y := Lookup_Tok_Name(99999)
+	y := LookupTokenName(99999)
 	if y == "bobbob" {
 		t.Errorf("Token Look bad\n")
 	}

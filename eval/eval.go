@@ -1909,7 +1909,7 @@ func (eval *EvalType) PresE() (TkL tok.Token) {
 					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
 					//TkL.CurValue = 0
 					//TkL.DataType = CtxType_Int
-					eval.SetErrorInfo(&TkL, "Error (Eval00039):  %= operator not defined for floating point data.\n")
+					eval.SetErrorInfo(&TkL, "Error (Eval00039):  %%= operator not defined for floating point data.\n")
 					return
 				case gen.Tok_CAROT_EQ:
 					// fmt.Printf("IS = Setting [[[%s]]] to %v At: %s\n", TkL.Match, TkR.CurValue, dbgo.LF())
