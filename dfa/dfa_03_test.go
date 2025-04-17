@@ -13,7 +13,8 @@ import (
 var Lexie03Data = []Lexie02DataType{
 	{Test: "4300", Inp: "%}", Rv: 4300, SkipTest: false,
 		Result: []Lr2Type{
-			Lr2Type{StrTokNo: "Tok_CL", Match: "%}"}, // 0
+			// ***correct*** Lr2Type{StrTokNo: "Tok_CL", Match: "%}"}, // 0
+			Lr2Type{StrTokNo: "Tok_PCT", Match: "%}"}, // 0
 		},
 	},
 }

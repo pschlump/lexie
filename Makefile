@@ -23,3 +23,5 @@ go_test:
 	( cd dfa ; go test )
 	( cd eval ; go test )
 	( cd smap ; go test )
+	echo ""
+	echo "PASS"
