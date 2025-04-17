@@ -170,7 +170,7 @@ func main() {
 
 	lex := dfa.NewLexie()
 	if opts.LexPat != "" {
-		lex.NewReadFile(opts.LexPat) // lex.NewReadFile("../in/django3.lex")
+		lex.NewReadFile(opts.LexPat, "django3") // lex.NewReadFile("../in/django3.lex")
 	} else if opts.ReadMachine != "" {
 		fmt.Printf("Should input machine at this point\n")
 		// xyzzy

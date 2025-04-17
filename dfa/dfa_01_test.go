@@ -401,7 +401,7 @@ rr {% ss %} %}
 // func (s *Reader_TestSuite) TestLexie(c *C) {
 func Test_DfaTestUsingDjango(t *testing.T) {
 
-	return
+	// return
 
 	dbgo.Fprintf(os.Stderr, "\n\n%(cyan)Test Matcher test from ../in/django3.lex file, %(LF)\n========================================================================\n\n")
 
@@ -425,7 +425,7 @@ func Test_DfaTestUsingDjango(t *testing.T) {
 	dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 
 	lex := NewLexie()
-	lex.NewReadFile("../in/django3.lex")
+	lex.NewReadFile("../in/django3.lex", "mmm")
 
 	in.DumpTokenMap()
 

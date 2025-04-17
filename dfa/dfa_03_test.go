@@ -42,7 +42,7 @@ func Test_03_DfaTest03(t *testing.T) {
 	dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 
 	lex := NewLexie()
-	lex.NewReadFile("../in/test03_dfa.lex")
+	lex.NewReadFile("../in/test03_dfa.lex", "pct")
 
 	in.DumpTokenMap()
 

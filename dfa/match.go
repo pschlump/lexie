@@ -246,7 +246,7 @@ func convRuleToActionFlag(ww *in.ImRuleType) int {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-func (lex *Lexie) NewReadFile(path string) (err error) {
+func (lex *Lexie) NewReadFile(path, outTag string) (err error) {
 	lex.Im = in.ImReadFile(path)
 
 	lex.NFA_Machine = make([]*nfa.NFA_PoolType, 0, 100)
@@ -319,9 +319,9 @@ func (lex *Lexie) NewReadFile(path string) (err error) {
 
 			last := len(lex.DFA_Machine) - 1
 
-			newFile := fmt.Sprintf("../ref/mmm_%s_%d.tst", "machine", last)
-			gvFile := fmt.Sprintf("../ref/mmm_%s_%d.gv", "machine", last)
-			svgFile := fmt.Sprintf("../ref/mmm_%s_%d.svg", "machine", last)
+			newFile := fmt.Sprintf("../ref/%s_%s_%d.tst", outTag, "machine", last)
+			gvFile := fmt.Sprintf("../ref/%s_%s_%d.gv", outTag, "machine", last)
+			svgFile := fmt.Sprintf("../ref/%s_%s_%d.svg", outTag, "machine", last)
 
 			fp, err := filelib.Fopen(newFile, "w")
 			if err != nil {

@@ -295,22 +295,22 @@ func Test_PbBufer01(t *testing.T) {
 				case CmdOpenFile: // Open a file , at the tail end of list of input
 					pb.OpenFile(ww.Fn)
 					dbgo.DbPrintf("testCode", "Open file %s At: %s\n", ww.Fn, dbgo.LF())
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbString: // Push back a string
 					pb.PbString(ww.Data)
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbRune: // Push back a rune
 					pb.PbRune(ww.Rn)
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbRuneArray: // Push back a rune array
 					pb.PbRuneArray(ww.RnS)
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdNextNChar:
@@ -321,17 +321,17 @@ func Test_PbBufer01(t *testing.T) {
 						}
 						dbgo.DbPrintf("testCode", "Case 5: At: ->%s<- ll=%d ss >>>%s<<< %s\n", string(rn), ll, ss, dbgo.LF())
 					}
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPeek:
 					rn, done := pb.PeekRune()
 					if done || rn != ww.Rn {
-						t.Errorf("%04s: Peek at [pc=%d] in test [%s] did not work, got %s expected %s, done=%v\n", pc, ii, string(rn), string(ww.Rn), done)
+						t.Errorf("%04d: Peek at [pc=%d] in test [%s] did not work, got %s expected %s, done=%v\n", ii, pc, vv.Test, string(rn), string(ww.Rn), done)
 					}
 				case CmdOutputToEof:
 					dbgo.DbPrintf("testCode", "All Done: ss >>>%s<<< before At: %s\n", ss, dbgo.LF())
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 					for rn, done := pb.NextRune(); !done; rn, done = pb.NextRune() {
@@ -340,19 +340,19 @@ func Test_PbBufer01(t *testing.T) {
 					dbgo.DbPrintf("testCode", "All Done: ss >>>%s<<< after At: %s\n", ss, dbgo.LF())
 				case CmdPbByteArray: // Push back a byte array
 					pb.PbByteArray([]byte(ww.Data))
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdPbFile: // Open file and push contents back onto input at head of list. (Macro file, Include, Require)
 					pb.PbFile(ww.Fn)
 					dbgo.DbPrintf("testCode", "Pb file %s At: %s\n", ww.Fn, dbgo.LF())
-					if dbgo.DbOn("testDump") {
+					if dbgo.IsDbOn("testDump") {
 						pb.Dump01(os.Stdout)
 					}
 				case CmdFileSeen:
 					fs := pb.FileSeen(ww.Fn)
 					if fs != ww.FileSeenFlag {
-						t.Errorf("%04s: Peek at [pc=%d] in test [%s] did not work, got %v expected %s for file seen flagv\n", pc, ii, fs, ww.FileSeenFlag)
+						t.Errorf("%04d: Peek at [pc=%d] in test [%s] did not work, got %v expected %v for file seen flag\n", ii, pc, vv.Test, fs, ww.FileSeenFlag)
 					}
 				case CmdGetPos: // Check get file name
 					ln, cn, fn := pb.GetPos()
