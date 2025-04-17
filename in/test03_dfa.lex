@@ -6,10 +6,9 @@ $def(Machines, S_Init)
 $def(Errors, Err_Invalid_Char) 	
 
 $machine(S_Init)
-`%}`					: Rv(Tok_CL) 
 `%`						: Rv(Tok_PCT) 
+`%}`					: Rv(Tok_CL) 
 `bb`					: Rv(Tok_BB) 
 .						: Error(Err_Invalid_Char)
-$eof					: Rv(Tok_EOF)
 $end
 

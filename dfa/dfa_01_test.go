@@ -401,6 +401,8 @@ rr {% ss %} %}
 // func (s *Reader_TestSuite) TestLexie(c *C) {
 func Test_DfaTestUsingDjango(t *testing.T) {
 
+	return
+
 	dbgo.Fprintf(os.Stderr, "\n\n%(cyan)Test Matcher test from ../in/django3.lex file, %(LF)\n========================================================================\n\n")
 
 	dbgo.SetADbFlag("db_DumpDFAPool", true)

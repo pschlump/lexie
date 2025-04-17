@@ -1,19 +1,12 @@
 digraph finite_state_machine {
 	rankdir=LR;
-	size="18,8"
-	node [shape = doublecircle]; s1 s5 s6 s9;
+	size="18,5"
+	node [shape = doublecircle]; s1 s4 s5;
 	node [shape = circle];
 	s0 -> s1 [ label = "%" ];
 	s0 -> s2 [ label = "b" ];
-	s0 -> s3 [ label = "e" ];
-	s0 -> s3 [ label = "f" ];
-	s0 -> s3 [ label = "o" ];
 	s0 -> s3 [ label = "}" ];
-	s0 -> s4 [ label = "EOL" ];
 	s0 -> s3 [ label = "◉" ];
-	s1 -> s5 [ label = "}" ];
-	s2 -> s6 [ label = "b" ];
-	s4 -> s7 [ label = "e" ];
-	s7 -> s8 [ label = "o" ];
-	s8 -> s9 [ label = "f" ];
+	s1 -> s4 [ label = "}" ];
+	s2 -> s5 [ label = "b" ];
 }
