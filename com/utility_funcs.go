@@ -267,20 +267,6 @@ func DirExists(name string) bool {
 	return false
 }
 
-/*
-// -------------------------------------------------------------------------------------------------
-// Exists reports whether the named file or directory exists.
-// -------------------------------------------------------------------------------------------------
-func Exists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
-}
-*/
-
 // -------------------------------------------------------------------------------------------------
 // Get a list of filenames and directorys.
 // -------------------------------------------------------------------------------------------------
@@ -479,17 +465,6 @@ func copyFileContents(src, dst string) (err error) {
 	return
 }
 
-// -------------------------------------------------------------------------------------------------------
-//func main() {
-//	 fmt.Printf("Copying %s to %s\n", os.Args[1], os.Args[2])
-//	 err := CopyFile(os.Args[1], os.Args[2])
-//	 if err != nil {
-//		  fmt.Printf("CopyFile failed %q\n", err)
-//	 } else {
-//		  fmt.Printf("CopyFile succeeded\n")
-//	 }
-//}
-
 var trueValues map[string]bool
 
 func init() {
@@ -515,7 +490,6 @@ func ParseBool(s string) (b bool) {
 }
 
 // -------------------------------------------------------------------------------------------------
-// xyzzy - str.
 // Return the basename from a file path.  This is the last component with the directory path
 // stripped off.  File extension removed.
 // -------------------------------------------------------------------------------------------------
@@ -532,10 +506,7 @@ func Basename(fn string) (bn string) {
 	return
 }
 
-// -------------------------------------------------------------------------------------------------
-// xyzzy - str.
 // With file extension
-// -------------------------------------------------------------------------------------------------
 func BasenameExt(fn string) (bn string) {
 	i, j := strings.LastIndex(fn, "/"), len(fn) // xyzzy windoz
 	// fmt.Printf ( "i=%d j=%d\n", i, j )
@@ -563,37 +534,6 @@ func RmExt(filename string) string {
 	var name = filename[0 : len(filename)-len(extension)]
 	return name
 }
-
-/*
-
-var qtRegEx = regexp.MustCompile("%{([A-Za-z0-9_]*)%}")
-
-// QT: Quick template
-// %{name%} gets replace with substitution from map if it is in map, else ""
-func Qt(format string, data map[string]string) string {
-	// re := regexp.MustCompile("%{([A-Za-z0-9_]*)%}")
-	return string(qtRegEx.ReplaceAllFunc([]byte(format), func(s []byte) []byte {
-		return []byte(data[string(s[2:len(s)-2])])
-	}))
-}
-
-func QtR(format string, data map[string]interface{}) string {
-	return string(qtRegEx.ReplaceAllFunc([]byte(format), func(s []byte) []byte {
-		t := string(s[2 : len(s)-2])
-		u, ok := data[t]
-		if !ok {
-			return []byte("")
-		}
-		switch u.(type) {
-		case string:
-			return []byte(u.(string))
-		default:
-			sb := fmt.Sprintf("%v", u)
-			return []byte(sb)
-		}
-	}))
-}
-*/
 
 // StringEscape will take a string and put a backslash in front of each double quote mark.
 func StringEscape(s string) (o string) {

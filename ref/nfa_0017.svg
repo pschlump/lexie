@@ -9,7 +9,7 @@
 <g id="graph0" class="graph" transform="scale(0.85956 0.85956) rotate(0) translate(4 178.72)">
 <title>finite_state_machine</title>
 <polygon fill="white" stroke="none" points="-4,4 -4,-178.72 666.11,-178.72 666.11,4 -4,4"/>
-<text text-anchor="middle" x="331.06" y="-7.2" font-family="Times,serif" font-size="14.00">Regular Expression: (aa|bb|ccc)abb</text>
+<text text-anchor="middle" x="331.06" y="-7.2" font-family="Times,serif" font-size="14.00">Regular Expression: xyzzy401</text>
 <!-- s11 -->
 <g id="node1" class="node">
 <title>s11</title>

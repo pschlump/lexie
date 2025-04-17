@@ -3,9 +3,8 @@ Machine:
 	//
 	// Lexie Input for the Django Teplate Superset, Ringo
 	//
-	// (C) Philip Schlump, 2010-2015.
+	// (C) Philip Schlump, 2010-2025.
 	// Version: 1.0.8
-	// BuildNo: 141
 	//
 	// Notes -----------------------------------------------------------------------------------------------------------------
 	//
@@ -77,7 +76,7 @@ Machine:
 	`{{`									: Rv(Tok_OP_VAR) Call(S_VAR)
 	`{%`									: Rv(Tok_OP_BL) Call(S_TAG)
 	`%}`									: Rv(Tok_CL_BL) Return()
-	`}}`									: Rv(Tok_CL_VAR) Return()
+	`}}`									: Rv(Tok_CL_CL) Return()
 	`++`									: Rv(Tok_PLUS_PLUS) 
 	--										: Rv(Tok_MINUS_MINUS) 
 	:=										: Rv(Tok_DCL_VAR)

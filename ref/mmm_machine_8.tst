@@ -3,9 +3,8 @@ Machine:
 	//
 	// Lexie Input for the Django Teplate Superset, Ringo
 	//
-	// (C) Philip Schlump, 2010-2015.
+	// (C) Philip Schlump, 2010-2025.
 	// Version: 1.0.8
-	// BuildNo: 141
 	//
 	// Notes -----------------------------------------------------------------------------------------------------------------
 	//
@@ -77,7 +76,7 @@ Machine:
 	`{{`									: Rv(Tok_OP_VAR) Call(S_VAR)
 	`{%`									: Rv(Tok_OP_BL) Call(S_TAG)
 	`%}`									: Rv(Tok_CL_BL) Return()
-	`}}`									: Rv(Tok_CL_VAR) Return()
+	`}}`									: Rv(Tok_CL_CL) Return()
 	`++`									: Rv(Tok_PLUS_PLUS) 
 	--										: Rv(Tok_MINUS_MINUS) 
 	:=										: Rv(Tok_DCL_VAR)
@@ -155,16 +154,16 @@ Machine:
 	
 	
 {"Input":"Lex-Machine-8", "Rv":1, "Start": 0, "States":[
- { "Sn":0,  "Term":71,  "Edge":[ { "On":".", "Fr":0, "To":1 }, { "On":"x", "Fr":0, "To":2 }, { "On":"", "Fr":0, "To":3 }, { "On":"", "Fr":0, "To":0 }]}
+ { "Sn":0,  "Term":72,  "Edge":[ { "On":".", "Fr":0, "To":1 }, { "On":"x", "Fr":0, "To":2 }, { "On":"", "Fr":0, "To":3 }, { "On":"", "Fr":0, "To":0 }]}
  { "Sn":1,  "Edge":[ { "On":"", "Fr":1, "To":4 }]}
- { "Sn":2,  "Term":71,  "Edge":[ { "On":"A", "Fr":2, "To":2 }, { "On":"B", "Fr":2, "To":2 }, { "On":"C", "Fr":2, "To":2 }, { "On":"D", "Fr":2, "To":2 }, { "On":"E", "Fr":2, "To":2 }, { "On":"F", "Fr":2, "To":2 }, { "On":"a", "Fr":2, "To":2 }, { "On":"b", "Fr":2, "To":2 }, { "On":"c", "Fr":2, "To":2 }, { "On":"d", "Fr":2, "To":2 }, { "On":"e", "Fr":2, "To":2 }, { "On":"f", "Fr":2, "To":2 }, { "On":"", "Fr":2, "To":2 }]}
+ { "Sn":2,  "Term":72,  "Edge":[ { "On":"A", "Fr":2, "To":2 }, { "On":"B", "Fr":2, "To":2 }, { "On":"C", "Fr":2, "To":2 }, { "On":"D", "Fr":2, "To":2 }, { "On":"E", "Fr":2, "To":2 }, { "On":"F", "Fr":2, "To":2 }, { "On":"a", "Fr":2, "To":2 }, { "On":"b", "Fr":2, "To":2 }, { "On":"c", "Fr":2, "To":2 }, { "On":"d", "Fr":2, "To":2 }, { "On":"e", "Fr":2, "To":2 }, { "On":"f", "Fr":2, "To":2 }, { "On":"", "Fr":2, "To":2 }]}
  { "Sn":3,  "Edge":[ { "On":"e", "Fr":3, "To":5 }]}
- { "Sn":4,  "Term":67,  "Edge":[ { "On":"E", "Fr":4, "To":6 }, { "On":"e", "Fr":4, "To":6 }, { "On":"", "Fr":4, "To":4 }]}
+ { "Sn":4,  "Term":68,  "Edge":[ { "On":"E", "Fr":4, "To":6 }, { "On":"e", "Fr":4, "To":6 }, { "On":"", "Fr":4, "To":4 }]}
  { "Sn":5,  "Edge":[ { "On":"o", "Fr":5, "To":7 }]}
  { "Sn":6,  "Edge":[ { "On":"+", "Fr":6, "To":8 }, { "On":"-", "Fr":6, "To":8 }, { "On":"", "Fr":6, "To":9 }]}
  { "Sn":7,  "Edge":[ { "On":"f", "Fr":7, "To":10 }]}
  { "Sn":8,  "Edge":[ { "On":"", "Fr":8, "To":9 }]}
- { "Sn":9,  "Term":67,  "Edge":[ { "On":".", "Fr":9, "To":11 }, { "On":"", "Fr":9, "To":9 }]}
+ { "Sn":9,  "Term":68,  "Edge":[ { "On":".", "Fr":9, "To":11 }, { "On":"", "Fr":9, "To":9 }]}
  { "Sn":10,  "Edge":[ ]}
- { "Sn":11,  "Term":67,  "Edge":[ { "On":"", "Fr":11, "To":11 }]}
+ { "Sn":11,  "Term":68,  "Edge":[ { "On":"", "Fr":11, "To":11 }]}
 ]}

@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/pschlump/dbgo"
+	"github.com/pschlump/lexie/in"
 )
 
 // -----------------------------------------------------------------------------------------------------------------------------
@@ -203,11 +204,16 @@ func (tl *TokenList) DumpTokenBuffer() {
 	for ii, jj := range tl.EndIdx {
 		fmt.Printf("\tEndIdx = %d -> %d\n", ii, jj)
 	}
+
+	// xyzzy --
+	dbgo.Printf("%(blue)At: %(LF) -- Output Token Buffer%(reset)\n")
+	// xyzzy --
+
 	fmt.Printf("TokenBuffer:\n")
-	fmt.Printf("\t%3s %-5s %8s %-20s %s\n", "row", "TokNo", "sL/C", "Match", "Val")
+	fmt.Printf("\t%3s %-5s/%-15s %8s %-20s %s\n", "row", "TokNo", "Token Name", "sL/C", "Match", "Val")
 	for ii, jj := range tl.TokenData {
-		fmt.Printf("\t%3d %5d %3d/%4d -->>%s<<-- -->%s<-\n", ii, jj.TokNo, jj.LineNo, jj.ColNo, jj.Match, jj.Val)
-		// , jj.Match)
+		tn := in.Lookup_Tok_Name(jj.TokNo)
+		fmt.Printf("\t%3d %5d/%-15s %3d/%4d -->>%s<<-- -->%s<-\n", ii, jj.TokNo, tn, jj.LineNo, jj.ColNo, jj.Match, jj.Val)
 	}
 }
 

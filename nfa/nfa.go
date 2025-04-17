@@ -412,6 +412,7 @@ func (nn *NFA_PoolType) ConvParsedReToNFA(depth int, lr *re.LexReType, CurIn int
 }
 
 func (nn *NFA_PoolType) AddReInfo(Re string, reFlags string, tRuleMatchId int, tRv int, info InfoType) int {
+	dbgo.DbPrintf("db_NFA", "%(yellow)at:%(LF) Re -->>%s<<--\n", Re)
 	nn.IsDirty = true
 	p := len(nn.ReSet)
 	nn.ReSet = append(nn.ReSet, &ReSetType{Re: Re, Rv: tRv, IsDirty: false, HasDot: false, HasNCCL: false, Deleted: false, TRuleMatch: tRuleMatchId})
@@ -432,7 +433,7 @@ func (nn *NFA_PoolType) AddReInfo(Re string, reFlags string, tRuleMatchId int, t
 	CurIn := nn.Pos0Start() // Start new NFA at Init Pos
 	CurStart, Cur := nn.ConvParsedReToNFA(0, lr, CurIn, lr.Tree.Children)
 
-	dbgo.DbPrintf("db_NFA", "CurStar: %d CurEnd: %d, reLen=%d\n", CurStart, Cur, reLen)
+	dbgo.DbPrintf("db_NFA", "CurStar: %d CurEnd: %d, reLen=%d at:%(LF)\n", CurStart, Cur, reLen)
 
 	nn.Pool[Cur].Rv = tRv
 	nn.Pool[Cur].TRuleMatch = tRuleMatchId
@@ -442,6 +443,7 @@ func (nn *NFA_PoolType) AddReInfo(Re string, reFlags string, tRuleMatchId int, t
 	nn.Pool[Cur].Info.NextState = info.NextState
 	nn.Pool[Cur].Info.ReplStr = info.ReplStr
 	nn.ReSet[p].Info = nn.Pool[Cur].Info
+	dbgo.DbPrintf("db_NFA", "%(yellow)at:%(LF)\n")
 	return Cur
 }
 

@@ -63,6 +63,8 @@ var db_test01 = false
 
 func Test_St01(t *testing.T) {
 
+	os.MkdirAll("./test", 0755)
+
 	SymbolTable := NewSymbolTable()
 
 	for ii, vv := range Pb01Test {

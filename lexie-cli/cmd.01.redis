@@ -1,0 +1,4 @@
+set a b
+get b
+expire a 30
+quit

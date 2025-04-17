@@ -11,8 +11,6 @@ const db_flag = false
 
 func Test_Com01(t *testing.T) {
 
-	return
-
 	v := []string{
 		"./t1/a.tpl",
 		"./t1/t2/t3/c.tpl",
@@ -38,13 +36,13 @@ func Test_Com01(t *testing.T) {
 
 	// Tests DirExists
 	if DirExists("./t1/a.tpl") {
-		t.Errorf("DirExists() failed.")
+		t.Errorf("DirExists() failed, test on a file.")
 	}
 	if !DirExists("./t1") {
-		t.Errorf("DirExists() failed.")
+		t.Errorf("DirExists() failed.  Failed to find a directory that exists.")
 	}
 	if DirExists("./t5") {
-		t.Errorf("DirExists() failed.")
+		t.Errorf("DirExists() failed.  Failed with non-nexistent directory.")
 	}
 
 	StashError("s")

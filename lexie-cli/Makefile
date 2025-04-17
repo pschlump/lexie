@@ -32,3 +32,6 @@ test6:
 	./lexie-cli -l ../in/django3.lex -i ./comment.06.tpl
 
 
+# New - redis
+test7:
+	./lexie-cli -l ../in/redis.lex -i ./cmd.01.redis -X db_NFA,match,db_DumpDFAPool,db_DumpPool,db_Matcher_02,db_NFA_LnNo,DumpParseNodes2,db_FlushTokenBeforeAfter,in-echo-machine
