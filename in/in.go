@@ -438,7 +438,7 @@ func ParseMachine(ln string) (aa []string) {
 }
 
 func validateDefType(DefType string) bool {
-	if !com.InArray(DefType, []string{"Tokens", "Machines", "Errors", "ReservedWords"}) {
+	if !com.InArray(DefType, []string{"Tokens", "Machines", "Errors", "ReservedWords", "Options"}) {
 		fmt.Printf("Error Invalid $def type -->%s<--, should be one of \"Tokens\", \"Machines\", \"Errors\", \"ReservedWords\" \n", DefType)
 		return false
 	}
@@ -582,6 +582,8 @@ func (Im *ImType) SavePattern(MNo int, pat string, isEof bool, opt []string, lin
 		case "ReservedWord":
 			x.ReservedWord = true
 			Im.SaveDef("ReservedWords", []string{param}, line_no, file_name)
+		case "Options":
+			Im.SaveDef("Options", []string{param}, line_no, file_name)
 		case "Return":
 			x.Return = true
 		case "Warn":
@@ -947,6 +949,14 @@ func ImReadFile(fn string) (Im *ImType) {
 	// fmt.Printf("%+v\n", Im)
 	Im.OutputImType()
 	return
+}
+
+func Dump_Tok_Map() {
+	// var Tok_map = make(map[int]string)
+	dbgo.Printf("%(cyan)Tok_map:\n")
+	for kk, vv := range Tok_map {
+		dbgo.Printf("%(cyan)\t%3d: %s\n", kk, vv)
+	}
 }
 
 func Lookup_Tok_Name(Tok int) (rv string) {
