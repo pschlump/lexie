@@ -652,16 +652,17 @@ func (Im *ImType) FindValueFor(t string) int {
 	return -1
 }
 
-func (Im *ImType) Lookup(DefType string, t string) int {
+// Lookup will search a specific defined type, Machine, Tokens etc, for the named item 't'.
+func (Im *ImType) Lookup(DefType string, t string) (int, error) {
 	if validateDefType(DefType) {
 		dd := Im.Def.DefsAre[DefType]
 		// fmt.Printf("In %s Looking for %s\n", s, t)
 		if v, ok := dd.NameValue[t]; ok {
 			// fmt.Printf("In %s Found for %s=%d\n", s, t, v)
-			return v
+			return v, nil
 		}
 	}
-	return -1
+	return -1, fmt.Errorf("Missing - did not find the specified key >%s< in >%s<\n", t, DefType)
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------
@@ -774,15 +775,23 @@ func (Im *ImType) FinializeFile() {
 		Im.Def.DefsAre[DefType] = dd
 	}
 
+	var err error
+
 	for _, vv := range Im.Machine {
 		for _, ww := range vv.Rules {
 			if len(ww.RvName) > 0 {
 				// fmt.Printf("%-20s", fmt.Sprintf(" Rv:%d=%s ", ww.Rv, ww.RvName))
-				ww.Rv = Im.Lookup("Tokens", ww.RvName)
+				ww.Rv, err = Im.Lookup("Tokens", ww.RvName)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Invalid token name, >%s< error: %s\n", ww.RvName, err)
+				}
 			}
 			if len(ww.CallName) > 0 {
 				// fmt.Printf("%-20s", fmt.Sprintf(" Call:%d=%s ", ww.Call, ww.CallName))
-				ww.Call = Im.Lookup("Machines", ww.CallName)
+				ww.Call, err = Im.Lookup("Machines", ww.CallName)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Invalid machine to call, >%s< error: %s\n", ww.CallName, err)
+				}
 			}
 		}
 	}
@@ -800,16 +809,18 @@ func (Im *ImType) FinializeFile() {
 			}
 		}
 		for _, ww := range vv.Mixins {
-			ii := Im.Lookup("Machines", ww)
-			if ii >= 0 && ii < len(Im.Machine) {
-				for _, uu := range Im.Machine[ii].Rules {
-					p := Im.LocatePattern(uu, tRules) // A merge operation - if not found then append, else replace
-					if p < 0 {
-						tRules = append(tRules, uu)
+			ii, err := Im.Lookup("Machines", ww)
+			if err != nil {
+				fmt.Printf("Error: Mixin - did not find %s as a machine name, %s\n", ww, err)
+			} else {
+				if ii >= 0 && ii < len(Im.Machine) {
+					for _, uu := range Im.Machine[ii].Rules {
+						p := Im.LocatePattern(uu, tRules) // A merge operation - if not found then append, else replace
+						if p < 0 {
+							tRules = append(tRules, uu)
+						}
 					}
 				}
-			} else {
-				fmt.Printf("Error: Mixin - did not find %s as a machine name\n", ww)
 			}
 		}
 		Im.Machine[kk].Rules = tRules
@@ -934,9 +945,8 @@ func (Im *ImType) OutputImType() {
 
 }
 
-func (Im *ImType) LookupMachine(name string) int {
-	x := Im.Lookup("Machines", name)
-	return x
+func (Im *ImType) LookupMachine(name string) (int, error) {
+	return Im.Lookup("Machines", name)
 }
 
 func ImReadFile(fn string) (Im *ImType) {

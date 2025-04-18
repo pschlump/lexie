@@ -7,8 +7,8 @@ Machine:
 	$def(Errors, Err_Invalid_Char) 	
 	
 	$machine(S_Init)
-	`%`						: Rv(Tok_PCT) 
 	`%}`					: Rv(Tok_CL) 
+	`%`						: Rv(Tok_PCT) 
 	`bb`					: Rv(Tok_BB) 
 	.						: Error(Err_Invalid_Char)
 	$end

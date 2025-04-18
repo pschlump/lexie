@@ -159,6 +159,17 @@ func (pb *PBReadType) PeekRune() (rn rune, done bool) {
 	return
 }
 
+// PeekPeekRune will take a peek, 2 in the future, at what is out there - return the next rune without advancing forward.
+func (pb *PBReadType) PeekPeekRune() (rn rune, done bool) {
+	dbgo.DbPrintf("pbbuf01", "At: %s\n", dbgo.LF())
+	rn0, done0 := pb.NextRune()
+	rn, done = pb.NextRune()
+	done = done0 || done
+	pb.PbRune(rn)
+	pb.PbRune(rn0)
+	return
+}
+
 // Take any pushed back stuff and put it into a buffer.
 func (pb *PBReadType) pushbackIntoBuffer() {
 	bl := pb.PbTop

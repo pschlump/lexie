@@ -24,16 +24,16 @@ import (
 )
 
 var opts struct {
-	Config      string `short:"c" long:"config"      description:"Config Input File"       default:"./config.json"` //
-	Tokens      string `short:"t" long:"tokens"      description:"Token Output File"          default:""`           //     *3* Output from running machine on Input File
-	ReadMachine string `short:"r" long:"read"        description:"Machine Input File"         default:""`           // <x>
-	Input       string `short:"i" long:"input"       description:"Input File"              default:""`              //
-	Output      string `short:"o" long:"output"      description:"Output File"             default:""`              //
-	Machine     string `short:"m" long:"machine"     description:"Machine Output File"        default:""`           // <x> Output in .mlex format
-	TraceOut    string `short:"t" long:"trace"       description:"Trace Output"            default:""`              //
-	Debug       string `short:"X" long:"debug"       description:"Debug Flags"             default:""`              //
-	Echo        string `short:"e" long:"echo"        description:"Output Machine "            default:""`           //     *** <x> Output in .mlex format
-	LexPat      string `short:"l" long:"lex"         description:"Lex Input File"             default:""`           //     *1* Input
+	Config      string `short:"c" long:"config"      description:"Config Input File"       default:"./config.json"`     //
+	Tokens      string `short:"t" long:"tokens"      description:"Token Output File"       default:""`                  //     *3* Output from running machine on Input File
+	ReadMachine string `short:"r" long:"read"        description:"Machine Input File"      default:""`                  // <x>
+	Input       string `short:"i" long:"input"       description:"Input File"              default:""`                  //
+	Output      string `short:"o" long:"output"      description:"Output File"             default:""`                  //
+	Machine     string `short:"m" long:"machine"     description:"Machine Output File"     default:""`                  // <x> Output in .mlex format
+	Debug       string `short:"X" long:"debug"       description:"Debug Flags"             default:""`                  //
+	Echo        string `short:"e" long:"echo"        description:"Output Machine "         default:""`                  //     *** <x> Output in .mlex format
+	LexPat      string `short:"l" long:"lex"         description:"Lex Input File"          default:"../in/django3.lex"` //     *1* Input
+	// TraceOut    string `short:"t" long:"trace"       description:"Trace Output"            default:""`                  //
 }
 
 func main() {
@@ -66,7 +66,7 @@ func main() {
 
 	// ------------------------------------------------------ input machine  --------------------------------------------------------------
 	if opts.LexPat != "" {
-		pt.Lex.NewReadFile(opts.LexPat) // pstk.Lex.NewReadFile("../in/django3.lex")
+		pt.Lex.NewReadFile(opts.LexPat, "ringo") // pstk.Lex.NewReadFile("../in/django3.lex")
 	} else if opts.ReadMachine != "" {
 		fmt.Printf("Should input machine at this point\n")
 		// xyzzy
@@ -82,10 +82,24 @@ func main() {
 
 	// -------------------------------------------------- start scanning process  ----------------------------------------------------------
 	if opts.Tokens != "" {
-		fp, _ = filelib.Fopen(opts.Tokens, "w")
+		fp, err = filelib.Fopen(opts.Tokens, "w")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "unable to open >%s< for output: %s\n", opts.Tokens, err)
+			os.Exit(1)
+		}
 	} else {
 		fp = os.Stdout
 	}
+
+	os.MkdirAll("./out", 0755)
+	fCnst, err := filelib.Fopen("./out/const-stuff.go", "w")
+	if err != nil {
+		// xyzzy
+	}
+	fmt.Fprintf(fCnst, `
+package Stuff
+
+`)
 
 	if opts.Input != "" {
 

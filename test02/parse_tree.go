@@ -1146,6 +1146,8 @@ func FxEndIf(callNo int, pt *Parse2Type, Context *eval.ContextType, curTree *MtT
 // 	{% for i = 0; i < x; i += 4 %}
 // 	{% for i = 0; i < x; %}
 // 	{% for expr/call %}
+// 	{% for init(); expr/call; step() %}
+// 	{% for condition/expression %}
 // 	{% for true %}
 //
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------

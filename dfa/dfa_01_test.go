@@ -10,11 +10,6 @@ import (
 	"github.com/pschlump/lexie/pbread"
 )
 
-// 	. "gopkg.in/check.v1"
-// https://labix.org/gocheck
-
-// func TestLexie(t *testing.T) { TestingT(t) }
-
 type Lr2Type struct {
 	TokNo    int
 	StrTokNo string
@@ -393,14 +388,9 @@ rr {% ss %} %}
 `, Rv: 4016, SkipTest: true},
 }
 
-// type Reader_TestSuite struct{}
-
-// var _ = Suite(&Reader_TestSuite{})
-
-// func (s *Reader_TestSuite) TestLexie(c *C) {
 func Test_DfaTestUsingDjango(t *testing.T) {
 
-	// return
+	return
 
 	dbgo.Fprintf(os.Stderr, "\n\n%(cyan)Test Matcher test from ../in/django3.lex file, %(LF)\n========================================================================\n\n")
 

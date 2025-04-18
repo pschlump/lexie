@@ -33,6 +33,7 @@ import (
 
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/lexie/nfa"
 	"github.com/pschlump/lexie/re"
 	"github.com/pschlump/lexie/smap"
@@ -769,18 +770,18 @@ Width = %d
 			}
 
 			fmt.Fprintf(fo, "SMap = %+v\n", dt.SMap)
-			fmt.Fprintf(fo, "%-6s : %-4s  %-5s %-5s %-4s %-4s    | ", "State", "Rv", "Actn", "Hard", "Next", "Leng")
+			fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "State", "Rv/Name", "Actn", "Hard", "Next", "Leng")
 			for jj := 0; jj < dt.Width; jj++ {
 				fmt.Fprintf(fo, "   %2d", jj)
 			}
 			fmt.Fprintf(fo, "\n")
-			fmt.Fprintf(fo, "%-6s : %-4s  %-5s %-5s %-4s %-4s    | ", "======", "====", "-----", "-----", "----", "----")
+			fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "======", "====/===============", "-----", "-----", "----", "----")
 			for jj := 0; jj < dt.Width; jj++ {
 				fmt.Fprintf(fo, "   %2s", "--")
 			}
 			fmt.Fprintf(fo, "\n")
 
-			fmt.Fprintf(fo, "%-6s : %-4s  %-5s %-5s %-4s %-4s    | ", " ", " ", " ", " ", " ", " ")
+			fmt.Fprintf(fo, "%-6s : %-4s/%-15s  %-5s %-5s %-4s %-4s    | ", " ", " ", " ", " ", " ", " ", " ")
 			for jj := 0; jj < dt.Width; jj++ {
 				if SigmaArray[jj] < ' ' {
 					s := fmt.Sprintf("%q", string(SigmaArray[jj]))
@@ -792,20 +793,25 @@ Width = %d
 			}
 			fmt.Fprintf(fo, "\n")
 
-			fmt.Fprintf(fo, "%-6s : %-4s  %-5s %-5s %-4s %-4s    | ", "======", "====", "-----", "-----", "----", "----")
+			fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "======", "====/===============", "-----", "-----", "----", "----")
 			for jj := 0; jj < dt.Width; jj++ {
 				fmt.Fprintf(fo, "   %2s", "--")
 			}
 			fmt.Fprintf(fo, "\n")
+
+			fx := func(rv int) string {
+				return in.LookupTokenName(rv)
+			}
+
 			for ii, vv := range dt.Machine {
 				tau := " "
 				if vv.Tau {
 					tau = "\u03c4"
 				}
 				if vv.Info.Action == 0 {
-					fmt.Fprintf(fo, "m[%3d] : %4d%s %5s %5v %4d %4d    | ", ii, vv.Rv, tau, "", vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
+					fmt.Fprintf(fo, "m[%3d] : %4d/%-15s%s %5s %5v %4d %4d    | ", ii, vv.Rv, fx(vv.Rv), tau, "", vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
 				} else {
-					fmt.Fprintf(fo, "m[%3d] : %4d%s %5x %5v %4d %4d    | ", ii, vv.Rv, tau, vv.Info.Action, vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
+					fmt.Fprintf(fo, "m[%3d] : %4d/%-15s%s %5x %5v %4d %4d    | ", ii, vv.Rv, fx(vv.Rv), tau, vv.Info.Action, vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
 				}
 				for _, ww := range vv.To {
 					if ww == -1 {
