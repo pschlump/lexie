@@ -154,12 +154,16 @@ func (lex *Lexie) GetToken() (AToken tok.Token) {
 	return
 }
 
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// FinializeMachines will put the final touches on each macine.
 func (lex *Lexie) FinializeMachines() {
-
 	for ii := range lex.DFA_Machine {
+		// Assign unique ID to each table.
+		lex.DFA_Machine[ii].MachineId = ii
 		dfa := lex.DFA_Machine[ii]
-		dfa.FinializeDFA()
+		// dfa.FinializeDFA()
+		// Take state machine graph and covnert into tables.
+		dt := dfa.ConvertToTable()
+		dfa.MTab = &dt
 	}
 }
 
@@ -256,7 +260,7 @@ func (lex *Lexie) NewReadFile(path, outTag string) (err error) {
 		lex.NFA_Machine = append(lex.NFA_Machine, Nfa)
 
 		Dfa := NewDFA_Pool()
-		Dfa.ConvNDA_to_DFA(Nfa)
+		Dfa.ConvertNFAToDFA(Nfa)
 		if dbgo.IsDbOn("db_Matcher_02") {
 			dbgo.DbPrintf("match", "Final DFA for ->%s<-\n", nm)
 			Dfa.DumpPool(false)

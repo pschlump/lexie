@@ -23,6 +23,14 @@ type MatchContextType struct {
 	Dfa *DFA_PoolType
 }
 
+func (lex *Lexie) AssignMacineId(rrr *pbread.PBReadType, s_init string) {
+	for ii := range lex.DFA_Machine {
+		// dfa := lex.DFA_Machine[ii]
+		// dfa.MachineId = ii
+		lex.DFA_Machine[ii].MachineId = ii
+	}
+}
+
 // MatcherLexieTable will use a push-back reader, `rrr`, a lexie machine, `lex`, and the name of a machine
 // to match the input data and convert it into a stream of tokens.
 func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
@@ -33,24 +41,29 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	var SMatch, filename string
 
 	lex.FinializeMachines()
+	lex.AssignMacineId(rrr, s_init)
 
 	init, err := lex.Im.LookupMachine(s_init)
 	if err != nil {
 		dbgo.Fprintf(os.Stderr, "Error: invalid machine name >%s< - not found, %s\n", s_init, err)
 		return
 	}
-	for ii := range lex.DFA_Machine {
-		if db1 {
-			fmt.Printf("At: %s\n", dbgo.LF())
+	if dbgo.IsDbOn("output-machine") {
+		for ii := range lex.DFA_Machine {
+			dbgo.Printf("\n\n%(blue)Machine[%d] =%(reset)\n", ii)
+			dbgo.Printf("%(blue)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%(reset)\n", ii)
+			dfa = lex.DFA_Machine[ii]
+			dfa.PrintStateMachine(os.Stdout, "text")
+			lex.OutputActionFlags(dfa)
 		}
-		dbgo.DbPrintf("match", "Machine[%d] =\n", ii)
-		dfa = lex.DFA_Machine[ii]
-		dfa.MachineId = ii
-		dfa.OutputInFormat(os.Stdout, "text")
-
-		lex.OutputActionFlags(dfa)
 	}
+
 	dfa = lex.DFA_Machine[init]
+
+	// -----------------------------------------------------------------------------------------------------------
+	// Machines are actually complete at this point - should be able to generate code.
+	// 1.  xyzzy2145 - generate code.
+	// -----------------------------------------------------------------------------------------------------------
 
 	ctx := NewContext(dfa.MTab.InitState, nil)
 	ctx_stack := make([]*MatchContextType, 0, 100)
@@ -75,6 +88,8 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	AtEOF := false
 	done := false
 	TokStart := 0
+	p_line_no := 1
+	p_col_no := 1
 
 	Next := func() (rn rune) {
 		rn, done := rrr.NextRune()
@@ -87,6 +102,11 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 		pos_no++
 		return
 	}
+
+	Accept := func() {
+		SMatch += string(rn)
+	}
+	_ = Accept
 
 	Peek := func() (rn rune) {
 		rn, done = rrr.PeekRune()
@@ -107,8 +127,6 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	}
 	_ = PeekPeek
 
-	var p_line_no int = 1
-	var p_col_no int = 1
 	SaveToken := func() {
 		start := pos_no - dfa.MTab.Machine[ctx.St].Info.MatchLength
 		if dfa.MTab.Machine[ctx.St].Info.MatchLength == 0 {
@@ -121,10 +139,10 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 
 		lRv := dfa.MTab.Machine[ctx.St].Rv
 
-		// xyzzy - this is the spot to convert from Tok_ID && ReservedWord -> a new ID
-		// lex.Im.St.Lookup.LookupSymbol(SMatch)
-		// func (st *SymbolTable) LookupSymbol(name string) (as *SymbolType, err error) {
-		// vv=in.ImDefinedValueType {Seq:1 WhoAmI:ReservedWords NameValueStr:map[and:Tok_L_AND not:Tok_not as:Tok_as in:Tok_in bor:Tok_B_OR band:Tok_B_AND xor:Tok_XOR or:Tok_L_OR true:Tok_true false:Tok_false export:Tok_export] NameValue:map[and:4 true:32 as:34 bor:42 band:41 xor:64 or:5 false:33 not:31 export:35 in:28] Reverse:map[5:or 32:true 42:bor 31:not 41:band 35:export 33:false 28:in 64:xor 4:and 34:as] SeenAt:map[bor:{LineNo:[39] FileName:[unk-file]} band:{LineNo:[39] FileName:[unk-file]} and:{LineNo:[39] FileName:[unk-file]} true:{LineNo:[39] FileName:[unk-file]} export:{LineNo:[39] FileName:[unk-file]} in:{LineNo:[39] FileName:[unk-file]} as:{LineNo:[39] FileName:[unk-file]} or:{LineNo:[39] FileName:[unk-file]} false:{LineNo:[39] FileName:[unk-file]} not:{LineNo:[39 39] FileName:[unk-file unk-file]} xor:{LineNo:[39] FileName:[unk-file]}]}, File: /Users/corwin/Projects/pongo2/lexie/dfa/match.go LineNo:260
+		// This is the spot to convert from Tok_ID && ReservedWord -> a new ID
+		// 		lex.Im.St.Lookup.LookupSymbol(SMatch)
+		// 		func (st *SymbolTable) LookupSymbol(name string) (as *SymbolType, err error) {
+		// 		vv=in.ImDefinedValueType {Seq:1 WhoAmI:ReservedWords NameValueStr:map[and:Tok_L_AND not:Tok_not as:Tok_as in:Tok_in bor:Tok_B_OR band:Tok_B_AND xor:Tok_XOR or:Tok_L_OR true:Tok_true false:Tok_false export:Tok_export] NameValue:map[and:4 true:32 as:34 bor:42 band:41 xor:64 or:5 false:33 not:31 export:35 in:28] Reverse:map[5:or 32:true 42:bor 31:not 41:band 35:export 33:false 28:in 64:xor 4:and 34:as] SeenAt:map[bor:{LineNo:[39] FileName:[unk-file]} band:{LineNo:[39] FileName:[unk-file]} and:{LineNo:[39] FileName:[unk-file]} true:{LineNo:[39] FileName:[unk-file]} export:{LineNo:[39] FileName:[unk-file]} in:{LineNo:[39] FileName:[unk-file]} as:{LineNo:[39] FileName:[unk-file]} or:{LineNo:[39] FileName:[unk-file]} false:{LineNo:[39] FileName:[unk-file]} not:{LineNo:[39 39] FileName:[unk-file unk-file]} xor:{LineNo:[39] FileName:[unk-file]}]}, File: /Users/corwin/Projects/pongo2/lexie/dfa/match.go LineNo:260
 		if dfa.MTab.Machine[ctx.St].Info.ReservedWord {
 			dbgo.DbPrintf("rw-lookup", "\n\nFound a  reserved word ------------------------------------------------------------------------ %(LF)\n")
 			dbgo.DbPrintf("rw-lookup", "SMatch >%s<, %s\n", SMatch, dbgo.LF())

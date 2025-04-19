@@ -2,25 +2,10 @@
 // D F A - Part of Lexie Lexical Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 1.0.8
 //
-
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-/*
-	1. Get .Tau set and reported in table-state machine
-	2. Fix the new matcher
-*/
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-
-// -----------------------------------------------------------------------------------------------------------------------------------------------
 //
 // DFA - Deterministic Finite Automata.
 //
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-//
-// Known Issues:
-//
-// -----------------------------------------------------------------------------------------------------------------------------------------------
 
 package dfa
 
@@ -365,32 +350,29 @@ func (dfa *DFA_PoolType) GetDFAName(StateSet []int) int {
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 func (dfa *DFA_PoolType) AddEdge(fr, to int, on string) {
+	dfa.Pool[fr].Next2 = append(dfa.Pool[fr].Next2, nfa.TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: dbgo.LINE(2)})
+	// OLD:
 	// Check if edge already exists - if so skip this
-	if !dfa.EdgeExists(fr, to, on) {
-		dfa.Pool[fr].Next2 = append(dfa.Pool[fr].Next2, nfa.TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: dbgo.LINE(2)})
-	}
+	// if !dfa.edgeExists(fr, to, on) {
+	// 	dfa.Pool[fr].Next2 = append(dfa.Pool[fr].Next2, nfa.TransitionType{IsLambda: false, On: on, To: to, From: fr, LineNo: dbgo.LINE(2)})
+	// }
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-func (dfa *DFA_PoolType) EdgeExists(fr, to int, on string) bool {
-	//	for _, vv := range dfa.Pool[fr].Next2 {
-	//		if vv.To == to && vv.On == on {
-	//			return true
-	//		}
-	//	}
-	return false
-}
+// func (dfa *DFA_PoolType) edgeExists(fr, to int, on string) bool {
+// 	//	for _, vv := range dfa.Pool[fr].Next2 {
+// 	//		if vv.To == to && vv.On == on {
+// 	//			return true
+// 	//		}
+// 	//	}
+// 	return false
+// }
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-//
-// func RunDFA ( ) - Run the DFA on some input and report back the set of tokens
-// Tokens must contain - Start Line No, Col No, File Name, End*, Macro Translation(pushback)
-//
-// Note: http://www.w3schools.com/charsets/ref_utf_dingbats.asp
-//       http://www.utf8-chartable.de/unicode-utf8-table.pl?start=768
-//
-
-func (dfa *DFA_PoolType) ConvNDA_to_DFA(nn *nfa.NFA_PoolType) {
+// ConvertNFAToDFA will convert from a non-deterministic finite state automatata to a deterministic one.
+func (dfa *DFA_PoolType) ConvertNFAToDFA(nn *nfa.NFA_PoolType) {
+	// Note: http://www.w3schools.com/charsets/ref_utf_dingbats.asp
+	//       http://www.utf8-chartable.de/unicode-utf8-table.pl?start=768
+	// Tokens must contain - Start Line No, Col No, File Name, End*, Macro Translation(pushback)
 	StartState := nn.InitState
 	dfa.NoneVisited()
 
@@ -729,105 +711,99 @@ func (dfa *DFA_PoolType) ConvertToTable() (rv dfaTable) {
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-func (dfa *DFA_PoolType) FinializeDFA() {
-
-	dt := dfa.ConvertToTable()
-	dfa.MTab = &dt
-
-}
+// func (dfa *DFA_PoolType) FinializeDFA() {
+// 	dt := dfa.ConvertToTable()
+// 	dfa.MTab = &dt
+// }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-func (dfa *DFA_PoolType) OutputInFormat(fo io.Writer, format string) {
+func (dfa *DFA_PoolType) PrintStateMachine(fo io.Writer, format string) {
 
-	//	dfa.FinializeDFA()
 	dt := dfa.MTab
 
-	//dt := dfa.ConvertToTable()
-	//dfa.MTab = &dt
+	switch format {
+	case "text":
 
-	if dbgo.IsDbOn("output-machine") {
-
-		if format == "text" {
-
-			fmt.Fprintf(fo, `
+		fmt.Fprintf(fo, `
 Sigma = %q
 InitState = %d
 N_States = %d
 Width = %d
 `, dfa.Sigma, dt.InitState, dt.N_States, dt.Width)
 
-			SigmaArray := make([]rune, dt.Width, dt.Width)
-			pp := 0
-			for jj := 0; jj < dt.Width; jj++ {
-				if pp < len(dfa.Sigma) {
-					rn, sz := utf8.DecodeRune([]byte(dfa.Sigma[pp:]))
-					SigmaArray[jj] = rn
-					pp += sz
-				} else {
-					// SigmaArray[jj] = rune(0xFBAD)
-					SigmaArray[jj] = dt.SMap.NoMap
-				}
+		SigmaArray := make([]rune, dt.Width, dt.Width)
+		pp := 0
+		for jj := 0; jj < dt.Width; jj++ {
+			if pp < len(dfa.Sigma) {
+				rn, sz := utf8.DecodeRune([]byte(dfa.Sigma[pp:]))
+				SigmaArray[jj] = rn
+				pp += sz
+			} else {
+				// SigmaArray[jj] = rune(0xFBAD)
+				SigmaArray[jj] = dt.SMap.NoMap
 			}
-
-			fmt.Fprintf(fo, "SMap = %+v\n", dt.SMap)
-			fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "State", "Rv/Name", "Actn", "Hard", "Next", "Leng")
-			for jj := 0; jj < dt.Width; jj++ {
-				fmt.Fprintf(fo, "   %2d", jj)
-			}
-			fmt.Fprintf(fo, "\n")
-			fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "======", "====/===============", "-----", "-----", "----", "----")
-			for jj := 0; jj < dt.Width; jj++ {
-				fmt.Fprintf(fo, "   %2s", "--")
-			}
-			fmt.Fprintf(fo, "\n")
-
-			fmt.Fprintf(fo, "%-6s : %-4s/%-15s  %-5s %-5s %-4s %-4s    | ", " ", " ", " ", " ", " ", " ", " ")
-			for jj := 0; jj < dt.Width; jj++ {
-				if SigmaArray[jj] < ' ' {
-					s := fmt.Sprintf("%q", string(SigmaArray[jj]))
-					s = s[1:]
-					fmt.Fprintf(fo, "   %2s", s[0:len(s)-1])
-				} else {
-					fmt.Fprintf(fo, "   %2s", string(SigmaArray[jj]))
-				}
-			}
-			fmt.Fprintf(fo, "\n")
-
-			fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "======", "====/===============", "-----", "-----", "----", "----")
-			for jj := 0; jj < dt.Width; jj++ {
-				fmt.Fprintf(fo, "   %2s", "--")
-			}
-			fmt.Fprintf(fo, "\n")
-
-			fx := func(rv int) string {
-				return in.LookupTokenName(rv)
-			}
-
-			for ii, vv := range dt.Machine {
-				tau := " "
-				if vv.Tau {
-					tau = "\u03c4"
-				}
-				if vv.Info.Action == 0 {
-					fmt.Fprintf(fo, "m[%3d] : %4d/%-15s%s %5s %5v %4d %4d    | ", ii, vv.Rv, fx(vv.Rv), tau, "", vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
-				} else {
-					fmt.Fprintf(fo, "m[%3d] : %4d/%-15s%s %5x %5v %4d %4d    | ", ii, vv.Rv, fx(vv.Rv), tau, vv.Info.Action, vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
-				}
-				for _, ww := range vv.To {
-					if ww == -1 {
-						// fmt.Fprintf(fo, "   %2s", "\u26d4") // No Entry
-						fmt.Fprintf(fo, "   %2s", "\u2629")
-					} else {
-						fmt.Fprintf(fo, "   %2d", ww)
-					}
-				}
-				fmt.Fprintf(fo, "\n")
-			}
-			fmt.Fprintf(fo, "\n")
-
-		} else {
-			fmt.Fprintf(os.Stderr, "Invalid Output Format for dfa.OutputInFomrat, %s\n", format)
 		}
+
+		fmt.Fprintf(fo, "SMap = %+v\n", dt.SMap)
+		fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "State", "Rv/Name", "Actn", "Hard", "Next", "Leng")
+		for jj := 0; jj < dt.Width; jj++ {
+			fmt.Fprintf(fo, "   %2d", jj)
+		}
+		fmt.Fprintf(fo, "\n")
+		fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "======", "====/===============", "-----", "-----", "----", "----")
+		for jj := 0; jj < dt.Width; jj++ {
+			fmt.Fprintf(fo, "   %2s", "--")
+		}
+		fmt.Fprintf(fo, "\n")
+
+		fmt.Fprintf(fo, "%-6s : %-4s/%-15s  %-5s %-5s %-4s %-4s    | ", " ", " ", " ", " ", " ", " ", " ")
+		for jj := 0; jj < dt.Width; jj++ {
+			if SigmaArray[jj] < ' ' {
+				s := fmt.Sprintf("%q", string(SigmaArray[jj]))
+				s = s[1:]
+				fmt.Fprintf(fo, "   %2s", s[0:len(s)-1])
+			} else {
+				fmt.Fprintf(fo, "   %2s", string(SigmaArray[jj]))
+			}
+		}
+		fmt.Fprintf(fo, "\n")
+
+		fmt.Fprintf(fo, "%-6s : %-20s  %-5s %-5s %-4s %-4s    | ", "======", "====/===============", "-----", "-----", "----", "----")
+		for jj := 0; jj < dt.Width; jj++ {
+			fmt.Fprintf(fo, "   %2s", "--")
+		}
+		fmt.Fprintf(fo, "\n")
+
+		fx := func(rv int) string {
+			return in.LookupTokenName(rv)
+		}
+
+		for ii, vv := range dt.Machine {
+			tau := " "
+			if vv.Tau {
+				tau = "\u03c4"
+			}
+			if vv.Info.Action == 0 {
+				fmt.Fprintf(fo, "m[%3d] : %4d/%-15s%s %5s %5v %4d %4d    | ", ii, vv.Rv, fx(vv.Rv), tau, "", vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
+			} else {
+				fmt.Fprintf(fo, "m[%3d] : %4d/%-15s%s %5x %5v %4d %4d    | ", ii, vv.Rv, fx(vv.Rv), tau, vv.Info.Action, vv.Info.HardMatch, vv.Info.NextState, vv.Info.MatchLength)
+			}
+			for _, ww := range vv.To {
+				if ww == -1 {
+					// fmt.Fprintf(fo, "   %2s", "\u26d4") // No Entry
+					fmt.Fprintf(fo, "   %2s", "\u2629")
+				} else {
+					fmt.Fprintf(fo, "   %2d", ww)
+				}
+			}
+			fmt.Fprintf(fo, "\n")
+		}
+		fmt.Fprintf(fo, "\n")
+
+		// should have 'json' or 'go' for output format?
+	default:
+		fmt.Fprintf(os.Stderr, "Invalid Output Format for dfa.OutputInFomrat, %s,  should be 'text'.\n", format)
+		os.Exit(1)
 	}
 }
 
