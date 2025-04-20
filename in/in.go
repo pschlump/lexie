@@ -34,6 +34,7 @@ import (
 
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
+	"github.com/pschlump/pluto/g_lib"
 )
 
 type ImMachineType struct {
@@ -438,7 +439,7 @@ func ParseMachine(ln string) (aa []string) {
 }
 
 func validateDefType(DefType string) bool {
-	if !com.InArray(DefType, []string{"Tokens", "Machines", "Errors", "ReservedWords", "Options"}) {
+	if !g_lib.InArray(DefType, []string{"Tokens", "Machines", "Errors", "ReservedWords", "Options"}) {
 		fmt.Printf("Error Invalid $def type -->%s<--, should be one of \"Tokens\", \"Machines\", \"Errors\", \"ReservedWords\" \n", DefType)
 		return false
 	}

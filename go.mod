@@ -21,6 +21,8 @@ require (
 	github.com/pschlump/go-colorable v0.0.24 // indirect
 	github.com/pschlump/go-isatty v0.0.24 // indirect
 	github.com/pschlump/json v1.12.1 // indirect
+	github.com/pschlump/pluto v0.0.15 // indirect
+	golang.org/x/exp v0.0.0-20230304125523-9ff063c70017 // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 )

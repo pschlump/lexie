@@ -54,6 +54,8 @@ func (tt TokenType)String() string {
 }
 `)
 
+	dbgo.Fprintf(fp, "\n\n/* Printed At:%(LF) defs are = lex.Im.Def.DefsAre = %s */\n", dbgo.SVarI(lex.Im.Def.DefsAre))
+
 	fp.Close()
 
 	out, err := exec.Command("goimorts", "-w", fn).Output()

@@ -5,6 +5,8 @@ $def(Machines, S_Init)
 
 $def(Errors, Err_Invalid_Char) 	
 
+$def(Options, GoPackageName=test03package)
+
 $machine(S_Init)
 `%}`					: Rv(Tok_CL) 
 `%`						: Rv(Tok_PCT) 
