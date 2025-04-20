@@ -2,7 +2,6 @@
 // C L I - Part of Lexie Lexical Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 1.0.8
 //
 
 /*

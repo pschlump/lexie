@@ -47,6 +47,8 @@ func Test_03_DfaTest03(t *testing.T) {
 
 	in.DumpTokenMap()
 
+	GenerateTokenMap("./out/token_map.go")
+
 	for ii, vv := range Lexie03Data {
 
 		if vv.SkipTest {
@@ -57,29 +59,29 @@ func Test_03_DfaTest03(t *testing.T) {
 
 		// r := strings.NewReader(vv.Inp)
 		r := pbread.NewPbRead()                                                                                  // Create a push-back buffer
-		dbgo.DbPrintf("trace-dfa-01 (../in/test03_dfa.lex scanner model)", "At: %(LF), Input: ->%s<-\n", vv.Inp) //
+		dbgo.DbPrintf("trace-dfa-03 (../in/test03_dfa.lex scanner model)", "At: %(LF), Input: ->%s<-\n", vv.Inp) //
 		r.PbString(vv.Inp)                                                                                       // set the input to the string
 		r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii))                                                             // simulate  file = sf-%d.txt, set line to 1
-		dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")                                                             //
+		dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")                                                             //
 		lex.MatcherLexieTable(r, "S_Init")                                                                       // Run the matcing machine
-		dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")                                                             //
+		dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")                                                             //
 
 		// Results are in lex.TokList.TokenData ************************************************************************************
 
 		if len(vv.ExpectedTokens) > 0 {
-			dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+			dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 			if len(lex.TokList.TokenData) != len(vv.ExpectedTokens) {
 				// fmt.Printf("Lengths did not match, %s", dbgo.SVarI(lex.TokList.TokenData))
 				// c.Check(len(lex.TokList.TokenData), Equals, len(vv.ExpectedTokens)) // xyzzy
-				dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+				dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 				t.Errorf("Length did not match, expected %d tokens, got %d\n", len(lex.TokList.TokenData), len(vv.ExpectedTokens))
 			} else {
 				for i := 0; i < len(vv.ExpectedTokens); i++ {
-					dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+					dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 					if vv.ExpectedTokens[i].StrTokNo != "" {
 						// func in.LookupTokenName(Tok int) (rv string) { -- use to repace token numbers '38' with Token Name and lookup for test
 						// c.Check(vv.ExpectedTokens[i].StrTokNo, Equals, in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo))) // xyzzy
-						dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+						dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 						if vv.ExpectedTokens[i].StrTokNo != in.LookupTokenName(int(lex.TokList.TokenData[i].TokNo)) {
 							t.Errorf("Invalid token found.  Expected %d/%s got %d/%s\n",
 								vv.ExpectedTokens[i].TokNo, in.LookupTokenName(int(vv.ExpectedTokens[i].TokNo)),
@@ -87,7 +89,7 @@ func Test_03_DfaTest03(t *testing.T) {
 							)
 						}
 					} else {
-						dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+						dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 						// c.Check(vv.ExpectedTokens[i].TokNo, Equals, int(lex.TokList.TokenData[i].TokNo)) // xyzzy
 						if vv.ExpectedTokens[i].TokNo != int(lex.TokList.TokenData[i].TokNo) {
 							t.Errorf("Invalid token found.  Expected %d/%s got %d/%s\n",
@@ -98,17 +100,17 @@ func Test_03_DfaTest03(t *testing.T) {
 					}
 					/*
 						// c.Check(vv.ExpectedTokens[i].Match, Equals, lex.TokList.TokenData[i].Match) // xyzzy
-						dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+						dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 						if vv.ExpectedTokens[i].LineNo > 0 {
-							dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+							dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 							// c.Check(vv.ExpectedTokens[i].LineNo, Equals, lex.TokList.TokenData[i].LineNo) // xyzzy
 						}
 						if vv.ExpectedTokens[i].ColNo > 0 {
-							dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+							dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 							// c.Check(vv.ExpectedTokens[i].ColNo, Equals, lex.TokList.TokenData[i].ColNo) // xyzzy
 						}
 						if vv.ExpectedTokens[i].FileName != "" {
-							dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+							dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 							// c.Check(vv.ExpectedTokens[i].FileName, Equals, lex.TokList.TokenData[i].FileName) // xyzzy
 						}
 					*/
@@ -116,7 +118,7 @@ func Test_03_DfaTest03(t *testing.T) {
 			}
 		}
 
-		dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+		dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 		fmt.Printf("Test:%s ------------------------- End --------------------------\n\n", vv.Test)
 
 	}

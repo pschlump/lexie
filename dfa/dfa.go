@@ -800,7 +800,9 @@ Width = %d
 		}
 		fmt.Fprintf(fo, "\n")
 
+	case "go":
 		// should have 'json' or 'go' for output format?
+
 	default:
 		fmt.Fprintf(os.Stderr, "Invalid Output Format for dfa.OutputInFomrat, %s,  should be 'text'.\n", format)
 		os.Exit(1)
