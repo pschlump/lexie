@@ -47,7 +47,7 @@ func Test_03_DfaTest03(t *testing.T) {
 
 	in.DumpTokenMap()
 
-	GenerateTokenMap("./out/token_map.go")
+	lex.GenerateTokenMap("./out/token_map.go")
 
 	for ii, vv := range Lexie03Data {
 
