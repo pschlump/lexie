@@ -89,6 +89,7 @@ import (
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/pbread"
 	"github.com/pschlump/lexie/ringo"
+	"github.com/pschlump/pluto/g_lib"
 	"github.com/russross/blackfriday"
 )
 
@@ -294,7 +295,7 @@ func main() {
 			yyt := yy
 			fmt.Printf("Process %s to %s\n", yy, mO[ii])
 			ext := filepath.Ext(yy)
-			if Options.ConvertMdToHtml && com.InArray(ext, Options.MdExtensions) { // if ext == ".md" || ext == ".markdown" {
+			if Options.ConvertMdToHtml && g_lib.InArray(ext, Options.MdExtensions) { // if ext == ".md" || ext == ".markdown" {
 				fmt.Printf("\t Convetting from MD to HTML\n")
 				in := yy
 				//yyt = "./tmp/" + com.Basename(yy) + ".html"	// old code - not using a Tempfile
@@ -602,7 +603,7 @@ func CopyInAssets(optsSiteName string, BaseAssets string, SiteAssets string, opt
 			// if base-dir-name is not in dirs then add base dir name
 			t_dirs = com.ReplaceEach(t_dirs, dir, optsOutput)
 			for _, x := range t_dirs {
-				if !com.InArray(x, dirs) {
+				if !g_lib.InArray(x, dirs) {
 					dirs = append(dirs, x)
 				}
 			}

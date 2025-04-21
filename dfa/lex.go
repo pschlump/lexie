@@ -115,19 +115,44 @@ func (lex *Lexie) DumpTokenBuffer2(fo io.Writer) {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-func (lex *Lexie) OutputActionFlags(dfa *DFA_PoolType) {
-	dbgo.DbPrintf("match", "Action Flags Are:\n")
-	// com. ConvertActionFlagToString(kk int) (rv string) {
-	dn := make(map[int]bool)
-	for _, vv := range dfa.Pool {
-		if vv.IsUsed {
-			if vv.Info.Action != 0 {
-				if _, ok := dn[vv.Info.Action]; !ok {
-					dbgo.DbPrintf("match", "    %2x: %s\n", vv.Info.Action, com.ConvertActionFlagToString(vv.Info.Action))
-					dn[vv.Info.Action] = true
+func (lex *Lexie) PrintActionFlags(dfa *DFA_PoolType, fmt string) {
+	switch fmt {
+	case "text":
+
+		dbgo.DbPrintf("match", "Action Flags Are:\n")
+		// com. ConvertActionFlagToString(kk int) (rv string) {
+		dn := make(map[int]bool)
+		for _, vv := range dfa.Pool {
+			if vv.IsUsed {
+				if vv.Info.Action != 0 {
+					if _, ok := dn[vv.Info.Action]; !ok {
+						dbgo.DbPrintf("match", "    %2x: %s\n", vv.Info.Action, com.ConvertActionFlagToString(vv.Info.Action))
+						dn[vv.Info.Action] = true
+					}
 				}
 			}
 		}
+
+	case "go":
+
+		dbgo.Printf("/*\nAction Flags Are:\n")
+		// com. ConvertActionFlagToString(kk int) (rv string) {
+		dn := make(map[int]bool)
+		for _, vv := range dfa.Pool {
+			if vv.IsUsed {
+				if vv.Info.Action != 0 {
+					if _, ok := dn[vv.Info.Action]; !ok {
+						dbgo.Printf("    %2x: %s\n", vv.Info.Action, com.ConvertActionFlagToString(vv.Info.Action))
+						dn[vv.Info.Action] = true
+					}
+				}
+			}
+		}
+		dbgo.Printf("*/\n\n")
+
+	default:
+		dbgo.Fprintf(os.Stderr, "Invalid format at:%(LF) >%s< \n", fmt)
+		os.Exit(1)
 	}
 }
 
@@ -141,29 +166,31 @@ func NewContext(InitState int, dfa *DFA_PoolType) (rv *MatchContextType) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 func (lex *Lexie) InitGetToken(rrr *pbread.PBReadType, sm string) (AToken tok.Token) {
 	lex.InputReader = rrr
 	lex.StartMachine = sm
 	// xyzzy
 	return
 }
+*/
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
 func (lex *Lexie) GetToken() (AToken tok.Token) {
 	// xyzzy
 	return
 }
+*/
 
 // FinializeMachines will put the final touches on each macine.
 func (lex *Lexie) FinializeMachines() {
 	for ii := range lex.DFA_Machine {
-		// Assign unique ID to each table.
-		lex.DFA_Machine[ii].MachineId = ii
+		lex.DFA_Machine[ii].MachineId = ii // Assign unique ID to each table.
 		dfa := lex.DFA_Machine[ii]
-		// dfa.FinializeDFA()
-		// Take state machine graph and covnert into tables.
-		dt := dfa.ConvertToTable()
+		dt := dfa.ConvertToTable() // Take state machine graph and covnert into tables.
 		dfa.MTab = &dt
+		lex.DFA_Machine[ii].MachineId = ii // Assign unique ID to each table.
 	}
 }
 

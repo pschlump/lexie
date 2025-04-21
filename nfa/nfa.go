@@ -20,6 +20,7 @@ import (
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/re"
+	"github.com/pschlump/pluto/g_lib"
 )
 
 type TransitionType struct {
@@ -809,6 +810,7 @@ type NNPairType struct {
 	MatchLength   int
 }
 
+/*
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func IsInArray(n int, arr []int) bool {
 	for _, v := range arr {
@@ -818,6 +820,7 @@ func IsInArray(n int, arr []int) bool {
 	}
 	return false
 }
+*/
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func (nn *NFA_PoolType) HasTauEdge(StateSet []int) (Is0Ch bool) {
@@ -825,7 +828,7 @@ func (nn *NFA_PoolType) HasTauEdge(StateSet []int) (Is0Ch bool) {
 	for ii, vv := range nn.Pool {
 		if nn.Pool[ii].IsUsed {
 			for _, ee := range vv.Next2 {
-				if ee.IsLambda && ee.Is0ChMatch && IsInArray(ee.To, StateSet) {
+				if ee.IsLambda && ee.Is0ChMatch && g_lib.InArray(ee.To, StateSet) {
 					// if "to" -> StateSet && StateSet [to] . Rv > 0
 					if nn.Pool[ee.To].Rv > 0 {
 						Is0Ch = true

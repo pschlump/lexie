@@ -23,17 +23,9 @@ type MatchContextType struct {
 	Dfa *DFA_PoolType
 }
 
-func (lex *Lexie) AssignMacineId(rrr *pbread.PBReadType, s_init string) {
-	for ii := range lex.DFA_Machine {
-		// dfa := lex.DFA_Machine[ii]
-		// dfa.MachineId = ii
-		lex.DFA_Machine[ii].MachineId = ii
-	}
-}
-
-// MatcherLexieTable will use a push-back reader, `rrr`, a lexie machine, `lex`, and the name of a machine
+// MatcherLexieTable will use a push-back reader, `pbReadBuf`, a lexie machine, `lex`, and the name of a machine
 // to match the input data and convert it into a stream of tokens.
-func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
+func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string) {
 
 	var dfa *DFA_PoolType
 	var ii, to, pos_no, col_no, line_no int
@@ -41,7 +33,6 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	var SMatch, filename string
 
 	lex.FinializeMachines()
-	lex.AssignMacineId(rrr, s_init)
 
 	init, err := lex.Im.LookupMachine(s_init)
 	if err != nil {
@@ -49,12 +40,12 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 		return
 	}
 	if dbgo.IsDbOn("output-machine") {
-		for ii := range lex.DFA_Machine {
+		for ii, dfa := range lex.DFA_Machine {
 			dbgo.Printf("\n\n%(blue)Machine[%d] =%(reset)\n", ii)
 			dbgo.Printf("%(blue)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%(reset)\n", ii)
-			dfa = lex.DFA_Machine[ii]
+			// dfa = lex.DFA_Machine[ii]
 			dfa.PrintStateMachine(os.Stdout, "text")
-			lex.OutputActionFlags(dfa)
+			lex.PrintActionFlags(dfa, "text")
 		}
 	}
 
@@ -92,7 +83,7 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	p_col_no := 1
 
 	Next := func() (rn rune) {
-		rn, done := rrr.NextRune()
+		rn, done := pbReadBuf.NextRune()
 		if done {
 			AtEOF = true
 			rn = re.R_EOF
@@ -109,7 +100,7 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	_ = Accept
 
 	Peek := func() (rn rune) {
-		rn, done = rrr.PeekRune()
+		rn, done = pbReadBuf.PeekRune()
 		if done {
 			AtEOF = true
 			rn = re.R_EOF
@@ -119,7 +110,7 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 	_ = Peek
 
 	PeekPeek := func() (rn rune) {
-		rn, done = rrr.PeekPeekRune()
+		rn, done = pbReadBuf.PeekPeekRune()
 		if done {
 			rn = 0
 		}
@@ -132,7 +123,7 @@ func (lex *Lexie) MatcherLexieTable(rrr *pbread.PBReadType, s_init string) {
 		if dfa.MTab.Machine[ctx.St].Info.MatchLength == 0 {
 			start = 0
 		}
-		line_no, col_no, filename = rrr.GetPos()
+		line_no, col_no, filename = pbReadBuf.GetPos()
 		if col_no > dfa.MTab.Machine[ctx.St].Info.MatchLength {
 			col_no -= dfa.MTab.Machine[ctx.St].Info.MatchLength
 		}

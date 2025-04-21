@@ -520,15 +520,6 @@ func BasenameExt(fn string) (bn string) {
 	return
 }
 
-func InArray(lookFor string, inArr []string) bool {
-	for _, v := range inArr {
-		if lookFor == v {
-			return true
-		}
-	}
-	return false
-}
-
 func RmExt(filename string) string {
 	var extension = filepath.Ext(filename)
 	var name = filename[0 : len(filename)-len(extension)]
