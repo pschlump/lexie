@@ -27,12 +27,15 @@ type MatchContextType struct {
 // to match the input data and convert it into a stream of tokens.
 func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string) {
 
+	// -----------------------------------------------------------------------------------------------------------
+	// Machines are actually complete at this point - should be able to generate code.
+	// 1.  xyzzy2145 - generate code.
+	// -----------------------------------------------------------------------------------------------------------
+
 	var dfa *DFA_PoolType
 	var ii, to, pos_no, col_no, line_no int
 	var rn rune
 	var SMatch, filename string
-
-	lex.FinializeMachines()
 
 	init, err := lex.Im.LookupMachine(s_init)
 	if err != nil {
@@ -50,11 +53,6 @@ func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
 	}
 
 	dfa = lex.DFA_Machine[init]
-
-	// -----------------------------------------------------------------------------------------------------------
-	// Machines are actually complete at this point - should be able to generate code.
-	// 1.  xyzzy2145 - generate code.
-	// -----------------------------------------------------------------------------------------------------------
 
 	ctx := NewContext(dfa.MTab.InitState, nil)
 	ctx_stack := make([]*MatchContextType, 0, 100)
@@ -118,7 +116,7 @@ func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
 	}
 	_ = PeekPeek
 
-	SaveToken := func() {
+	SaveToken := func(to int) {
 		start := pos_no - dfa.MTab.Machine[ctx.St].Info.MatchLength
 		if dfa.MTab.Machine[ctx.St].Info.MatchLength == 0 {
 			start = 0
@@ -197,9 +195,9 @@ func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
 		}
 	}
 
-	PushState := func(St int) {
+	PushState := func(to int, St int) {
 		dbgo.DbPrintf("match", "\n-------------------------------------------------------------------------------\n")
-		dbgo.DbPrintf("match", "Found a PUSH: to %d -- This should be subscript of new machine\n", dfa.MTab.Machine[St].Info.NextState)
+		dbgo.DbPrintf("match", "Found a PshState(to=%d, St=%d): to %d -- This should be subscript of new machine\n", to, St, dfa.MTab.Machine[St].Info.NextState)
 		dbgo.DbPrintf("match", "-------------------------------------------------------------------------------\n")
 		t_ctx := NewContext(0, dfa)
 
@@ -246,8 +244,8 @@ func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
 		dbgo.DbPrintf("match", "Top: (machine number %d) current state ctx.St:%d\n", dfa.MachineId, ctx.St)
 		cur_st := ctx.St
 
-		rn = Peek() // grab next token for a Peek()
-		// rn = Next()                                          // grab next token
+		// rn = Peek() // grab next token for a Peek()
+		rn = Next()                                          // grab next token
 		ii = dfa.MTab.SMap.MapRune(rn)                       // Convet rune, 'rn', to a table state position
 		to = dfa.MTab.Machine[cur_st].To[ii]                 // if -1, then no future state, if >= 0, then a potential future state
 		hardMatch := dfa.MTab.Machine[cur_st].Info.HardMatch // if true, then this is a terminal state (match occurd)
@@ -258,38 +256,46 @@ func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
 		if rn == re.R_EOF {
 			dbgo.DbPrintf("match", " %(yellow)At: %(LF), matched re.R_EOF\n")
 			FlushToken(true)
-		} else if dfa.MTab.Machine[cur_st].Rv > 0 && dfa.MTab.Machine[cur_st].Tau && to == -1 {
-			dbgo.DbPrintf("match", " %(yellow)At: %(LF) -- this one is imporant\n")
-			SaveToken()
-			FlushToken(hardMatch)
-		} else if dfa.MTab.Machine[cur_st].Rv > 0 && hardMatch {
-			if to == -1 {
-				// no next state, so done at this point.
-				dbgo.DbPrintf("match", " %(yellow)At: %(LF)\n")
-				SaveToken()
+		} else if dfa.MTab.Machine[cur_st].Rv > 0 && hardMatch { // This indicates a potential Terminal State */
+			if to == -1 { // no next state, so done at this point.
+				// No next state, found a terminal state - this is a perfect match.
+				dbgo.DbPrintf("match", " %(yellow)At: %(LF) -- to===-1, hard match, no next state.\n")
+				SaveToken(to)
 				FlushToken(hardMatch)
+				ctx.St = 0
 			} else {
 				// xyzzy3330 - I suspect that this is the problem spot, a to >= 0
 				// xyzzy3330 - hard==true => terminal state, to >= 0 ==>> the problem we are seeing
 				dbgo.DbPrintf("match", " %(cyan)At: %(LF), to=%d, indicates a potential next state\n", to)
 				if hardMatch && to != -1 {
 					dbgo.DbPrintf("match", " %(red)At: %(LF), hardMatch=%v to=%d, *** should push state ***\n", hardMatch, to)
+					PushState(to, ctx.St) // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< New
+					if (com.A_Push & dfa.MTab.Machine[cur_st].Info.Action) == 0 {
+						dbgo.DbPrintf("match", " %(cyan)At: %s\n", dbgo.LF())
+						rn = Next() // Remove makes beginning work
+					}
+					ctx.St = to
+				} else {
+					// (peek) machine=0 cur_st=3 ii=5 for rune rn=-> <- to=0 hard=true Rv=8 Tau=true
+					if (com.A_Push & dfa.MTab.Machine[cur_st].Info.Action) == 0 {
+						dbgo.DbPrintf("match", " %(cyan)At: %s\n", dbgo.LF())
+						rn = Next() // Remove makes beginning work
+					}
+					dbgo.DbPrintf("match", " %(yellow)At: %(LF)\n")
+					SaveToken(to)
+					FlushToken(hardMatch) // PJS added Wed Jul 15 15:43:28 MDT 2015
+					ctx.St = to
 				}
-				// (peek) machine=0 cur_st=3 ii=5 for rune rn=-> <- to=0 hard=true Rv=8 Tau=true
-				if (com.A_Push & dfa.MTab.Machine[cur_st].Info.Action) == 0 {
-					dbgo.DbPrintf("match", " %(cyan)At: %s\n", dbgo.LF())
-					rn = Next() // Remove makes beginning work
-				}
-				dbgo.DbPrintf("match", " %(yellow)At: %(LF)\n")
-				SaveToken()
-				FlushToken(hardMatch) // PJS added Wed Jul 15 15:43:28 MDT 2015
 			}
-			ctx.St = to
+		} else if dfa.MTab.Machine[cur_st].Rv > 0 && dfa.MTab.Machine[cur_st].Tau && to == -1 {
+			dbgo.DbPrintf("match", " %(yellow)At: %(LF) -- this one is imporant\n")
+			SaveToken(to)
+			FlushToken(hardMatch)
 		} else if dfa.MTab.Machine[cur_st].Rv > 0 { // && !dfa.MTab.Machine[cur_st].Tau && to != -1 {
 			dbgo.DbPrintf("match", " %(yellow)At: %(LF)\n")
+			SaveToken(to)
+			dbgo.DbPrintf("match", " %(yellow)At: %(LF) -- Setup next state after hard match. \n")
 			rn = Next()
-			dbgo.DbPrintf("match", " %(yellow)At: %(LF)\n")
-			SaveToken()
 			ctx.St = to
 		} else if ((com.A_Push | com.A_Pop | com.A_Reset) & dfa.MTab.Machine[cur_st].Info.Action) != 0 {
 			dbgo.DbPrintf("match", "%(yellow)-- critical -- At: %(LF)\n")
@@ -309,7 +315,7 @@ func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
 
 		if (com.A_Push & dfa.MTab.Machine[cur_st].Info.Action) != 0 { // 					xyzzy - total bullshit -- Allows to hapen on non-termaial in middle of stuff -- call non-terminal
 			dbgo.DbPrintf("match", "PUSH: At: %(LF)\n")
-			PushState(cur_st)
+			PushState(to, cur_st)
 		} else if (com.A_Pop & dfa.MTab.Machine[cur_st].Info.Action) != 0 { // PJS modded Wed Jul 15 15:43:28 MDT 2015
 			// } else if (com.A_Pop&dfa.MTab.Machine[cur_st].Info.Action) != 0 && to == -1 { // 	xyzzy - total bullshit -- Only on terminal state!
 			dbgo.DbPrintf("match", "POP: cur_st=%d Rv=%d At: %(LF)\n", cur_st, dfa.MTab.Machine[cur_st].Rv)

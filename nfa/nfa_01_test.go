@@ -349,7 +349,7 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 	for ii, vv := range NFATest_02Data {
 		s := ""
 		for _, ww := range vv.Data {
-			s += ww.Re
+			s += ww.Re + "\n"
 		}
 		NFATest_02Data[ii].fullRv = s
 	}

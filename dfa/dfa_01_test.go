@@ -419,22 +419,33 @@ func Test_DfaTestUsingDjango(t *testing.T) {
 	in.DumpTokenMap()
 
 	for ii, vv := range Lexie02Data {
-
 		if vv.SkipTest {
 			continue
 		}
 
 		dbgo.Printf("\n\n%(yellow)Test:%s ------------------------- Start --------------------------, %d, Input: -->>%s<<--\n", vv.Test, ii, vv.Inp)
 
+		// ---------------------------------------------------------------------------------
+		// Read in input
+		// ---------------------------------------------------------------------------------
 		// r := strings.NewReader(vv.Inp)
-		r := pbread.NewPbRead()                                                                               // Create a push-back buffer
-		dbgo.DbPrintf("trace-dfa-01 (../in/django3.lex scanner model)", "At: %(LF), Input: ->%s<-\n", vv.Inp) //
-		r.PbString(vv.Inp)                                                                                    // set the input to the string
-		r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii))                                                          // simulate  file = sf-%d.txt, set line to 1
+		// r := pbread.NewStringReader(vv.Inp)	// todo.
+		r := pbread.NewPbRead()                                                                                  // Create a push-back buffer
+		dbgo.DbPrintf("trace-dfa-03 (../in/test03_dfa.lex scanner model)", "At: %(LF), Input: ->%s<-\n", vv.Inp) //
+		r.PbString(vv.Inp)                                                                                       // set the input to the string
+		r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii))                                                             // simulate  file = sf-%d.txt, set line to 1, this takes input from a string instead of from a file.
 
-		dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
-		lex.MatcherLexieTable(r, "S_Init")
-		dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")
+		// ---------------------------------------------------------------------------------
+		// Generate machine
+		// ---------------------------------------------------------------------------------
+		dbgo.DbPrintf("trace-dfa-03", "At: %(LF) --- generate machine ---\n") //
+		lex.FinializeMachines()
+
+		// ---------------------------------------------------------------------------------
+		// Run interepreted matcher
+		// ---------------------------------------------------------------------------------
+		dbgo.DbPrintf("trace-dfa-03", "At: %(LF) --- run matcher -- \n") //
+		lex.MatcherLexieTable(r, "S_Init")                               // Run the matcing machine
 
 		if len(vv.ExpectedTokens) > 0 {
 			dbgo.DbPrintf("trace-dfa-01", "At: %(LF)\n")

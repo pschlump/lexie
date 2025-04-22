@@ -709,7 +709,7 @@ func (nn *NFA_PoolType) GenerateGVFile(fo io.Writer, td string, tn int, fullRv s
 	// fmt.Fprintf(fo, `{"Input":%q, "Rv":%d, "Start": %d, "Sigma":%q, "States":[%s`, td, tn, nn.InitState, nn.GenerateSigma(), "\n")
 	fmt.Fprintf(fo,
 		`digraph finite_state_machine {
-	label="Regular Expression: %s";
+	label="Regular Expression: \n%s";
 	rankdir=LR;
 	size="8,5"
 `, com.StringEscape(fullRv))
@@ -810,35 +810,21 @@ type NNPairType struct {
 	MatchLength   int
 }
 
-/*
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-func IsInArray(n int, arr []int) bool {
-	for _, v := range arr {
-		if v == n {
-			return true
-		}
-	}
-	return false
-}
-*/
-
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func (nn *NFA_PoolType) HasTauEdge(StateSet []int) (Is0Ch bool) {
-	Is0Ch = false
 	for ii, vv := range nn.Pool {
 		if nn.Pool[ii].IsUsed {
 			for _, ee := range vv.Next2 {
 				if ee.IsLambda && ee.Is0ChMatch && g_lib.InArray(ee.To, StateSet) {
 					// if "to" -> StateSet && StateSet [to] . Rv > 0
 					if nn.Pool[ee.To].Rv > 0 {
-						Is0Ch = true
-						return
+						return (true)
 					}
 				}
 			}
 		}
 	}
-	return
+	return (false)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -847,7 +833,6 @@ func (nn *NFA_PoolType) HasTauEdge(StateSet []int) (Is0Ch bool) {
 // Return that one
 
 func (nn *NFA_PoolType) IsTerminalState(StateSet []int) (rv int, is bool, info InfoType, Is0Ch bool) {
-	Is0Ch = false
 	Is0Ch = nn.HasTauEdge(StateSet)
 	dbgo.DbPrintf("nfa4", "IsTau-Term: StateSet[%v] = %v\n", StateSet, Is0Ch)
 	// fmt.Printf("IsTermailal: Input %s\n", dbgo.SVar(StateSet))
@@ -896,7 +881,6 @@ func (nn *NFA_PoolType) IsTerminalState(StateSet []int) (rv int, is bool, info I
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 func (nn *NFA_PoolType) IsNonTerminalPushPopState(StateSet []int) (rv int, is bool, info InfoType, Is0Ch bool) {
-	Is0Ch = false
 	Is0Ch = nn.HasTauEdge(StateSet)
 	dbgo.DbPrintf("nfa4", "IsTau-NonTerm: StateSet[%v] = %v\n", StateSet, Is0Ch)
 	// fmt.Printf("IsTermailal: Input %s\n", dbgo.SVar(StateSet))

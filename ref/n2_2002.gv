@@ -1,5 +1,8 @@
 digraph finite_state_machine {
-	label="Regular Expression: %}.*";
+	label="Regular Expression: \n%}
+.*
+
+";
 	rankdir=LR;
 	size="8,5"
 	node [shape = doublecircle]; s0 s2 s4;

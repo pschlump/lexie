@@ -43,31 +43,43 @@ func Test_03_DfaTest03(t *testing.T) {
 	dbgo.SetADbFlag("in-echo-machine", true) // Output machine
 
 	lex := NewLexie()
-	lex.NewReadFile("../in/test03_dfa.lex", "pct")
+	Machine := "../in/test03_dfa.lex"
+	lex.NewReadFile(Machine, "pct")
 
 	in.DumpTokenMap()
 
 	lex.GenerateTokenMap("./out/token_map.go")
 
 	for ii, vv := range Lexie03Data {
-
 		if vv.SkipTest {
 			continue
 		}
 
-		dbgo.Printf("\n\n%(yellow)Test:%s ------------------------- Start --------------------------, %d, Input: -->>%s<<--\n", vv.Test, ii, vv.Inp)
+		dbgo.Printf("\n\n%(yellow)Test:%s ------------------------- Start [%s] --------------------------, %d, Input: -->>%s<<--\n", vv.Test, Machine, ii, vv.Inp)
 
+		// ---------------------------------------------------------------------------------
+		// Read in input
+		// ---------------------------------------------------------------------------------
 		// r := strings.NewReader(vv.Inp)
+		// r := pbread.NewStringReader(vv.Inp)	// todo.
 		r := pbread.NewPbRead()                                                                                  // Create a push-back buffer
 		dbgo.DbPrintf("trace-dfa-03 (../in/test03_dfa.lex scanner model)", "At: %(LF), Input: ->%s<-\n", vv.Inp) //
 		r.PbString(vv.Inp)                                                                                       // set the input to the string
-		r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii))                                                             // simulate  file = sf-%d.txt, set line to 1
-		dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")                                                             //
-		lex.MatcherLexieTable(r, "S_Init")                                                                       // Run the matcing machine
-		dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")                                                             //
+		r.SetPos(1, 1, fmt.Sprintf("sf-%d.txt", ii))                                                             // simulate  file = sf-%d.txt, set line to 1, this takes input from a string instead of from a file.
+
+		// ---------------------------------------------------------------------------------
+		// Generate machine
+		// ---------------------------------------------------------------------------------
+		dbgo.DbPrintf("trace-dfa-03", "At: %(LF) --- generate machine ---\n") //
+		lex.FinializeMachines()
+
+		// ---------------------------------------------------------------------------------
+		// Run interepreted matcher
+		// ---------------------------------------------------------------------------------
+		dbgo.DbPrintf("trace-dfa-03", "At: %(LF) --- run matcher -- \n") //
+		lex.MatcherLexieTable(r, "S_Init")                               // Run the matcing machine
 
 		// Results are in lex.TokList.TokenData ************************************************************************************
-
 		if len(vv.ExpectedTokens) > 0 {
 			dbgo.DbPrintf("trace-dfa-03", "At: %(LF)\n")
 			if len(lex.TokList.TokenData) != len(vv.ExpectedTokens) {
