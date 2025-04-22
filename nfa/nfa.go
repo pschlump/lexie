@@ -1,4 +1,3 @@
-//
 // N F A - Part of Lexie Lexical Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
@@ -540,9 +539,9 @@ func (nn *NFA_PoolType) DumpPool(all bool) {
 				for _, ww := range vv.Next2 {
 					if ww.IsLambda {
 						if ww.Is0ChMatch {
-							fmt.Printf("{  \u03c4  %2d -> %2d  %s}  ", ww.From, ww.To, IfLnNo(ww.LineNo)) // Show a Tau(t) for a lambda that matchiens on else conditions.
+							fmt.Printf("{ \u03c4 [Tau] %2d -> %2d  %s }  ", ww.From, ww.To, IfLnNo(ww.LineNo)) // Show a Tau(t) for a lambda that matchiens on else conditions.
 						} else {
-							fmt.Printf("{  \u03bb  %2d -> %2d  %s}  ", ww.From, ww.To, IfLnNo(ww.LineNo))
+							fmt.Printf("{ \u03bb [Lambda] %2d -> %2d  %s }  ", ww.From, ww.To, IfLnNo(ww.LineNo))
 						}
 						// fmt.Printf("{ (L) %2d -> %2d  %s}  ", ww.From, ww.To, IfLnNo(ww.LineNo))
 					} else {
@@ -574,7 +573,7 @@ func (nn *NFA_PoolType) DumpPool(all bool) {
 						case re.R_LAMBDA_MATCH: // = '\uF8FE'
 							son = "LambdaM/uF8FE"
 						}
-						fmt.Printf("{ %s  %2d -> %2d  %s}  ", son, ww.From, ww.To, IfLnNo(ww.LineNo))
+						fmt.Printf("{ %s  %2d -> %2d  %s }  ", son, ww.From, ww.To, IfLnNo(ww.LineNo))
 					}
 				}
 				if vv.Info.Action != 0 || vv.Info.MatchLength != 0 {
@@ -599,9 +598,9 @@ func (nn *NFA_PoolType) DumpPoolJSON(fo io.Writer, td string, tn int) {
 			for _, ww := range vv.Next2 {
 				if ww.IsLambda {
 					if ww.Is0ChMatch {
-						fmt.Fprintf(fo, "%s{ \"On\":\"\u03c4\", \"Fr\":%d, \"To\":%d }", cc, ww.From, ww.To)
+						fmt.Fprintf(fo, "%s{ \"On\":\"\u03c4\" [Tau], \"Fr\":%d, \"To\":%d }", cc, ww.From, ww.To)
 					} else {
-						fmt.Fprintf(fo, "%s{ \"On\":\"\u03bb\", \"Fr\":%d, \"To\":%d }", cc, ww.From, ww.To)
+						fmt.Fprintf(fo, "%s{ \"On\":\"\u03bb\" [Lambda], \"Fr\":%d, \"To\":%d }", cc, ww.From, ww.To)
 					}
 					// fmt.Fprintf(fo, "%s{ \"On\":\"(L)\", \"Fr\":%d, \"To\":%d }", cc, ww.From, ww.To)
 				} else {

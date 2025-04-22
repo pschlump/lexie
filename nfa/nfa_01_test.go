@@ -39,7 +39,7 @@ import (
 
 // TODO - Figure out path to 'dot' so can run it.
 // var dotPath = "/opt/homebrew/bin/dot"
-var dotPath = "/usr/local/bin/dot"
+// var dotPath = "/usr/local/bin/dot"
 
 type Lexie01DataType struct {
 	Test         string
@@ -192,7 +192,7 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 			gv.Close()
 
 			// out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
-			out, err := exec.Command(dotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
+			out, err := exec.Command(com.DotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
 				dbgo.Printf("%(red)Error from dot, %s\n", err)
 				dbgo.Printf("Output: %s\n", out)
@@ -330,6 +330,13 @@ var NFATest_02Data = []NFATest_02DataType{
 		NFATest_03Type{Sp: "EOF", Rv: 124},
 	},
 	},
+	{Test: "2003", SkipTest: false, Data: []NFATest_03Type{
+		NFATest_03Type{Re: "%}", Rv: 120, Act: com.A_Pop},
+		NFATest_03Type{Re: "%", Rv: 121, Act: com.A_Pop},
+		NFATest_03Type{Re: ".*", Rv: 122}, // Implicitly .*/%}
+		NFATest_03Type{Sp: "EOF", Rv: 124},
+	},
+	},
 }
 
 type NFA_Multi_Part_TestSuite struct{}
@@ -411,7 +418,7 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 		Pool.GenerateGVFile(gv, vv.Test, 0, vv.fullRv)
 
 		// _, err = exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
-		out, err := exec.Command(dotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
+		out, err := exec.Command(com.DotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
 		if err != nil {
 			dbgo.Printf("%(red)Error from dot, %s\n", err)
 			dbgo.Printf("Output: %s\n", out)

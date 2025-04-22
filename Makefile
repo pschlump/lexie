@@ -20,8 +20,8 @@ go_test:
 	( cd st ; go test )
 	( cd tok ; go test )
 	( cd nfa ; go test )
+	( cd smap ; go test )
 	( cd dfa ; go test )
 	( cd eval ; go test )
-	( cd smap ; go test )
 	echo ""
 	echo "PASS"

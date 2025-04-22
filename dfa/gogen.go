@@ -8,6 +8,7 @@ import (
 
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/filelib"
+	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/in"
 	"github.com/pschlump/pluto/g_lib"
 )
@@ -58,7 +59,8 @@ func (tt TokenType)String() string {
 
 	fp.Close()
 
-	out, err := exec.Command("goimorts", "-w", fn).Output()
+	// var goImortsPath = "/Users/philip/go/bin/goimports"
+	out, err := exec.Command(com.GoImportsPath, "-w", fn).Output()
 	if err != nil {
 		dbgo.Fprintf(os.Stderr, "%(red)Error%(reset) from goimports, %s, %(LF)\n", err)
 		dbgo.Fprintf(os.Stderr, "Output: %s\n", out)

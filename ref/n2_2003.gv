@@ -1,0 +1,20 @@
+digraph finite_state_machine {
+	label="Regular Expression: \n%}
+%
+.*
+
+";
+	rankdir=LR;
+	size="8,5"
+	node [shape = doublecircle]; s0 s2 s3 s5;
+	node [shape = circle];
+	s0 -> s1 [ label = "%" ];
+	s0 -> s3 [ label = "%" ];
+	s0 -> s4 [ label = "◉" ];
+	s0 -> s4 [ label = "λ" ];
+	s0 -> s4 [ label = "%" ];
+	s0 -> s4 [ label = "}" ];
+	s1 -> s2 [ label = "}" ];
+	s4 -> s0 [ label = "λ" ];
+	s4 -> s5 [ label = "τ" ];
+}

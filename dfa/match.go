@@ -23,6 +23,40 @@ type MatchContextType struct {
 	Dfa *DFA_PoolType
 }
 
+/*
+
+Match Interpreter: func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
+-----------------------------------------------------------------------------------------------------
+
+St := 0
+type StateContext struct {
+	St 				int
+	Matched 		string
+	StackOfState 	??
+}
+
+Table:
+-----------------------------------------------------------------------------------
+Hard   To		Cur[Tau] 	SaveState				Action To Take
+
+true	-1		false		false		Terminal State, Done
+false	-1		false		false		Error - No next state
+true	>=0		false		false		[Push!] save a state for later, set SaveState <- true
+false	>=0		false		false 		St = To, move to next state
+
+true	-1		false		true		Terminal State, Done
+false	-1		false		true		[Backup!] to saved state **********, SaveState <0- false
+true	>=0		false		true		[Reset/Push!] save state for later, set SaveState <- true(again)
+false	>=0		false		true 		St = To, move to next state
+
+
+
+
+// Note:
+	fmt.Printf("{  \u03c4 [Tau] %2d -> %2d  %s}  ", ww.From, ww.To, IfLnNo(ww.LineNo)) // Show a Tau(t) for a lambda that matchiens on else conditions.
+
+*/
+
 // MatcherLexieTable will use a push-back reader, `pbReadBuf`, a lexie machine, `lex`, and the name of a machine
 // to match the input data and convert it into a stream of tokens.
 func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string) {

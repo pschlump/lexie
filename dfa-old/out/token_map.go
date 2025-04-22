@@ -5,26 +5,17 @@ import "fmt"
 type TokenType int
 
 const (
+	Tok_BB     TokenType = 3
 	Tok_CL     TokenType = 1
 	Tok_EOF    TokenType = 4
 	Tok_PCT    TokenType = 2
 	Tok_null   TokenType = 0
 	Tok_ID     TokenType = 5
 	Tok_Ignore TokenType = 6
-	Tok_BB     TokenType = 3
 )
 
 func (tt TokenType) String() string {
 	switch tt {
-
-	case Tok_EOF: /* 4 */
-		return "Tok_EOF"
-
-	case Tok_PCT: /* 2 */
-		return "Tok_PCT"
-
-	case Tok_null: /* 0 */
-		return "Tok_null"
 
 	case Tok_ID: /* 5 */
 		return "Tok_ID"
@@ -37,6 +28,15 @@ func (tt TokenType) String() string {
 
 	case Tok_CL: /* 1 */
 		return "Tok_CL"
+
+	case Tok_EOF: /* 4 */
+		return "Tok_EOF"
+
+	case Tok_PCT: /* 2 */
+		return "Tok_PCT"
+
+	case Tok_null: /* 0 */
+		return "Tok_null"
 
 	default:
 		return fmt.Sprintf("--unknown TokenType %d--", int(tt))

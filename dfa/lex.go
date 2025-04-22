@@ -322,7 +322,8 @@ func (lex *Lexie) NewReadFile(path, outTag string) (err error) {
 			lex.DFA_Machine[last].GenerateGVFile(gv, fmt.Sprintf("Lex-Machine-%d", last), 1)
 			gv.Close()
 
-			out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
+			// out, err := exec.Command("/usr/local/bin/dot", "-Tsvg", "-o"+svgFile, gvFile).Output()
+			out, err := exec.Command(com.DotPath, "-Tsvg", "-o"+svgFile, gvFile).Output()
 			if err != nil {
 				dbgo.DbPrintf("match", "%(red)Error%(reset) from dot, %s, %(LF)\n", err)
 				dbgo.DbPrintf("match", "Output: %s\n", out)
