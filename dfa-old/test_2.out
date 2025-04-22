@@ -1,0 +1,435 @@
+
+
+[0;36;40mTest Matcher test from ../in/test03_dfa.lex file, File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/dfa_03_test.go LineNo:24
+========================================================================
+
+[0mDefs - OutputDef
+==========================================================================
+DefType: Machines
+==========================================================================
+    S_Init=0
+==========================================================================
+DefType: Errors
+==========================================================================
+    Err_Invalid_Char=1
+==========================================================================
+DefType: ReservedWords
+==========================================================================
+==========================================================================
+DefType: Tokens
+==========================================================================
+    Tok_BB=3
+    Tok_CL=1
+    Tok_EOF=4
+    Tok_ID=5
+    Tok_Ignore=6
+    Tok_PCT=2
+    Tok_null=0
+
+// Defs - OutputDef
+// ==========================================================================
+// DefType: Tokens
+// ==========================================================================
+const (
+    Tok_null = 0
+    Tok_CL = 1
+    Tok_PCT = 2
+    Tok_BB = 3
+    Tok_EOF = 4
+    Tok_ID = 5
+)
+
+// ==========================================================================
+// DefType: Machines
+// ==========================================================================
+const (
+)
+
+// ==========================================================================
+// DefType: Errors
+// ==========================================================================
+const (
+)
+
+// ==========================================================================
+// DefType: ReservedWords
+// ==========================================================================
+const (
+)
+
+Machine[0] Name[S_Init]-----------------------------------------------------------------
+    Mixins: []
+        0: Pat   %\\}                            Rv:1=Tok_CL                            
+        1: Pat   %                               Rv:2=Tok_PCT                           
+        2: Pat   bb                              Rv:3=Tok_BB                            
+        3: Pat   .                                                                       [Err=Err_Invalid_Char] 
+M= ->%\}<- Adding at  0 RE: %\}                            (Rv: 1, final=   1), File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/lex.go LineNo:264
+[0;36;40mAT File: /Users/philip/go/src/github.com/pschlump/lexie/re/re.go LineNo:715, input = -->>%\}<<--
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:230 depth=0
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:233 -- adding in the buf
+[0mM= ->%<- Adding at  1 RE: %                              (Rv: 2, final=   2), File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/lex.go LineNo:264
+[0;36;40mAT File: /Users/philip/go/src/github.com/pschlump/lexie/re/re.go LineNo:715, input = -->>%<<--
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:230 depth=0
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:233 -- adding in the buf
+[0mM= ->bb<- Adding at  2 RE: bb                             (Rv: 3, final=   3), File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/lex.go LineNo:264
+[0;36;40mAT File: /Users/philip/go/src/github.com/pschlump/lexie/re/re.go LineNo:715, input = -->>bb<<--
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:230 depth=0
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:233 -- adding in the buf
+[0mM= ->.<- Adding at  3 RE: .                              (Rv: 0, final=   0), File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/lex.go LineNo:264
+[0;36;40mAT File: /Users/philip/go/src/github.com/pschlump/lexie/re/re.go LineNo:715, input = -->>.<<--
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:230 depth=0
+[0m[0;36;40mAT:File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:233 -- adding in the buf
+[0mBuildDFA_2: Nfa.Sigma Before Finialize-><-
+NFA for (Before Finialize) ->S_Init<-
+
+-------------------------------------- Modified for New Rule Order -----------------------------------------
+
+NFA InitState: 0
+
+  0:         	 E:{ "%"   0 ->  1  }  { "%"   0 ->  3  }  { "b"   0 ->  4  }  { DOT/uF8FA   0 ->  6  }  
+
+  1:         	 E:{ "}"   1 ->  2  }  
+
+  2:  T:0001 	 E:			NFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:2 ReplStr:-><-, PositionNumber:1
+
+
+  3:  T:0002 	 E:			NFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:1 ReplStr:-><-, PositionNumber:2
+
+
+  4:         	 E:{ "b"   4 ->  5  }  
+
+  5:  T:0003 	 E:			NFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:2 ReplStr:-><-, PositionNumber:3
+
+
+  6:         	 E:			NFA.Info: Action: (140) A_Reset|A_Error(140), Ns:0, MatchLength:1 ReplStr:-><-, PositionNumber:4
+
+
+BuildDFA_2: Nfa.Sigma ->%b}<-
+Final NFA for ->S_Init<-
+
+-------------------------------------- Modified for New Rule Order -----------------------------------------
+
+NFA InitState: 0
+
+  0:         	 E:{ "%"   0 ->  1  }  { "%"   0 ->  3  }  { "b"   0 ->  4  }  { DOT/uF8FA   0 ->  6  }  { "%"   0 ->  6  }  { "b"   0 ->  6  }  { "}"   0 ->  6  }  
+
+  1:         	 E:{ "}"   1 ->  2  }  
+
+  2:  T:0001 	 E:			NFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:2 ReplStr:-><-, PositionNumber:1
+
+
+  3:  T:0002 	 E:			NFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:1 ReplStr:-><-, PositionNumber:2
+
+
+  4:         	 E:{ "b"   4 ->  5  }  
+
+  5:  T:0003 	 E:			NFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:2 ReplStr:-><-, PositionNumber:3
+
+
+  6:         	 E:			NFA.Info: Action: (140) A_Reset|A_Error(140), Ns:0, MatchLength:1 ReplStr:-><-, PositionNumber:4
+
+
+IsTau-Term: StateSet[[0]] = false
+
+Set: (IsTerminalState - top) StateSet = [0]
+
+Set: Set = [], max_len = 0
+min TRuleMatchVal = 999999999, at subscript 0, StateSet: [0], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:863
+At File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:877
+IsTau-Term: StateSet[[1 3 6]] = false
+
+Set: (IsTerminalState - top) StateSet = [1 3 6]
+
+Set: Set = [{1 2 1}], max_len = 1
+min TRuleMatchVal = 2, at subscript 0, StateSet: [1 3 6], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:863
+min_TRuleMatchVal == v == 2, match found for state 3, File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:868
+IsTermailal: Found at 3, value = 2
+IsTau-Term: StateSet[[4 6]] = false
+
+Set: (IsTerminalState - top) StateSet = [4 6]
+
+Set: Set = [], max_len = 0
+min TRuleMatchVal = 999999999, at subscript 0, StateSet: [4 6], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:863
+At File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:877
+IsTau-NonTerm: StateSet[[4 6]] = false
+
+Set: (IsNonTerminalPushPopState - top) StateSet = [4 6]
+
+Set: Set = [{1 4 1}], max_len = 1
+min TRuleMatchVal = 4, at subscript 0, StateSet: [4 6], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:911
+min_TRuleMatchVal == v == 4, match found for state 6, File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:916
+IsNonTermailal: Found at 6, value = 0
+IsTau-Term: StateSet[[6]] = false
+
+Set: (IsTerminalState - top) StateSet = [6]
+
+Set: Set = [], max_len = 0
+min TRuleMatchVal = 999999999, at subscript 0, StateSet: [6], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:863
+At File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:877
+IsTau-NonTerm: StateSet[[6]] = false
+
+Set: (IsNonTerminalPushPopState - top) StateSet = [6]
+
+Set: Set = [{0 4 1}], max_len = 1
+min TRuleMatchVal = 4, at subscript 0, StateSet: [6], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:911
+min_TRuleMatchVal == v == 4, match found for state 6, File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:916
+IsNonTermailal: Found at 6, value = 0
+IsTau-Term: StateSet[[6]] = false
+
+Set: (IsTerminalState - top) StateSet = [6]
+
+Set: Set = [], max_len = 0
+min TRuleMatchVal = 999999999, at subscript 0, StateSet: [6], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:863
+At File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:877
+IsTau-NonTerm: StateSet[[6]] = false
+
+Set: (IsNonTerminalPushPopState - top) StateSet = [6]
+
+Set: Set = [{0 4 1}], max_len = 1
+min TRuleMatchVal = 4, at subscript 0, StateSet: [6], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:911
+min_TRuleMatchVal == v == 4, match found for state 6, File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:916
+IsNonTermailal: Found at 6, value = 0
+IsTau-Term: StateSet[[2]] = false
+
+Set: (IsTerminalState - top) StateSet = [2]
+
+Set: Set = [{0 1 2}], max_len = 2
+min TRuleMatchVal = 1, at subscript 0, StateSet: [2], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:863
+min_TRuleMatchVal == v == 1, match found for state 2, File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:868
+IsTermailal: Found at 2, value = 1
+IsTau-Term: StateSet[[5]] = false
+
+Set: (IsTerminalState - top) StateSet = [5]
+
+Set: Set = [{0 3 2}], max_len = 2
+min TRuleMatchVal = 3, at subscript 0, StateSet: [5], File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:863
+min_TRuleMatchVal == v == 3, match found for state 5, File: /Users/philip/go/src/github.com/pschlump/lexie/nfa/nfa.go LineNo:868
+IsTermailal: Found at 5, value = 3
+Final DFA for ->S_Init<-
+
+---------------------------- DFA Output -----------------------------------------------
+
+DFA InitState: 0, Sigma ->%b}<-
+
+ St:     StateName     StateSet ✔              	Edges
+
+  0:             0          [0] ✔ :        	 E:{ "%"   0 ->  1  }  { "b"   0 ->  2  }  { "}"   0 ->  3  }  { DOT/uF8FA   0 ->  3  }  
+
+  1:         1-3-6      [1,3,6] ✔ : T:0002 	 E:{ "}"   1 ->  4  }  
+			DFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:1 ReplStr:-><- IsHard=true (((false imples else case Rv!)))
+
+  2:           4-6        [4,6] ✔ :        	 E:{ "b"   2 ->  5  }  
+			DFA.Info: Action: (140) A_Reset|A_Error(140), Ns:0, MatchLength:1 ReplStr:-><- IsHard=false (((false imples else case Rv!)))
+
+  3:             6          [6] ✔ :        	 E:
+			DFA.Info: Action: (140) A_Reset|A_Error(140), Ns:0, MatchLength:1 ReplStr:-><- IsHard=false (((false imples else case Rv!)))
+
+  4:             2          [2] ✔ : T:0001 	 E:
+			DFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:2 ReplStr:-><- IsHard=true (((false imples else case Rv!)))
+
+  5:             5          [5] ✔ : T:0003 	 E:
+			DFA.Info: Action: **No A Flag**(00), Ns:0, MatchLength:2 ReplStr:-><- IsHard=true (((false imples else case Rv!)))
+
+[0;36;40mTok_map:
+[0m[0;36;40m	  3: Tok_BB
+[0m[0;36;40m	  1: Tok_CL
+[0m[0;36;40m	  4: Tok_EOF
+[0m[0;36;40m	  2: Tok_PCT
+[0m[0;36;40m	  0: Tok_null
+[0m[0;36;40m	  5: Tok_ID
+[0m[0;36;40m	  6: Tok_Ignore
+[0m[0;31;40mError[0m from goimports, exec: "goimorts": executable file not found in $PATH, File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/gogen.go LineNo:63
+[0mOutput: 
+
+
+[0;33;40mTest:4300 ------------------------- Start --------------------------, 0, Input: -->>%}<<--
+[0m
+
+[0;34;47mMachine[0] =[0m
+[0m[0;34;47m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[0m
+Sigma = "%b}\uf8fa"
+InitState = 0
+N_States = 6
+Width = 5
+SMap = {{{ smap.MinV = 37, smap.MaxV = 88, smap.Len = 5
+smap.NoMap = f8fc (  ), smap.NoMapTo = 4
+smap.M0 = (89 items)
+     0: [   0 0x25     "%" ] = 0
+     1: [   1 0x26     "&" ] = 4
+     2: [   2 0x27     "'" ] = 4
+     3: [   3 0x28     "(" ] = 4
+     4: [   4 0x29     ")" ] = 4
+     5: [   5 0x2a     "*" ] = 4
+     6: [   6 0x2b     "+" ] = 4
+     7: [   7 0x2c     "," ] = 4
+     8: [   8 0x2d     "-" ] = 4
+     9: [   9 0x2e     "." ] = 4
+    10: [  10 0x2f     "/" ] = 4
+    11: [  11 0x30     "0" ] = 4
+    12: [  12 0x31     "1" ] = 4
+    13: [  13 0x32     "2" ] = 4
+    14: [  14 0x33     "3" ] = 4
+    15: [  15 0x34     "4" ] = 4
+    16: [  16 0x35     "5" ] = 4
+    17: [  17 0x36     "6" ] = 4
+    18: [  18 0x37     "7" ] = 4
+    19: [  19 0x38     "8" ] = 4
+    20: [  20 0x39     "9" ] = 4
+    21: [  21 0x3a     ":" ] = 4
+    22: [  22 0x3b     ";" ] = 4
+    23: [  23 0x3c     "<" ] = 4
+    24: [  24 0x3d     "=" ] = 4
+    25: [  25 0x3e     ">" ] = 4
+    26: [  26 0x3f     "?" ] = 4
+    27: [  27 0x40     "@" ] = 4
+    28: [  28 0x41     "A" ] = 4
+    29: [  29 0x42     "B" ] = 4
+    30: [  30 0x43     "C" ] = 4
+    31: [  31 0x44     "D" ] = 4
+    32: [  32 0x45     "E" ] = 4
+    33: [  33 0x46     "F" ] = 4
+    34: [  34 0x47     "G" ] = 4
+    35: [  35 0x48     "H" ] = 4
+    36: [  36 0x49     "I" ] = 4
+    37: [  37 0x4a     "J" ] = 4
+    38: [  38 0x4b     "K" ] = 4
+    39: [  39 0x4c     "L" ] = 4
+    40: [  40 0x4d     "M" ] = 4
+    41: [  41 0x4e     "N" ] = 4
+    42: [  42 0x4f     "O" ] = 4
+    43: [  43 0x50     "P" ] = 4
+    44: [  44 0x51     "Q" ] = 4
+    45: [  45 0x52     "R" ] = 4
+    46: [  46 0x53     "S" ] = 4
+    47: [  47 0x54     "T" ] = 4
+    48: [  48 0x55     "U" ] = 4
+    49: [  49 0x56     "V" ] = 4
+    50: [  50 0x57     "W" ] = 4
+    51: [  51 0x58     "X" ] = 4
+    52: [  52 0x59     "Y" ] = 4
+    53: [  53 0x5a     "Z" ] = 4
+    54: [  54 0x5b     "[" ] = 4
+    55: [  55 0x5c    "\\" ] = 4
+    56: [  56 0x5d     "]" ] = 4
+    57: [  57 0x5e     "^" ] = 4
+    58: [  58 0x5f     "_" ] = 4
+    59: [  59 0x60     "`" ] = 4
+    60: [  60 0x61     "a" ] = 4
+    61: [  61 0x62     "b" ] = 1
+    62: [  62 0x63     "c" ] = 4
+    63: [  63 0x64     "d" ] = 4
+    64: [  64 0x65     "e" ] = 4
+    65: [  65 0x66     "f" ] = 4
+    66: [  66 0x67     "g" ] = 4
+    67: [  67 0x68     "h" ] = 4
+    68: [  68 0x69     "i" ] = 4
+    69: [  69 0x6a     "j" ] = 4
+    70: [  70 0x6b     "k" ] = 4
+    71: [  71 0x6c     "l" ] = 4
+    72: [  72 0x6d     "m" ] = 4
+    73: [  73 0x6e     "n" ] = 4
+    74: [  74 0x6f     "o" ] = 4
+    75: [  75 0x70     "p" ] = 4
+    76: [  76 0x71     "q" ] = 4
+    77: [  77 0x72     "r" ] = 4
+    78: [  78 0x73     "s" ] = 4
+    79: [  79 0x74     "t" ] = 4
+    80: [  80 0x75     "u" ] = 4
+    81: [  81 0x76     "v" ] = 4
+    82: [  82 0x77     "w" ] = 4
+    83: [  83 0x78     "x" ] = 4
+    84: [  84 0x79     "y" ] = 4
+    85: [  85 0x7a     "z" ] = 4
+    86: [  86 0x7b     "{" ] = 4
+    87: [  87 0x7c     "|" ] = 4
+    88: [  88 0x7d     "}" ] = 2
+smap.M1 = (2 items)
+    : 3 X_DOT     \uF8FA 
+    : 4 X_else_CH \uF8FC 
+}}}
+
+State  : Rv/Name               Actn  Hard  Next Leng    |     0    1    2    3    4
+====== : ====/===============  ----- ----- ---- ----    |    --   --   --   --   --
+       :     /                                          |     %    b    }        
+====== : ====/===============  ----- ----- ---- ----    |    --   --   --   --   --
+m[  0] :    0/Tok_null               false    0    0    |     1    2    3    3    3
+m[  1] :    2/Tok_PCT                 true    0    1    |     ☩    ☩    4    ☩    ☩
+m[  2] :    0/Tok_null           140 false    0    1    |     ☩    5    ☩    ☩    ☩
+m[  3] :    0/Tok_null           140 false    0    1    |     ☩    ☩    ☩    ☩    ☩
+m[  4] :    1/Tok_CL                  true    0    2    |     ☩    ☩    ☩    ☩    ☩
+m[  5] :    3/Tok_BB                  true    0    2    |     ☩    ☩    ☩    ☩    ☩
+
+Action Flags Are:
+    140: (140) A_Reset|A_Error
+
+[0;34;47m**********************************************************************************************************[0m
+[0mTop: (machine number 0) current state ctx.St:0
+ (peek) machine=0 cur_st=0 ii=0 for rune rn=->%<-  [0;33;40mto=1 hard=false[0m  Rv=0 Tau=false Action=0, ctx_stack=[]
+[0m[0;33;40m-- other --  At: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:303
+[0m
+[0;34;47m**********************************************************************************************************[0m
+[0mTop: (machine number 0) current state ctx.St:1
+ (peek) machine=0 cur_st=1 ii=2 for rune rn=->}<-  [0;33;40mto=4 hard=true[0m  Rv=2 Tau=false Action=0, ctx_stack=[]
+[0m [0;36;40mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:274, to=4, indicates a potential next state
+[0m [0;31;40mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:276, hardMatch=true to=4, *** should push state ***
+[0m [0;36;40mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:280
+[0m [0;33;40mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:283
+[0m+==================================================================================
++ SaveToken: Line:1 Col:2
++==================================================================================
+Before Flush, TokStart=0, eof = false
+TokenList:
+	row Start End   Hard TokNo     sL/C Match                
+	  0     2     3    1     2   1/   1 -->>%}<<--
+
+	EndIdx = 3 -> 0
+[0;34;47mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/tok/tok.go LineNo:209 -- Output Token Buffer[0m
+[0mTokenBuffer:
+	row TokNo/Token Name          sL/C Match                Val
+At top of loop, ii = 0, tl.TL[ii]={Start:2 End:3 NHard:1 AToken:{FileName:sf-0.txt Typ:0 Match:%} Val:%} TokNo:2 LineNo:1 ColNo:1 State:0 IsRepl:false ReplStr: DataType:0 CurValue:<nil> Error:false ErrorMsg: LValue:false CreateId:false CoceLocation:}}
+keepTok = [0], last=-1
+After Flush
+--------------------------------------------------------
+TokenList:
+	row Start End   Hard TokNo     sL/C Match                
+
+[0;34;47mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/tok/tok.go LineNo:209 -- Output Token Buffer[0m
+[0mTokenBuffer:
+	row TokNo/Token Name          sL/C Match                Val
+	  0     2/Tok_PCT           1/   1 -->>%}<<-- -->%}<-
+--------------------------------------------------------
+
+[0;34;47m**********************************************************************************************************[0m
+[0mTop: (machine number 0) current state ctx.St:4
+ (peek) machine=0 cur_st=4 ii=4 for rune rn=-><-  [0;33;40mto=-1 hard=true[0m  Rv=1 Tau=false Action=0, ctx_stack=[]
+[0m [0;33;40mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:259, matched re.R_EOF
+[0mBefore Flush, TokStart=0, eof = true
+TokenList:
+	row Start End   Hard TokNo     sL/C Match                
+
+[0;34;47mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/tok/tok.go LineNo:209 -- Output Token Buffer[0m
+[0mTokenBuffer:
+	row TokNo/Token Name          sL/C Match                Val
+	  0     2/Tok_PCT           1/   1 -->>%}<<-- -->%}<-
+keepTok = [], last=0
+After Flush
+--------------------------------------------------------
+TokenList:
+	row Start End   Hard TokNo     sL/C Match                
+
+[0;34;47mAt: File: /Users/philip/go/src/github.com/pschlump/lexie/tok/tok.go LineNo:209 -- Output Token Buffer[0m
+[0mTokenBuffer:
+	row TokNo/Token Name          sL/C Match                Val
+	  0     2/Tok_PCT           1/   1 -->>%}<<-- -->%}<-
+--------------------------------------------------------
+to=-1, At: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:325
+ At: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:329
+ Reached EOF
+ send EOF 
+ At: File: /Users/philip/go/src/github.com/pschlump/lexie/dfa-old/match.go LineNo:349
+ end of function 
+Test:4300 ------------------------- End --------------------------
+
+PASS
+ok  	github.com/pschlump/lexie/dfa-old	0.268s
