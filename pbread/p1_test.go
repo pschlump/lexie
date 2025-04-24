@@ -4,7 +4,6 @@ package pbread
 // P B B U F F E R - Push back buffer - test.
 //
 // Copyright (C) Philip Schlump, 2013-2025.
-// Version: 1.0.0
 //
 
 import (

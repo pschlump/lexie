@@ -1,0 +1,20 @@
+digraph finite_state_machine {
+	rankdir=LR;
+	size="18,8"
+	node [shape = doublecircle]; s6 s7 s10 s11;
+	node [shape = circle];
+	s0 -> s1 [ label = "e" ];
+	s0 -> s2 [ label = "g" ];
+	s0 -> s1 [ label = "r" ];
+	s0 -> s3 [ label = "s" ];
+	s0 -> s1 [ label = "t" ];
+	s0 -> s1 [ label = "◉" ];
+	s2 -> s4 [ label = "e" ];
+	s3 -> s5 [ label = "e" ];
+	s4 -> s6 [ label = "t" ];
+	s5 -> s7 [ label = "t" ];
+	s6 -> s8 [ label = "e" ];
+	s7 -> s9 [ label = "e" ];
+	s8 -> s10 [ label = "r" ];
+	s9 -> s11 [ label = "r" ];
+}

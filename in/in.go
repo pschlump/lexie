@@ -2,12 +2,12 @@
 // I N - Part of Lexie Lexical Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 1.0.8
 //
 // Basic scanning and input to convert an input file into an internal data structure.
 // It is ironic that this tool uses a hand-coded scanner when being a scanner generator.
 //
 // Error: TODO xyzzy108: This is not relly correct, try a comment inside a quoted string and see why
+// xyzzyEof00 - looks like the place for matcing $eof
 
 package in
 
@@ -160,6 +160,7 @@ func clasifyLine(ln string) (cls ClsOfString) {
 	if reDollarEnd.MatchString(ln) {
 		return ClsEnd
 	}
+	// xyzzyEof00 - looks like the place for matcing $eof
 	// if strings.HasPrefix(ln, "$eof") {
 	if reDollarEof.MatchString(ln) {
 		return ClsEof
@@ -307,6 +308,7 @@ func PickOffPatternAtBeginning(cls ClsOfString, ln string) (pat string, rest str
 			rest = ln[ii:]
 		}
 		// fmt.Printf("rest ->%s<-, %s\n", rest, dbgo.LF())
+		// xyzzyEof00 - looks like the place for matcing $eof
 	}
 	return
 }
@@ -642,7 +644,7 @@ func (Im *ImType) SaveMachine(opt []string) int {
 func (Im *ImType) FindValueFor(t string) int {
 	//for s, dd := range Im.Def.DefsAre {
 	//	_ = s
-	for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens"} {
+	for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens", "Options"} {
 		dd := Im.Def.DefsAre[DefType]
 		// fmt.Printf("In %s Looking for %s\n", s, t)
 		if v, ok := dd.NameValue[t]; ok {
@@ -831,21 +833,38 @@ func (Im *ImType) FinializeFile() {
 	Tok_map = dd.Reverse
 }
 
-func (Im *ImType) OutputDef() {
-	fmt.Printf("Defs - OutputDef\n")
-	for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens"} {
-		dd := Im.Def.DefsAre[DefType]
-		fmt.Printf("==========================================================================\n")
-		fmt.Printf("DefType: %s\n", DefType)
-		fmt.Printf("==========================================================================\n")
+func (Im *ImType) OutputDef(fp *os.File, genFmt string) {
+	if genFmt == "text" {
 
-		ss := com.SortMapStringString(dd.NameValueStr)
-		// for AKey, ADef := range dd.NameValueStr {
-		for _, AKey := range ss {
-			ADef := dd.NameValueStr[AKey]
-			fmt.Printf("    %s=%v\n", AKey, ADef)
+		fmt.Fprintf(fp, "Defs - OutputDef\n")
+		for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens"} {
+			dd := Im.Def.DefsAre[DefType]
+			fmt.Fprintf(fp, "==========================================================================\n")
+			fmt.Fprintf(fp, "DefType: %s\n", DefType)
+			fmt.Fprintf(fp, "==========================================================================\n")
+
+			ss := com.SortMapStringString(dd.NameValueStr)
+			// for AKey, ADef := range dd.NameValueStr {
+			for _, AKey := range ss {
+				ADef := dd.NameValueStr[AKey]
+				fmt.Fprintf(fp, "    %s=%v\n", AKey, ADef)
+			}
 		}
+
+	} else if genFmt == "go" {
+
+		// xyzzy - generate
+		for _, DefType := range []string{"Machines", "Errors", "ReservedWords", "Tokens"} {
+			dbgo.Fprintf(fp, "/*\n")
+			dbgo.Fprintf(fp, "==========================================================================\n")
+			dbgo.Fprintf(fp, "DefType print AT: %(LF)\n")
+			dbgo.Fprintf(fp, "DefType: %s\n", DefType)
+			dbgo.Fprintf(fp, "==========================================================================\n")
+			dbgo.Fprintf(fp, "*/\n")
+		}
+
 	}
+
 }
 
 // min, max := com.RangeOfIntKeys(dd.Reverse)
@@ -873,6 +892,7 @@ func (Im *ImType) OutputDefAsGoCode(fo io.Writer) {
 	for _, DefType := range []string{"Tokens", "Machines", "Errors", "ReservedWords"} {
 		dd := Im.Def.DefsAre[DefType]
 		fmt.Fprintf(fo, "// ==========================================================================\n")
+		dbgo.Fprintf(fo, "// DefType from AT:%(LF)\n")
 		fmt.Fprintf(fo, "// DefType: %s\n", DefType)
 		fmt.Fprintf(fo, "// ==========================================================================\n")
 		fmt.Fprintf(fo, "const (\n")
@@ -895,51 +915,51 @@ func (Im *ImType) OutputDefAsGoCode(fo io.Writer) {
 }
 
 // Output the Im structure
-func (Im *ImType) OutputImType() {
+func (Im *ImType) OutputImType(fp *os.File, outFmt string) {
 
 	dpt := []string{"???", "Pat", "EOF", "???"}
 	if dbgo.IsDbOn("in-echo-machine") {
 
-		Im.OutputDef()
-		Im.OutputDefAsGoCode(os.Stdout)
+		Im.OutputDef(fp, outFmt)
+		Im.OutputDefAsGoCode(fp)
 		for ii, vv := range Im.Machine {
-			fmt.Printf("Machine[%d] Name[%s]-----------------------------------------------------------------\n", ii, vv.Name)
-			fmt.Printf("    Mixins: %v\n", vv.Mixins)
+			fmt.Fprintf(fp, "Machine[%d] Name[%s]-----------------------------------------------------------------\n", ii, vv.Name)
+			fmt.Fprintf(fp, "    Mixins: %v\n", vv.Mixins)
 			// Rules  []*ImRuleType //
 			for jj, ww := range vv.Rules {
 				s := fmt.Sprintf("%q", ww.Pattern)
 				s = s[1:]
 				s = s[0 : len(s)-1]
-				fmt.Printf("      %3d: %3s   %-30s ", jj, dpt[ww.PatternType], s)
+				fmt.Fprintf(fp, "      %3d: %3s   %-30s ", jj, dpt[ww.PatternType], s)
 				if len(ww.RvName) > 0 {
-					fmt.Printf("%-20s", fmt.Sprintf(" Rv:%d=%s ", ww.Rv, ww.RvName))
+					fmt.Fprintf(fp, "%-20s", fmt.Sprintf(" Rv:%d=%s ", ww.Rv, ww.RvName))
 				} else {
-					fmt.Printf("%-20s", "")
+					fmt.Fprintf(fp, "%-20s", "")
 				}
 				if len(ww.CallName) > 0 {
-					fmt.Printf("%-20s", fmt.Sprintf(" Call:%d=%s ", ww.Call, ww.CallName))
+					fmt.Fprintf(fp, "%-20s", fmt.Sprintf(" Call:%d=%s ", ww.Call, ww.CallName))
 				} else {
-					fmt.Printf("%-20s", "")
+					fmt.Fprintf(fp, "%-20s", "")
 				}
 				if ww.Return {
-					fmt.Printf(" Return ")
+					fmt.Fprintf(fp, " Return ")
 				}
 				if ww.Repl {
-					fmt.Printf(" Repl:%s ", ww.ReplString)
+					fmt.Fprintf(fp, " Repl:%s ", ww.ReplString)
 				}
 				if ww.Ignore {
-					fmt.Printf(" [Ignore] ")
+					fmt.Fprintf(fp, " [Ignore] ")
 				}
 				if ww.ReservedWord {
-					fmt.Printf(" [ReservedWord] ")
+					fmt.Fprintf(fp, " [ReservedWord] ")
 				}
 				if ww.Err {
-					fmt.Printf(" [Err=%s] ", ww.WEString)
+					fmt.Fprintf(fp, " [Err=%s] ", ww.WEString)
 				}
 				if ww.Warn {
-					fmt.Printf(" [Warn=%s] ", ww.WEString)
+					fmt.Fprintf(fp, " [Warn=%s] ", ww.WEString)
 				}
-				fmt.Printf("\n")
+				fmt.Fprintf(fp, "\n")
 			}
 		}
 	}
@@ -958,7 +978,7 @@ func ImReadFile(fn string) (Im *ImType) {
 		Im.ParseFile(fd)
 	}
 	// fmt.Printf("%+v\n", Im)
-	Im.OutputImType()
+	Im.OutputImType(os.Stdout, "text")
 	return
 }
 

@@ -2,7 +2,6 @@
 // C O M - Part of Lexie Lexical Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 1.0.8
 //
 
 package com
@@ -63,6 +62,7 @@ func KeyStringSort(str []string) (rv []string) {
 	return
 }
 
+// NameOf convers a array of ints into a NUM _ Num _ Num ... string
 func NameOf(inputSet []int) string {
 	// inputSet = USortIntSlice(inputSet)
 	com := ""
@@ -74,6 +74,7 @@ func NameOf(inputSet []int) string {
 	return s
 }
 
+// ComparSlice will return true if 2 int slices have the same ints in them.
 func CompareSlices(X, Y []int) []int {
 	m := make(map[int]int)
 
@@ -93,6 +94,7 @@ func CompareSlices(X, Y []int) []int {
 	return ret
 }
 
+// EqualStringSlice will return true if two int slices are exactly the same with, the same order, the same length, the same values.
 func EqualStringSlices(X, Y []string) bool {
 	if len(X) != len(Y) {
 		return false
@@ -105,14 +107,15 @@ func EqualStringSlices(X, Y []string) bool {
 	return true
 }
 
-// DbPrintf("db_DumpDFAPool", " %12s %12s \u2714              \tEdges", "StateName", "StateSet")
-
+// ChkOrX will return a check mark if true, or an X if false.
 func ChkOrX(v bool) string {
 	if v {
 		return "\u2714"
 	}
 	return "\u2716"
 }
+
+// ChkOrBlank will return a check mark if true, or a blank if false.
 func ChkOrBlank(v bool) string {
 	if v {
 		return "\u2714"
@@ -251,9 +254,7 @@ func AllFilesInPath(path string) (filenames []string) {
 	return
 }
 
-// -----------------------------------------------------------------------------------------------------------------------------------
-// Exists reports whether the named file or directory exists.
-// -----------------------------------------------------------------------------------------------------------------------------------
+// DirExists reports returns true if the named directory exits.
 func DirExists(name string) bool {
 	if fstat, err := os.Stat(name); err != nil {
 		if os.IsNotExist(err) {
@@ -371,7 +372,6 @@ func FilterArray(re string, inArr []string) (outArr []string) {
 			outArr = append(outArr, inArr[k])
 		}
 	}
-	// fmt.Printf ( "output = %v\n", outArr )
 	return
 }
 

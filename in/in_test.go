@@ -2,6 +2,7 @@ package in
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/pschlump/dbgo"
@@ -181,7 +182,7 @@ func Test_ParseFile(t *testing.T) {
 			Im.ParseFile(fd)
 		}
 		fmt.Printf("%+v\n", Im)
-		Im.OutputImType()
+		Im.OutputImType(os.Stdout, "text")
 	} else {
 		Im := ImReadFile("./django3.lex")
 		_ = Im

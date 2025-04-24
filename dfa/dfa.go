@@ -212,9 +212,9 @@ func (dfa *DFA_PoolType) DumpPool(all bool) {
 						fmt.Printf("//Found  \u03c4 (%s) //", dbgo.LF()) // Show a Tau(t) for a lambda that matchiens on else conditions.
 					}
 					if ww.IsLambda {
-						fmt.Printf("{  ERROR!! \u03bb  %2d -> %2d  %s}  ", ww.From, ww.To, ww.LineNo)
+						fmt.Printf("{  ERROR!! \u03bb  %2d -> %2d  %s }  ", ww.From, ww.To, ww.LineNo)
 					} else {
-						// fmt.Printf("{ \"%s\" %2d -> %2d  %s}  ", ww.On, ww.From, ww.To, IfLnNo(ww.LineNo))
+						// fmt.Printf("{ \"%s\" %2d -> %2d  %s }  ", ww.On, ww.From, ww.To, IfLnNo(ww.LineNo))
 						on, _ := utf8.DecodeRune([]byte(ww.On))
 						son := fmt.Sprintf("%q", ww.On)
 						switch on {
@@ -243,7 +243,7 @@ func (dfa *DFA_PoolType) DumpPool(all bool) {
 						case re.R_LAMBDA_MATCH: // = '\uF8FE'
 							son = "LambdaM/uF8FE"
 						}
-						fmt.Printf("{ %s  %2d -> %2d  %s}  ", son, ww.From, ww.To, IfLnNo(ww.LineNo))
+						fmt.Printf("{ %s  %2d -> %2d  %s }  ", son, ww.From, ww.To, IfLnNo(ww.LineNo))
 					}
 				}
 				fmt.Printf("\n")
@@ -282,9 +282,9 @@ func (dfa *DFA_PoolType) DumpPoolOneState(ii int) string {
 	s += fmt.Sprintf("\t E:")
 	for _, ww := range vv.Next2 {
 		if ww.IsLambda {
-			s += fmt.Sprintf("{  ERROR!! \u03bb  %2d -> %2d  %s}  ", ww.From, ww.To, ww.LineNo)
+			s += fmt.Sprintf("{  ERROR!! \u03bb  %2d -> %2d  %s }  ", ww.From, ww.To, ww.LineNo)
 		} else {
-			s += fmt.Sprintf("{ \"%s\" %2d -> %2d  %s}  ", ww.On, ww.From, ww.To, IfLnNo(ww.LineNo))
+			s += fmt.Sprintf("{ \"%s\" %2d -> %2d  %s }  ", ww.On, ww.From, ww.To, IfLnNo(ww.LineNo))
 		}
 	}
 	s += "\n"

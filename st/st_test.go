@@ -4,7 +4,6 @@ package st
 // S T - Symbol table - test
 //
 // Copyright (C) Philip Schlump, 2013-2025.
-// Version: 1.0.0
 //
 
 import (

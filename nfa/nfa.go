@@ -1,7 +1,6 @@
 // N F A - Part of Lexie Lexical Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 1.0.8
 //
 
 // xyzzy-NCCL - add in NCCL at this point
@@ -543,7 +542,7 @@ func (nn *NFA_PoolType) DumpPool(all bool) {
 						} else {
 							fmt.Printf("{ \u03bb [Lambda] %2d -> %2d  %s }  ", ww.From, ww.To, IfLnNo(ww.LineNo))
 						}
-						// fmt.Printf("{ (L) %2d -> %2d  %s}  ", ww.From, ww.To, IfLnNo(ww.LineNo))
+						// fmt.Printf("{ (L) %2d -> %2d  %s }  ", ww.From, ww.To, IfLnNo(ww.LineNo))
 					} else {
 						on, _ := utf8.DecodeRune([]byte(ww.On))
 						son := fmt.Sprintf("%q", ww.On)

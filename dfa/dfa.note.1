@@ -1,0 +1,79 @@
+
+Action Flags Are:
+     4: (04) A_Push
+    200: (200) A_Warning
+     8: (08) A_Pop
+    140: (140) A_Reset|A_Error
+Action Flags Are:
+    88: (88) A_Pop|A_NotGreedy
+     4: (04) A_Push
+    140: (140) A_Reset|A_Error
+Action Flags Are:
+     1: (01) A_Repl
+    140: (140) A_Reset|A_Error
+
+
+		switch nm {
+		// Return Value ( Terminal State )
+		case "Rv":
+			x.RvName = param
+			Im.SaveDef("Tokens", []string{param}, line_no, file_name)
+		// Call a sub-machine
+		case "Call":
+			x.CallName = param
+			Im.SaveDef("Machines", []string{param}, line_no, file_name)
+		// xyzzy 
+		case "Repl":
+			x.Repl = true
+			x.ReplString = param
+		// xyzzy 
+		case "Ignore":
+			x.Ignore = true
+			x.RvName = "Tok_Ignore"
+		case "NotGreedy":
+			x.NotGreedy = true
+		case "Error":
+			x.Err = true
+			x.WEString = param
+			Im.SaveDef("Errors", []string{param}, line_no, file_name)
+		case "ReservedWord":
+			x.ReservedWord = true
+			Im.SaveDef("ReservedWords", []string{param}, line_no, file_name)
+		// xyzzy 
+		case "Options":
+			Im.SaveDef("Options", []string{param}, line_no, file_name)
+		case "Return":
+			x.Return = true
+		case "Warn":
+			x.Warn = true
+			x.WEString = param
+			Im.SaveDef("Errors", []string{param}, line_no, file_name)
+		// xyzzy 
+		case "Reset":
+			// TODO xyzzy - not implemented yet
+		default:
+			fmt.Printf("Error: %s is not a defined operation, line %d file %s\n", nm, line_no, file_name)
+		}
+
+# State Options
+
+| Option         | Description                                                                |
++================+============================================================================+
+| Rv             | Terminal state returns a named or value at this point.                     |
+| Call           | Next state transition will use a different machine.                        |
+| Return         | Return from this mache to a stack-pushed machine.  If top machine - error. |
+| Warn           | Report a warning error if this state is "accepted".                        |
+| Error          | Report an error if this state is "accepted".                               |
+| Options        | Set an option - don't know where this is used if at all.                   |
+| ReservedWords  | Mark as a resrved word for a ReservedWord Lookup table.                    |
+| NotGreedey     | No lookahead for this token if matched.  Greedey is default.               |
+|                | Any "Return" or "Call" matche is by default NotGreedey.                    |
+| Repl           | ?? Replace output at matched with string ??                                |
+|                | Saves a string in x.ReplString                                             |
+|                | Created in ./in/in.go - used in ./dfa/dfa.go                               |
+
+
+Need to implement!
+
+$eof				| set match and return stuff for EOF
+

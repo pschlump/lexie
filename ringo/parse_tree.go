@@ -4,7 +4,6 @@ package ringo
 // R I N G O - A template engine using the lexie system.
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 0.3.0
 //
 
 /*

@@ -394,24 +394,28 @@ func Test_DfaTestUsingDjango(t *testing.T) {
 
 	dbgo.Fprintf(os.Stderr, "\n\n%(cyan)Test Matcher test from ../in/django3.lex file, %(LF)\n========================================================================\n\n")
 
-	dbgo.SetADbFlag("db_DumpDFAPool", true)
-	dbgo.SetADbFlag("db_DumpPool", true)
-	dbgo.SetADbFlag("db_Matcher_02", true)
-	// dbgo.SetADbFlag("db_NFA_LnNo", true)
-	dbgo.SetADbFlag("match", true)
 	// dbgo.SetADbFlag("nfa3", true)
-	dbgo.SetADbFlag("output-machine", true)
-	dbgo.SetADbFlag("match", true)
-	dbgo.SetADbFlag("match_x", true)
+	// dbgo.SetADbFlag("db_NFA_LnNo", true)
 	// dbgo.SetADbFlag("nfa3", true)
 	// dbgo.SetADbFlag("nfa4", true)
 	// dbgo.SetADbFlag("db_DFAGen", true)
 	// dbgo.SetADbFlag("pbbuf02", true)
 	// dbgo.SetADbFlag("DumpParseNodes2", true)
-	dbgo.SetADbFlag("db_FlushTokenBeforeBefore", true)
-	dbgo.SetADbFlag("db_FlushTokenBeforeAfter", true)
-	dbgo.SetADbFlag("db_tok01", true)
-	dbgo.SetADbFlag("in-echo-machine", true) // Output machine
+	/*
+		dbgo.SetADbFlag("db_DumpDFAPool", true)
+		dbgo.SetADbFlag("db_DumpPool", true)
+		dbgo.SetADbFlag("db_Matcher_02", true)
+		dbgo.SetADbFlag("match", true)
+		dbgo.SetADbFlag("output-machine", true)
+		dbgo.SetADbFlag("match", true)
+		dbgo.SetADbFlag("match_x", true)
+		dbgo.SetADbFlag("db_FlushTokenBeforeBefore", true)
+		dbgo.SetADbFlag("db_FlushTokenBeforeAfter", true)
+		dbgo.SetADbFlag("db_tok01", true)
+		dbgo.SetADbFlag("in-echo-machine", true) // Output machine
+	*/
+
+	dbgo.SetDbFlagsTo(true, "db_DumpDFAPool", "db_DumpPool", "db_Matcher_02", "match", "output-machine", "match", "match_x", "db_FlushTokenBeforeBefore", "db_FlushTokenBeforeAfter", "db_tok01", "in-echo-machine")
 
 	lex := NewLexie()
 	lex.NewReadFile("../in/django3.lex", "mmm")

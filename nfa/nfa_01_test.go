@@ -15,11 +15,7 @@ import (
 	"github.com/pschlump/dbgo"
 	"github.com/pschlump/filelib"
 	"github.com/pschlump/lexie/com"
-
-	. "gopkg.in/check.v1"
 )
-
-// https://labix.org/gocheck
 
 // Test the generation of NFA - Non-Deterministic Finite state Automata.
 // ------------------------------------------------------------------------------------
@@ -114,29 +110,27 @@ var Lexie01Data = []Lexie01DataType{
 // Hook up gocheck into the "go test" runner.
 // -----------------------------------------------------------------------------------------------------------------------------------------
 
-func TestLexie(t *testing.T) { TestingT(t) }
+// func TestLexie(t *testing.T) { TestingT(t) }
 
-type LexieTestSuite struct{}
+// type LexieTestSuite struct{}
 
-var _ = Suite(&LexieTestSuite{})
+// var _ = Suite(&LexieTestSuite{})
 
-func (s *LexieTestSuite) TestLexie(c *C) {
+// func (s *LexieTestSuite) TestLexie(c *C) {
+
+func TestLexie(t *testing.T) {
 
 	// return
 	fmt.Fprintf(os.Stderr, "Test Parsing of REs, Test genration of NFAs %s\n", dbgo.LF())
 
-	dbgo.SetADbFlag("db_NFA", true)
-	dbgo.SetADbFlag("db_NFA_LnNo", true)
-	dbgo.SetADbFlag("db_DumpPool", true)
-	dbgo.SetADbFlag("parseExpression", true)
-	dbgo.SetADbFlag("CalcLength", true)
+	//dbgo.SetADbFlag("db_NFA", true)
+	//dbgo.SetADbFlag("db_NFA_LnNo", true)
+	//dbgo.SetADbFlag("db_DumpPool", true)
+	//dbgo.SetADbFlag("parseExpression", true)
+	//dbgo.SetADbFlag("CalcLength", true)
+	dbgo.SetDbFlagsTo(true, "db_NFA", "db_NFA_LnNo", "db_DumpPool", "parseExpression", "CalcLength")
 
-	// Add a test for any issue
-	c.Check(42, Equals, 42)
-	// c.Assert("nope", Matches, "hel.*there")
 	fmt.Printf("**** In Test Issues\n")
-	//x := test7GenDFA()
-	//c.Check(x, Equals, 0)
 
 	n_err := 0
 	n_skip := 0
@@ -178,11 +172,14 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 				if err != nil {
 					panic("unable to read file, " + cmpFile)
 				}
-				if string(ref) != string(newData) {
-					c.Check(string(newData), Equals, string(ref))
+
+				// c.Check(string(newData), Equals, string(ref))
+				if string(newData) != string(ref) {
+					t.Errorf("Test %v:  Expected %s got %s\n", vv.Test, ref, newData)
 					dbgo.Printf("%(red)Error%(reset): Test case %s failed to match, cmpFile(.ref)=%s newFile(.tst)=%s to \n", vv.Test, cmpFile, newFile)
 					n_err++
 				}
+
 			} else {
 				n_skip++
 			}
@@ -215,11 +212,13 @@ func (s *LexieTestSuite) TestLexie(c *C) {
 
 // -----------------------------------------------------------------------------------------------------------------------------------------
 
-type LambdaClosureTestSuite struct{}
+//type LambdaClosureTestSuite struct{}
+//
+//var _ = Suite(&LambdaClosureTestSuite{})
+//
+//func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
-var _ = Suite(&LambdaClosureTestSuite{})
-
-func (s *LambdaClosureTestSuite) TestLexie(c *C) {
+func TestLexie2(t *testing.T) {
 
 	// return
 	fmt.Fprintf(os.Stderr, "Test NFA generation from REs, %s\n", dbgo.LF())
@@ -244,13 +243,13 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	// -------------------------------------- test 1 -----------------------------------
 	r1 := Pool.LambdaClosure([]int{4, 1, 5})
-	fmt.Printf("\n\nr1(4,1,5)=%v\n", r1)
+	// fmt.Printf("\n\nr1(4,1,5)=%v\n", r1)
 
 	if len(com.CompareSlices([]int{4, 1, 5}, r1)) != 0 {
 		dbgo.Printf("%(red)Error%(reset): Test case 1 failed to match\n")
+		t.Errorf("CompareSlice did not work.")
 		n_err++
 	}
-	c.Check(len(com.CompareSlices([]int{4, 1, 5}, r1)), Equals, 0)
 
 	// -------------------------------------- test 2 -----------------------------------
 	r2 := Pool.LambdaClosure([]int{12, 9, 13})
@@ -258,9 +257,9 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	if len(com.CompareSlices([]int{12, 9, 13}, r2)) != 0 {
 		dbgo.Printf("%(red)Error%(reset): Test case 2 failed to match\n")
+		t.Errorf("CompareSlice did not work.")
 		n_err++
 	}
-	c.Check(len(com.CompareSlices([]int{12, 9, 13}, r2)), Equals, 0)
 
 	// -------------------------------------- test 3 -----------------------------------
 	r3 := Pool.LambdaClosure([]int{12, 9, 13})
@@ -268,18 +267,8 @@ func (s *LambdaClosureTestSuite) TestLexie(c *C) {
 
 	if len(com.CompareSlices([]int{12, 9, 13}, r3)) != 0 {
 		dbgo.Printf("%(red)Error%(reset): Test case 3 failed to match\n")
+		t.Errorf("CompareSlice did not work.")
 		n_err++
-	}
-	c.Check(len(com.CompareSlices([]int{12, 9, 13}, r3)), Equals, 0)
-
-	// ------------------------- understand test runner ---------------------------------------
-	if false {
-		c.Check(1, Equals, 0)
-		// c.Assert(2, Equals, 0) // Failure of an assert ends test (exit)
-		sss := c.GetTestLog()
-		fp, err := filelib.Fopen(",g", "w")
-		c.Check(err, Equals, nil)
-		fmt.Fprintf(fp, "c.GetTestLog: ->%s<-\n", sss)
 	}
 
 	// ------------------------- eval results now ---------------------------------------
@@ -339,11 +328,13 @@ var NFATest_02Data = []NFATest_02DataType{
 	},
 }
 
-type NFA_Multi_Part_TestSuite struct{}
+//type NFA_Multi_Part_TestSuite struct{}
+//
+//var _ = Suite(&NFA_Multi_Part_TestSuite{})
+//
+//func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 
-var _ = Suite(&NFA_Multi_Part_TestSuite{})
-
-func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
+func TestLexie3(t *testing.T) {
 
 	fmt.Fprintf(os.Stderr, "Test NFA Multi-Part RE - NFA test %s\n", dbgo.LF())
 	n_err := 0
@@ -400,7 +391,7 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 				panic("unable to read file, " + cmpFile)
 			}
 			if string(ref) != string(newData) {
-				c.Check(string(newData), Equals, string(ref))
+				t.Errorf("n2 test %s did not work.", vv.Test)
 				dbgo.Printf("%(red)Error%(reset): Test case %s failed to match\n", vv.Test)
 				n_err++
 			}
@@ -442,5 +433,4 @@ func (s *NFA_Multi_Part_TestSuite) TestLexie(c *C) {
 		dbgo.DbPrintf("debug", "\n\n%(green)PASS\n")
 	}
 
-	_ = n_skip
 }

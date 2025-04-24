@@ -1,5 +1,5 @@
 //
-// M A T C H - Part of Lexie Lexical Generation System
+// M A T C H - Part of Lexie Lexical Analyzer Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
 //
@@ -35,22 +35,36 @@ type StateContext struct {
 	StackOfState 	??
 }
 
+Tau - is the "no character match" transition character.
+	- it is a zero ( 0 ) movement as no match ocrured.
+
 Table:
 -----------------------------------------------------------------------------------
-Hard   To		Cur[Tau] 	SaveState				Action To Take
+Hard   To		Tau			SaveState	Action To Take
 
-true	-1		false		false		Terminal State, Done
-false	-1		false		false		Error - No next state
-true	>=0		false		false		[Push!] save a state for later, set SaveState <- true
-false	>=0		false		false 		St = To, move to next state
+true	-1		.			false		Terminal State, Done
+				τ 			false		Terminal State, Done
+false	-1		.			false		Error - No next state
+				τ 			false		Error then Reset on Tau
+true	>=0		.			false		[Push!] save a state for later, set SaveState <- true
+false	>=0		.			false 		St = To, move to next state
 
-true	-1		false		true		Terminal State, Done
-false	-1		false		true		[Backup!] to saved state **********, SaveState <0- false
-true	>=0		false		true		[Reset/Push!] save state for later, set SaveState <- true(again)
-false	>=0		false		true 		St = To, move to next state
+true	-1		.			true		Terminal State, Done
+				τ 			false		Terminal State, Done
+false	-1		.			true		[Backup!] to saved state **********, SaveState <0- false
+				τ 			false		Error then Reset on Tau
+true	>=0		.			true		[Reset/Push!] save state for later, set SaveState <- true(again)
+false	>=0		.			true 		St = To, move to next state
+
+
+NonGreedey - v.s. default(Greedey)
+Call
+Return
 
 
 
+
+τ
 
 // Note:
 	fmt.Printf("{  \u03c4 [Tau] %2d -> %2d  %s}  ", ww.From, ww.To, IfLnNo(ww.LineNo)) // Show a Tau(t) for a lambda that matchiens on else conditions.
@@ -321,7 +335,7 @@ func (lex *Lexie) MatcherLexieTable(pbReadBuf *pbread.PBReadType, s_init string)
 					ctx.St = to
 				}
 			}
-		} else if dfa.MTab.Machine[cur_st].Rv > 0 && dfa.MTab.Machine[cur_st].Tau && to == -1 {
+		} else if dfa.MTab.Machine[cur_st].Rv > 0 && dfa.MTab.Machine[cur_st].Tau && to == -1 { // Should be impossible, Tau is not found.
 			dbgo.DbPrintf("match", " %(yellow)At: %(LF) -- this one is imporant\n")
 			SaveToken(to)
 			FlushToken(hardMatch)

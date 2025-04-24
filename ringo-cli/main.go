@@ -4,7 +4,6 @@ package main
 // R I N G O - Static site generator using a template system based on Python templates.
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 0.2.2
 //
 
 /*

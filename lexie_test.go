@@ -16,8 +16,6 @@ import (
 	"github.com/pschlump/lexie/com"
 	"github.com/pschlump/lexie/dfa"
 	"github.com/pschlump/lexie/nfa"
-
-	. "gopkg.in/check.v1"
 )
 
 type Lexie01DataType struct {
@@ -69,13 +67,8 @@ var Lexie01Data = []Lexie01DataType{
 // Hook up gocheck into the "go test" runner.
 // -----------------------------------------------------------------------------------------------------------------------------------------
 
-func TestLexie(t *testing.T) { TestingT(t) }
-
-type LexieTestSuite struct{}
-
-var _ = Suite(&LexieTestSuite{})
-
-func (s *LexieTestSuite) TestLexie(c *C) {
+// func (s *LexieTestSuite) TestLexie(c *C) {
+func Test_DfaTestUsingDjango(t *testing.T) {
 
 	fmt.Fprintf(os.Stderr, "Test Parsing of REs, %s\n", dbgo.LF())
 

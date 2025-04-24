@@ -3,11 +3,10 @@ package smap
 import (
 	"fmt"
 	"testing"
-
-	. "gopkg.in/check.v1"
 )
 
 // https://labix.org/gocheck
+// . "gopkg.in/check.v1"
 
 type Ri struct {
 	R rune
@@ -44,13 +43,7 @@ var SMap01Data = []SMap01DataType{
 
 */
 
-func TestLexie(t *testing.T) { TestingT(t) }
-
-type SMapTypeTestSuite struct{}
-
-var _ = Suite(&SMapTypeTestSuite{})
-
-func (s *SMapTypeTestSuite) TestLexie(c *C) {
+func TestLexie(t *testing.T) {
 
 	t_debug := false
 
@@ -70,12 +63,18 @@ func (s *SMapTypeTestSuite) TestLexie(c *C) {
 					if t_debug {
 						fmt.Printf("  Faild %d,%d : rn=%04x %s expected = %d result = %d\n", ii, jj, ww.R, string(ww.R), ww.I, rx)
 					}
-					c.Check(ww.I, Equals, rx)
+					// c.Check(ww.I, Equals, rx)
+					if ww.I != rx {
+						t.Errorf("Failed %d,%d:  Expected %v got %v\n", ii, jj, ww.I, rx)
+					}
 				}
 			}
 			// func (smap *SMapType) Length() int {
 			if vv.Len > 0 {
-				c.Check(vv.Len, Equals, t1.Length())
+				// c.Check(vv.Len, Equals, t1.Length())
+				if vv.Len != t1.Length() {
+					t.Errorf("Failed:  Length did not match, expeced, %d got %d\n", vv.Len, t1.Length())
+				}
 			}
 		}
 	}

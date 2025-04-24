@@ -15,11 +15,7 @@ import (
 	"testing"
 
 	"github.com/pschlump/dbgo"
-
-	. "gopkg.in/check.v1"
 )
-
-// https://labix.org/gocheck
 
 type TokByte struct {
 	Tok LR_TokType // Node Type
@@ -273,13 +269,7 @@ var Test6Data = []Test6DataType{
 // From: https://labix.org/gocheck
 // -----------------------------------------------------------------------------------------------------------------------------------------
 
-func TestLexie(t *testing.T) { TestingT(t) }
-
-type ReTesteSuite struct{}
-
-var _ = Suite(&ReTesteSuite{})
-
-func (s *ReTesteSuite) TestLexie(c *C) {
+func TestLexie(t *testing.T) {
 
 	// Test of Parseing REs into RE-TParseTrees
 	fmt.Fprintf(os.Stderr, "Test Parsing of REs, %s\n", dbgo.LF())
@@ -309,14 +299,18 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 					// Check correct token
 					if vv.SM[tn].Tok != ww {
 						fmt.Printf("     Failed to return the correct token, expecting %d/%s, got %d/%s\n", vv.SM[tn].Tok, LR_TokTypeLookup[vv.SM[tn].Tok], ww, LR_TokTypeLookup[ww])
-						c.Check(int(vv.SM[tn].Tok), Equals, int(ww))
+						// c.Check(int(vv.SM[tn].Tok), Equals, int(ww))
+						if int(vv.SM[tn].Tok) != int(ww) {
+							t.Errorf("Failed %v,%v:  Expected %v got %v\n", ii, vv, int(vv.SM[tn].Tok), int(ww))
+						}
 						n_err++
 						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", ii)
 					}
 					// Check correct string/rune returned
 					if !CmpByteArr(vv.SM[tn].Dat, []byte(cc)) {
 						fmt.Printf("     The returned runes did not match\n")
-						c.Check(string(vv.SM[tn].Dat), Equals, cc)
+						// c.Check(string(vv.SM[tn].Dat), Equals, cc)
+						t.Errorf("Failed %v,%v:  Expected %v got %v\n", ii, vv, vv.SM[tn].Dat, cc)
 						n_err++
 						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", ii)
 					}
@@ -343,7 +337,10 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 			if vv.Sigma != "" {
 				if vv.Sigma != lr.Sigma {
 					fmt.Printf("     The calculated and reference Sigma did not match\n")
-					c.Check(vv.Sigma, Equals, lr.Sigma)
+					// c.Check(vv.Sigma, Equals, lr.Sigma)
+					if vv.Sigma != lr.Sigma {
+						t.Errorf("Failed %v,%v:  Expected %v got %v\n", ii, vv, vv.Sigma, lr.Sigma)
+					}
 					n_err++
 					dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", ii)
 				}
@@ -373,7 +370,10 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 				for i := 0; i < len(v.TopTok); i++ {
 					if v.TopTok[i] != lr.Tree.Children[i].LR_Tok {
 						dbgo.DbPrintf("debug", "%(red)Error%(reset): invalid token returnd at postion %d\n", i)
-						c.Check(v.TopTok[i], Equals, lr.Tree.Children[i].LR_Tok)
+						// c.Check(v.TopTok[i], Equals, lr.Tree.Children[i].LR_Tok)
+						if v.TopTok[i] != lr.Tree.Children[i].LR_Tok {
+							t.Errorf("Failed %v:  Expected %v got %v\n", i, v.TopTok[i], lr.Tree.Children[i].LR_Tok)
+						}
 						n_err++
 						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 					}
@@ -390,6 +390,7 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 					if v.TopVal[i] != lr.Tree.Children[i].Item {
 						dbgo.DbPrintf("debug", "%(red)Error%(reset): invalid value at postion %d, %(LF)\n", i)
 						n_err++
+						t.Errorf("Failed %v:  Expected %v got %v\n", i, v.TopVal[i], lr.Tree.Children[i].Item)
 						// xyzzy821
 						dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 					}
@@ -398,6 +399,7 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 		}
 		if len(lr.Error) > v.NExpectedErr {
 			dbgo.DbPrintf("debug", "%(red)Error%(reset): Errors reported in R.E. parsing %d\n", len(lr.Error))
+			t.Errorf("Failed %v:  Expected %v got %v\n", i, v.NExpectedErr, len(lr.Error))
 			n_err++
 			dbgo.Printf("\n%(red)************************************** errorerror ************************************** at:%(LF), test=%d\n", i)
 		} else if len(lr.Error) > 0 {
@@ -416,7 +418,6 @@ func (s *ReTesteSuite) TestLexie(c *C) {
 		dbgo.Fprintf(os.Stderr, "%(yellow)Skipped, # of files without automated checks = %d\n", n_skip)
 	}
 	if n_err > 0 {
-		c.Check(n_err, Equals, 0)
 		dbgo.Fprintf(os.Stderr, "%(red)Failed, # of errors = %d\n", n_err)
 	} else {
 		dbgo.Fprintf(os.Stderr, "%(green)PASS\n")

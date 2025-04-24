@@ -4,7 +4,6 @@ package main
 // C L I / T E S T 2 - Part of Lexie Lexical Generation System
 //
 // Copyright (C) Philip Schlump, 2014-2025.
-// Version: 0.0.8
 //
 
 /*
